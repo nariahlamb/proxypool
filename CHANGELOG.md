@@ -5,6 +5,18 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.53] - 2026-08-17
+
+### ⬆️ 运行阶段镜像升级 alpine 3.21 → 3.24
+
+- `Dockerfile` / `Dockerfile.release` 运行阶段：`FROM alpine:3.21` → `alpine:3.24`
+  （当前最新稳定版 3.24.1）
+- 背景：v1.1.52 升级 Go 1.27 后，构建阶段 `golang:1.27.0-alpine` 底层已是 alpine
+  3.24.1，运行阶段 3.21（2024-12 发布）临近 EOL，ca-certificates/tzdata 等
+  运行时包同步到新版仓库
+- 验证：alpine:3.24 全流程本地构建 + 容器冒烟（/health、首页、/bestProxyIp
+  输出含 ipdb 纯 IP 源节点）、容器内确认 alpine 3.24.1
+
 ## [v1.1.52] - 2026-08-17
 
 ### ⬆️ Go 工具链升级 1.25 → 1.27

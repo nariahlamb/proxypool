@@ -1,5 +1,5 @@
 # 运行阶段
-FROM alpine:3.21
+FROM alpine:3.24
 
 # 接收构建参数 (由 buildx 自动注入)
 ARG TARGETOS
