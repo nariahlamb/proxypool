@@ -2,7 +2,7 @@
 
 module github.com/One-Piecs/proxypool
 
-go 1.25.0
+go 1.27.0
 
 require (
 	github.com/arl/statsviz v0.8.1

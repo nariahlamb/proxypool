@@ -5,6 +5,16 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.52] - 2026-08-17
+
+### ⬆️ Go 工具链升级 1.25 → 1.27
+
+- `go.mod`：`go 1.25.0` → `go 1.27.0`
+- `Dockerfile`：构建镜像 `golang:1.26.0-alpine` → `golang:1.27.0-alpine`
+- CI（`.github/workflows/docker-release.yml`）：`actions/setup-go` 版本 `1.26` → `1.27`
+- 验证：Go 1.27.0 下 `go mod tidy` 无依赖变更（go.sum 不变）、`go vet ./...` +
+  `go test ./...` 全包通过
+
 ## [v1.1.51] - 2026-08-17
 
 ### 🚀 sub_ip_list_url 支持纯 IP 行（无端口自动补 443）
