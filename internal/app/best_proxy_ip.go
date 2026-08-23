@@ -672,23 +672,33 @@ func SubNiceCfProxySub(format string, sub string, distNodeCountry string, isIPV6
 		return "", fmt.Errorf("get cfIpApi readall: %w", err)
 	}
 
-	de64, err := base64.StdEncoding.DecodeString(string(body))
-	if err != nil {
-		log.Errorln("url[%s] base64.StdEncoding.DecodeString(): %s", sub, err.Error())
-		return "", fmt.Errorf("url[%s] base64.StdEncoding.DecodeString(): %s", sub, err.Error())
-	}
-
 	addrMap := sync.Map{}
 
-	r := bufio.NewScanner(bytes.NewReader(de64))
-	for r.Scan() {
-		parsedURL, err := url.Parse(r.Text())
-		if err != nil {
-			log.Errorln("url.Parse: %s", err.Error())
-			continue
+	// 兼容两种订阅格式：
+	// 1. base64 编码的 URL 订阅（vless:// 等，原格式）
+	// 2. 明文 "host:port#注释" 列表（如 https://bestcf.pages.dev/domain/Domain-Asia.txt）
+	if de64, err := base64.StdEncoding.DecodeString(string(body)); err == nil {
+		r := bufio.NewScanner(bytes.NewReader(de64))
+		for r.Scan() {
+			parsedURL, err := url.Parse(r.Text())
+			if err != nil {
+				log.Errorln("url.Parse: %s", err.Error())
+				continue
+			}
+			// 使用sync.Map进行去重
+			addrMap.Store(nodeBase{parsedURL.Hostname(), parsedURL.Port(), parsedURL.Fragment}, struct{}{})
 		}
-		// 使用sync.Map进行去重
-		addrMap.Store(nodeBase{parsedURL.Hostname(), parsedURL.Port(), parsedURL.Fragment}, struct{}{})
+	} else {
+		// 明文格式：host:port#注释，端口缺失默认 443
+		log.Infoln("url[%s] is not base64, parsing as plain host:port lines", sub)
+		r := bufio.NewScanner(bytes.NewReader(body))
+		for r.Scan() {
+			host, port, name, ok := parsePlainSubLine(r.Text())
+			if !ok {
+				continue
+			}
+			addrMap.Store(nodeBase{host, port, name}, struct{}{})
+		}
 	}
 
 	bestCfNodeList := make([]nodeBase, 0, 200)
@@ -825,6 +835,44 @@ func parseSubIpSubLine(line string) (addr string, ok bool) {
 		return "", false
 	}
 	return net.JoinHostPort(host, portStr), true
+}
+
+// parsePlainSubLine 解析明文 "host:port#注释" 订阅行（如 bestcf.pages.dev 域名列表）。
+// host 可为域名或 IP；端口缺失默认 443；# 后注释作为节点名（可省略）。
+// 端口必须位于白名单（443/2053/2083/2087/2096/8443）。
+func parsePlainSubLine(line string) (host, port, name string, ok bool) {
+	line = strings.TrimSpace(line)
+	if line == "" || strings.HasPrefix(line, "#") {
+		return "", "", "", false
+	}
+	// # 后为注释（作为节点名）
+	if idx := strings.Index(line, "#"); idx >= 0 {
+		name = strings.TrimSpace(line[idx+1:])
+		line = strings.TrimSpace(line[:idx])
+	}
+	if line == "" {
+		return "", "", "", false
+	}
+
+	host = line
+	port = ""
+	if h, p, err := net.SplitHostPort(line); err == nil {
+		host, port = h, p
+	}
+	if port == "" {
+		port = "443" // 默认端口：纯域名/IP 行
+	}
+	if _, inWhitelist := bestIpPortWhitelist[port]; !inWhitelist {
+		return "", "", "", false
+	}
+	// 裸 IPv6 无方括号：SplitHostPort 失败会把整串当 host，这里丢弃
+	if strings.Count(host, ":") > 1 && net.ParseIP(host) == nil {
+		return "", "", "", false
+	}
+	if host == "" {
+		return "", "", "", false
+	}
+	return host, port, name, true
 }
 
 func ipToUint32(ip string) uint32 {

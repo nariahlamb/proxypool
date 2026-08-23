@@ -65,3 +65,44 @@ func TestBestIpPortWhitelist(t *testing.T) {
 		}
 	}
 }
+
+// TestParsePlainSubLine 验证明文 "host:port#注释" 订阅行解析（bestcf.pages.dev 域名列表格式）
+func TestParsePlainSubLine(t *testing.T) {
+	cases := []struct {
+		name     string
+		line     string
+		host     string
+		port     string
+		fragment string
+		ok       bool
+	}{
+		{"域名带中文注释", "polestar.com:443#亚洲域名 | 中国极星汽车", "polestar.com", "443", "亚洲域名 | 中国极星汽车", true},
+		{"IP带注释", "162.159.198.1:443#亚洲域名 | 优选网", "162.159.198.1", "443", "亚洲域名 | 优选网", true},
+		{"域名无注释", "deepin.org:443", "deepin.org", "443", "", true},
+		{"无端口带注释", "70mai.store#亚洲域名 | 中国70迈", "70mai.store", "443", "亚洲域名 | 中国70迈", true},
+		{"纯域名无端口", "52pojie.org", "52pojie.org", "443", "", true},
+		{"多级域名", "www.nestle.com.cn:443#中国雀巢", "www.nestle.com.cn", "443", "中国雀巢", true},
+		{"IPv6带方括号", "[2606:4700::1111]:443#US", "2606:4700::1111", "443", "US", true},
+		{"头注释行", "# 84 bestcf domains", "", "", "", false},
+		{"空行", "", "", "", "", false},
+		{"纯空白行", "   ", "", "", "", false},
+		{"非白名单端口", "1.2.3.4:80#US", "", "", "", false},
+		{"裸IPv6无方括号(歧义,视为IPv6)", "2606:4700::1111:443#US", "2606:4700::1111:443", "443", "US", true},
+		{"过多冒号非法行", "a:b:c:d:e:f:1:2:3:4#US", "", "", "", false},
+		{"行尾CRLF", "deepin.org:443#深度系统\r", "deepin.org", "443", "深度系统", true},
+		{"首尾空格", "  polestar.com:443#亚洲  ", "polestar.com", "443", "亚洲", true},
+		{"注释内多个#", "a.com:443#x#y", "a.com", "443", "x#y", true},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			host, port, fragment, ok := parsePlainSubLine(tc.line)
+			if ok != tc.ok {
+				t.Fatalf("ok = %v, want %v (got %s:%s)", ok, tc.ok, host, port)
+			}
+			if host != tc.host || port != tc.port || fragment != tc.fragment {
+				t.Fatalf("got (%q,%q,%q), want (%q,%q,%q)", host, port, fragment, tc.host, tc.port, tc.fragment)
+			}
+		})
+	}
+}

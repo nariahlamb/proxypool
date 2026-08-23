@@ -5,6 +5,22 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.54] - 2026-08-17
+
+### 🚀 /bestCfProxySub 支持明文域名列表（bestcf.pages.dev 格式）
+
+- **sub 参数新增支持明文 `host:port#注释` 列表**，如
+  `https://bestcf.pages.dev/domain/Domain-Asia.txt`（每行如
+  `polestar.com:443#亚洲域名 | 中国极星汽车`，84 行亚洲域名）
+- 格式自动识别：base64 解码成功走原 URL 订阅逻辑；失败回退明文行解析，
+  两者共用同一去重/生成流水线
+- `parsePlainSubLine` 解析规则：host 可为域名或 IP、端口缺失默认 443、
+  `#` 后注释作为节点名、端口白名单（443/2053/2083/2087/2096/8443）校验、
+  兼容 IPv6 方括号与 CRLF
+- 新增 15 个 `TestParsePlainSubLine` 用例
+- 端到端验证：容器内实测明文源（surgeTrojan/clashVmess 输出域名节点）与
+  base64 旧格式（vless 订阅）均正常
+
 ## [v1.1.53] - 2026-08-17
 
 ### ⬆️ 运行阶段镜像升级 alpine 3.21 → 3.24
