@@ -151,6 +151,43 @@ func CrawlBestNode() {
 		}
 	})
 
+	// 5. Best IP Sub URLs (明文 ip:port 订阅，如 best-cf-ips)
+	subIpListUrls := config.Config().SubIpListUrl
+	if len(subIpListUrls) > 0 {
+		wg.Add(1)
+		wp.Submit(func() {
+			defer wg.Done()
+			for _, _url := range subIpListUrls {
+				log.Infoln("Starting Sub IP Sub URL: %s", _url)
+
+				for retries := 0; retries < 3; retries++ {
+					resp, err := bestNodeClient.R().Get(_url)
+					if err != nil {
+						log.Errorln("bestNodeClient.Get(): %s, retry: %d", err.Error(), retries)
+						// 指数退避：超时后等服务恢复，避免立即重试再超时
+						time.Sleep(time.Duration(retries+1) * 2 * time.Second)
+						continue
+					}
+
+					r := bufio.NewScanner(bytes.NewReader([]byte(resp.String())))
+					count := 0
+					for r.Scan() {
+						addr, ok := parseSubIpSubLine(r.Text())
+						if !ok {
+							continue
+						}
+						addrMap.Store(addr, struct{}{})
+						count++
+					}
+					log.Infoln("Processed %s, found %d nodes", _url, count)
+					break
+				}
+			}
+		})
+	} else {
+		log.Errorln("not found sub ip sub url")
+	}
+
 	wg.Wait()
 	wp.Stop()
 
@@ -747,6 +784,45 @@ func ExtractHostPort(link string) (addr string, err error) {
 	}
 
 	return u.Host, nil
+}
+
+// bestIpPortWhitelist 端口白名单：best ip 明文订阅仅接受这些端口
+var bestIpPortWhitelist = map[string]struct{}{
+	"443":  {},
+	"2053": {},
+	"2083": {},
+	"2087": {},
+	"2096": {},
+	"8443": {},
+}
+
+// parseSubIpSubLine 解析 sub_ip_list_url 订阅行。
+// 行格式: "ip:port#Country"（# 后为国家/地区注释，可省略），
+// 如 "104.17.212.191:443#US 🇺🇸"。仅接受端口白名单内的条目，host 必须是合法 IP。
+func parseSubIpSubLine(line string) (addr string, ok bool) {
+	line = strings.TrimSpace(line)
+	if line == "" || strings.HasPrefix(line, "#") {
+		return "", false
+	}
+	// 去掉 # 注释（国家码等）
+	if idx := strings.Index(line, "#"); idx >= 0 {
+		line = strings.TrimSpace(line[:idx])
+	}
+	if line == "" {
+		return "", false
+	}
+
+	host, portStr, err := net.SplitHostPort(line)
+	if err != nil {
+		return "", false
+	}
+	if _, inWhitelist := bestIpPortWhitelist[portStr]; !inWhitelist {
+		return "", false
+	}
+	if net.ParseIP(host) == nil {
+		return "", false
+	}
+	return net.JoinHostPort(host, portStr), true
 }
 
 func ipToUint32(ip string) uint32 {

@@ -49,3 +49,43 @@ func TestParseInvalidPath(t *testing.T) {
 		t.Fatal("expected error for nonexistent config file")
 	}
 }
+
+// TestParseSubIpListUrl 验证 sub_ip_list_url 配置项解析
+func TestParseSubIpListUrl(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.yaml")
+	content := `sub_ip_list_url:
+  - "https://raw.githubusercontent.com/LancelotRar/best-cf-ips/main/best-cf-ipv4.txt"
+  - https://example.com/list.txt
+`
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := Parse(path); err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	got := Config().SubIpListUrl
+	if len(got) != 2 {
+		t.Fatalf("SubIpListUrl len = %d, want 2", len(got))
+	}
+	want := []string{
+		"https://raw.githubusercontent.com/LancelotRar/best-cf-ips/main/best-cf-ipv4.txt",
+		"https://example.com/list.txt",
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Errorf("SubIpListUrl[%d] = %q, want %q", i, got[i], want[i])
+		}
+	}
+
+	// 未配置时为空
+	path2 := filepath.Join(t.TempDir(), "config2.yaml")
+	if err := os.WriteFile(path2, []byte("port: \"12580\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := Parse(path2); err != nil {
+		t.Fatalf("parse2: %v", err)
+	}
+	if len(Config().SubIpListUrl) != 0 {
+		t.Errorf("SubIpListUrl should be empty when not configured, got %v", Config().SubIpListUrl)
+	}
+}

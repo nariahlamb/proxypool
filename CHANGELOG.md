@@ -5,6 +5,22 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.50] - 2026-08-17
+
+### 🚀 新增 sub_ip_list_url 配置项：明文 best IP 订阅源
+
+- **新增配置项 `sub_ip_list_url`**（字符串数组）：明文 `ip:port` 列表订阅源，
+  每行格式 `ip:port#国家/地区`（`#` 后为注释，可省略），如
+  `104.17.212.191:443#US 🇺🇸`；头部 `# 295 bestips updated at ...` 注释行自动跳过
+- **`CrawlBestNode()` 新增第 5 个数据源**：并发拉取 `sub_ip_list_url` 列表，
+  解析出 IP 与端口后与其他源（sub_ip_url / cf_best_ip / vps789 Top20 / Provider）
+  统一去重 → DNS 解析 → CDN 检测 → GeoIP 国家识别，供 `/bestProxyIp` 等接口输出
+- **端口白名单**：仅接受 `443 / 2053 / 2083 / 2087 / 2096 / 8443`，
+  其余端口行静默丢弃；host 必须是合法 IP（域名/非法格式行丢弃），兼容 IPv6 方括号
+- **失败重试**：与订阅源一致，最多重试 3 次（指数退避 2s/4s/6s）
+- 新增单元测试：`parseSubIpSubLine` 解析（标准行/注释/CRLF/白名单/非法端口/IPv6）、
+  端口白名单完整性、`config.Parse` 对 `sub_ip_list_url` 的 yaml 解析
+
 ## [v1.1.49] - 2026-08-17
 
 ### 🎛 type 参数支持多类型 + PORT 环境变量修复

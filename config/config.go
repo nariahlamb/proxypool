@@ -40,6 +40,7 @@ type ConfigOptions struct {
 
 	SubBestNodeInterval uint64    `json:"sub-best-node-interval" yaml:"sub-best-node-interval"`
 	SubIpUrl            []string  `json:"sub_ip_url" yaml:"sub_ip_url"`
+	SubIpListUrl        []string  `json:"sub_ip_list_url" yaml:"sub_ip_list_url"`
 	ProxyInfo           ProxyInfo `json:"proxy_info" yaml:"proxy_info"`
 	CfBestIp            []string  `json:"cf_best_ip" yaml:"cf_best_ip"`
 }
