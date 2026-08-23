@@ -51,9 +51,11 @@ sub-best-node-interval: 60 # default 60 (min)
 sub_ip_url:
   - "https://VLESS.xxxxx.com/sub"
 
-# best ip 明文订阅（每行格式：ip:port#国家，端口仅接受 443/2053/2083/2087/2096/8443）
+# best ip 明文订阅（每行格式：ip:port#国家 或纯 IP 行如 ipdb 源，无端口默认补 443；
+# 端口仅接受 443/2053/2083/2087/2096/8443）
 sub_ip_list_url:
   - "https://raw.githubusercontent.com/LancelotRar/best-cf-ips/main/best-cf-ipv4.txt"
+  - "https://ipdb.api.030101.xyz/?type=bestproxy&country=true"
 
 proxy_info:
   JP:

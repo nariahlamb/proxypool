@@ -797,8 +797,9 @@ var bestIpPortWhitelist = map[string]struct{}{
 }
 
 // parseSubIpSubLine 解析 sub_ip_list_url 订阅行。
-// 行格式: "ip:port#Country"（# 后为国家/地区注释，可省略），
-// 如 "104.17.212.191:443#US 🇺🇸"。仅接受端口白名单内的条目，host 必须是合法 IP。
+// 行格式: "ip:port#Country" 或纯 IP 行 "ip#"（无端口，默认补 443），
+// # 后为国家/地区注释，可省略，如 "104.17.212.191:443#US 🇺🇸" 或 "47.57.245.232#"。
+// 仅接受端口白名单内的条目，host 必须是合法 IP。
 func parseSubIpSubLine(line string) (addr string, ok bool) {
 	line = strings.TrimSpace(line)
 	if line == "" || strings.HasPrefix(line, "#") {
@@ -812,9 +813,10 @@ func parseSubIpSubLine(line string) (addr string, ok bool) {
 		return "", false
 	}
 
-	host, portStr, err := net.SplitHostPort(line)
-	if err != nil {
-		return "", false
+	host := line
+	portStr := "443" // 默认端口：纯 IP 行（如 ipdb bestproxy 源）补默认白名单端口
+	if h, p, err := net.SplitHostPort(line); err == nil {
+		host, portStr = h, p
 	}
 	if _, inWhitelist := bestIpPortWhitelist[portStr]; !inWhitelist {
 		return "", false

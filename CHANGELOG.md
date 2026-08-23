@@ -5,6 +5,18 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.51] - 2026-08-17
+
+### 🚀 sub_ip_list_url 支持纯 IP 行（无端口自动补 443）
+
+- **ipdb 等纯 IP 订阅源支持**：`https://ipdb.api.030101.xyz/?type=bestproxy&country=true`
+  返回每行 `IP`（或 `IP#`，无端口），原解析要求 `host:port` 导致整行全部丢弃
+- 增强 `parseSubIpSubLine`：无端口行默认补 `443`（在白名单内）；
+  有端口行仍严格校验白名单（443/2053/2083/2087/2096/8443）；host 必须为合法 IP
+- 兼容裸 IPv6（自动补方括号）；域名/多余冒号等非法行继续丢弃
+- 配置示例 `sub_ip_list_url` 追加 ipdb 源
+- 新增测试用例：纯 IP 行（带#/无#/带国家注释）、裸 IPv6、多余冒号非法行
+
 ## [v1.1.50] - 2026-08-17
 
 ### 🚀 新增 sub_ip_list_url 配置项：明文 best IP 订阅源
