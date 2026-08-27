@@ -39,6 +39,30 @@ type Format struct {
 	V2rayn bool
 }
 
+// sortBestNodes 按照国家名称、IP 和端口多级排序（稳定）。
+// IPv4 使用 TCP 数值比较，IPv6/域名保持字符串比较。
+func sortBestNodes(nodes []cache.BestNode) {
+	slices.SortStableFunc(nodes, func(a, b cache.BestNode) int {
+		// 首先按国家排序
+		if a.Country != b.Country {
+			return cmp.Compare(a.Country, b.Country)
+		}
+		// 国家相同时按IP排序，使用TCP数值比较
+		if a.Ip != b.Ip {
+			// 如果是IPv4地址，使用数值比较
+			aParts := strings.Split(a.Ip, ".")
+			bParts := strings.Split(b.Ip, ".")
+			if len(aParts) == 4 && len(bParts) == 4 {
+				return cmp.Compare(ipToUint32(a.Ip), ipToUint32(b.Ip))
+			}
+			// 对于IPv6或其他格式，保持字符串比较
+			return cmp.Compare(a.Ip, b.Ip)
+		}
+		// IP相同时按端口排序
+		return cmp.Compare(a.Port, b.Port)
+	})
+}
+
 func CrawlBestNode() {
 	urls := config.Config().SubIpUrl
 	addrMap := sync.Map{}
@@ -304,26 +328,7 @@ func CrawlBestNode() {
 
 	wp.StopWait()
 
-	// 按照国家名称、IP和端口多级排序
-	slices.SortStableFunc(bestNodeList, func(a, b cache.BestNode) int {
-		// 首先按国家排序
-		if a.Country != b.Country {
-			return cmp.Compare(a.Country, b.Country)
-		}
-		// 国家相同时按IP排序，使用TCP数值比较
-		if a.Ip != b.Ip {
-			// 如果是IPv4地址，使用数值比较
-			aParts := strings.Split(a.Ip, ".")
-			bParts := strings.Split(b.Ip, ".")
-			if len(aParts) == 4 && len(bParts) == 4 {
-				return cmp.Compare(ipToUint32(a.Ip), ipToUint32(b.Ip))
-			}
-			// 对于IPv6或其他格式，保持字符串比较
-			return cmp.Compare(a.Ip, b.Ip)
-		}
-		// IP相同时按端口排序
-		return cmp.Compare(a.Port, b.Port)
-	})
+	sortBestNodes(bestNodeList)
 
 	cache.SetBestNodeList("bestNode", bestNodeList)
 
