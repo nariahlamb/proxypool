@@ -33,9 +33,6 @@ active-interval:      # default 60 (min)
 active-frequency:     # default 100 (requests per interval)
 active-max-number:    # default 100. If more than this number of active proxies, the extra will be deprecated by speed
 
-# cloudflare api
-cf_email: ""
-cf_key: ""
 
 #tg_channel_proxy_url: "https://tg.i-c-a.su/rss/"
 tg_channel_proxy_url: "http://127.0.0.1:9504/rss/"

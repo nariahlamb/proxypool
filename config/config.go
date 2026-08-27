@@ -23,8 +23,6 @@ type ConfigOptions struct {
 	KeyFile               string   `json:"key_file" yaml:"key_file"`
 	DatabaseUrl           string   `json:"database_url" yaml:"database_url"`
 	CrawlInterval         uint64   `json:"crawl-interval" yaml:"crawl-interval"`
-	CFEmail               string   `json:"cf_email" yaml:"cf_email"`
-	CFKey                 string   `json:"cf_key" yaml:"cf_key"`
 	SourceFiles           []string `json:"source-files" yaml:"source-files"`
 	SpeedTest             bool     `json:"speedtest" yaml:"speedtest"`
 	SpeedTestInterval     uint64   `json:"speedtest-interval" yaml:"speedtest-interval"`
@@ -197,12 +195,6 @@ func Parse(path string) error {
 	// 部分配置环境变量优先
 	if domain := os.Getenv("DOMAIN"); domain != "" {
 		cfg.Domain = domain
-	}
-	if cfEmail := os.Getenv("CF_API_EMAIL"); cfEmail != "" {
-		cfg.CFEmail = cfEmail
-	}
-	if cfKey := os.Getenv("CF_API_KEY"); cfKey != "" {
-		cfg.CFKey = cfKey
 	}
 
 	gCfg.Store(&cfg)

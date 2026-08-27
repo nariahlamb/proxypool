@@ -89,7 +89,6 @@ docker pull <dockerhub用户名>/proxypool:latest
 | `healthcheck_test_urls` | 健康检查测试地址覆盖（默认内置国内可达 204 端点，不含 gstatic） |
 | `proxy_info` | 优选 IP 出站节点凭据（vmess/trojan/vless/anytls，按国家） |
 | `cf_best_ip` | 静态优选 IP 列表 |
-| `cf_email` / `cf_key` | Cloudflare API（可选） |
 
 `source.yaml` 中的 getter 类型：`subscribe`、`clash`、`webfuzz`、`webfuzzsub`、`tgchannel`、`web-fanqiangdang`、`web-freessrxyz` 等。
 
