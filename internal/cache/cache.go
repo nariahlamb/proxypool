@@ -7,11 +7,13 @@ import (
 )
 
 // BestNode 最佳节点信息
+// AnyTLS 标记该 ip:port 能否透传 anytls 流量（CrawlBestNode 后由探测任务标记）
 type BestNode struct {
 	Ip      string
 	Port    int
 	Country string
 	CDN     bool
+	AnyTLS  bool
 }
 
 // cacheStore 一个简单的无过期时间的并发安全缓存，

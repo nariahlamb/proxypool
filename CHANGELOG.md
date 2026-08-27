@@ -5,6 +5,27 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.57] - 2026-08-17
+
+### 🚀 best 节点 anytls 可转发性探测（xxxAnytls 仅导出可透传节点）
+
+- **背景**：anytls 是 TLS over TCP 自定义协议，CF 的 443 anycast 只做 HTTP 层转发，
+  仅部分 ip:port 能透传原始 TCP；此前 `xxxAnytls` 导出全部 best 节点，多数不可用
+- **探测机制**：`CrawlBestNode()` 收集完成后异步探测每个 ip:port ——
+  构造临时 anytls 出站（server=候选 ip, port=候选 port, sni=源站域名），复用 mihomo
+  完整握手（TCP+TLS+anytls 协议鉴权），`DialContext` 成功即标记 `BestNode.AnyTLS=true`
+- **导出过滤**：`/bestProxyIp/*Anytls`（含 /bestIpKr）仅输出标记节点；
+  非 anytls 格式不受影响
+- **配置项 `anytls_probe`**（不配置此段时 anytls 导出为空；enable 缺省 true；
+  country 缺省自动取 proxy_info 中第一个配置了 anytls 的国家）：
+  `enable` / `concurrency`(默认20) / `timeout`(默认5s) / `country`
+- **降级**：源站不可用 → 全部探测失败 → anytls 导出空（符合实际）；
+  探测异常不阻塞爬取（异步 + 完成后原子替换缓存）
+- 新增测试：`anytls_probe` 配置默认值（nil/缺省/显式 false/自定义）、探测国家自动选择、
+  导出过滤（启用/关闭/无配置）
+- 端到端验证：389 个 best 节点探测标记 **311 个可透传**，`surgeAnytls` 导出恰为 311 行，
+  `surgeTrojan` 保持 389 全量
+
 ## [v1.1.56] - 2026-08-17
 
 ### 🐛 /best* anytls 配置缺失报错提示优化 + /surge/proxies?type=anytls 验证

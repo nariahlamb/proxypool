@@ -338,6 +338,15 @@ func CrawlBestNode() {
 	})
 
 	cache.SetBestNodeList("bestNode", bestNodeList)
+
+	// anytls 可转发性探测：异步执行，完成后原子替换缓存（不阻塞爬取主流程）。
+	// 探测用任一配置了 anytls 凭据的国家（默认自动选择），标记的是 ip:port 透传能力。
+	if cfg := config.Config().AnyTLSProbe; cfg != nil && cfg.Enabled() {
+		go func(base []cache.BestNode) {
+			marked := ProbeAndMarkAnyTLS(base)
+			cache.SetBestNodeList("bestNode", marked)
+		}(bestNodeList)
+	}
 	cache.SetString("bestNodeLastUpdateTime", time.Now().Format(time.RFC3339))
 	log.Infoln("Completed processing %d nodes", len(bestNodeList))
 }
@@ -357,6 +366,11 @@ func SubNiceProxyIp(format string, distNodeCountry string, proxyCountryIsoCode s
 	if len(bestNodeList) == 0 {
 		log.Errorln("No best nodes found")
 		return "", errors.New("not found best node list")
+	}
+
+	// anytls 格式：仅导出可透传 anytls 的节点；未启用探测时导出空
+	if f.Anytls {
+		bestNodeList = filterAnyTLSNodes(bestNodeList)
 	}
 
 	// 预分配buffer以提高性能

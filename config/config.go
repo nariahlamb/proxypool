@@ -41,8 +41,30 @@ type ConfigOptions struct {
 	SubBestNodeInterval uint64    `json:"sub-best-node-interval" yaml:"sub-best-node-interval"`
 	SubIpUrl            []string  `json:"sub_ip_url" yaml:"sub_ip_url"`
 	SubIpListUrl        []string  `json:"sub_ip_list_url" yaml:"sub_ip_list_url"`
+	AnyTLSProbe         *AnyTLSProbeConfig `json:"anytls_probe" yaml:"anytls_probe"`
 	ProxyInfo           ProxyInfo `json:"proxy_info" yaml:"proxy_info"`
 	CfBestIp            []string  `json:"cf_best_ip" yaml:"cf_best_ip"`
+}
+
+// AnyTLSProbeConfig best 节点 anytls 可转发性探测配置。
+// Enable 用 *bool：nil 表示配置了 anytls_probe 段但未写 enable（默认开启），
+// 显式 false 才关闭；整个段缺失（AnyTLSProbe == nil）表示未启用。
+type AnyTLSProbeConfig struct {
+	Enable      *bool  `json:"enable" yaml:"enable"`
+	Concurrency int    `json:"concurrency" yaml:"concurrency"`
+	Timeout     int    `json:"timeout" yaml:"timeout"`
+	Country     string `json:"country" yaml:"country"`
+}
+
+// Enabled 探测开关：段缺失=false；段存在且 enable 未写=默认 true；显式 false=关闭
+func (p *AnyTLSProbeConfig) Enabled() bool {
+	if p == nil {
+		return false
+	}
+	if p.Enable == nil {
+		return true
+	}
+	return *p.Enable
 }
 
 var gCfg atomic.Value
@@ -157,6 +179,15 @@ func Parse(path string) error {
 
 	if cfg.SubBestNodeInterval == 0 {
 		cfg.SubBestNodeInterval = 60
+	}
+
+	if cfg.AnyTLSProbe != nil {
+		if cfg.AnyTLSProbe.Concurrency <= 0 {
+			cfg.AnyTLSProbe.Concurrency = 20
+		}
+		if cfg.AnyTLSProbe.Timeout <= 0 {
+			cfg.AnyTLSProbe.Timeout = 5
+		}
 	}
 
 	// 部分配置环境变量优先
