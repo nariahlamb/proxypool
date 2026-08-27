@@ -46,15 +46,11 @@ func CrawlBestNode() {
 
 	// Fetch from all sources concurrently
 	wp := workerpool.New(10)
-	wg := &sync.WaitGroup{}
 
 	// 1. Subscription URLs
 	if len(urls) > 0 {
 		for _, _url := range urls {
-			wg.Add(1)
-			_url := _url
 			wp.Submit(func() {
-				defer wg.Done()
 				log.Infoln("Starting Sub URL: %s", _url)
 
 				for retries := range 3 {
@@ -101,9 +97,7 @@ func CrawlBestNode() {
 	}
 
 	// 2. CF Best IPs from Config
-	wg.Add(1)
 	wp.Submit(func() {
-		defer wg.Done()
 		cfIps := config.Config().CfBestIp
 		if len(cfIps) > 0 {
 			log.Infoln("Adding %d CF Best IPs from config", len(cfIps))
@@ -118,9 +112,7 @@ func CrawlBestNode() {
 	})
 
 	// 3. CF Top 20 from vps789
-	wg.Add(1)
 	wp.Submit(func() {
-		defer wg.Done()
 		log.Infoln("Fetching CF Top 20...")
 		ips, err := fetchCfIpTop20()
 		if err != nil {
@@ -134,9 +126,7 @@ func CrawlBestNode() {
 	})
 
 	// 4. CF Provider IPs from vps789
-	wg.Add(1)
 	wp.Submit(func() {
-		defer wg.Done()
 		log.Infoln("Fetching CF Provider IPs...")
 		// Fetch for all ISPs
 		isps := []string{"CT", "CU", "CM"}
@@ -156,9 +146,7 @@ func CrawlBestNode() {
 	// 5. Best IP Sub URLs (明文 ip:port 订阅，如 best-cf-ips)
 	subIpListUrls := config.Config().SubIpListUrl
 	if len(subIpListUrls) > 0 {
-		wg.Add(1)
 		wp.Submit(func() {
-			defer wg.Done()
 			for _, _url := range subIpListUrls {
 				log.Infoln("Starting Sub IP Sub URL: %s", _url)
 
@@ -190,8 +178,7 @@ func CrawlBestNode() {
 		log.Errorln("not found sub ip sub url")
 	}
 
-	wg.Wait()
-	wp.Stop()
+	wp.StopWait()
 
 	// 收集去重后的地址
 	addrAll := make([]string, 0, 200)

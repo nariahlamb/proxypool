@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"sync"
 	"time"
 
 	"github.com/One-Piecs/proxypool/config"
@@ -116,17 +115,12 @@ func ProbeAndMarkAnyTLS(nodes []cache.BestNode) []cache.BestNode {
 
 	results := make([]bool, len(nodes))
 	wp := workerpool.New(concurrency)
-	var wg sync.WaitGroup
 	for i, node := range nodes {
-		i, node := i, node
-		wg.Add(1)
 		wp.Submit(func() {
-			defer wg.Done()
 			results[i] = probeAnyTLSNode(node.Ip, node.Port, password, sni, testURL, timeout)
 		})
 	}
-	wg.Wait()
-	wp.Stop()
+	wp.StopWait()
 
 	marked := make([]cache.BestNode, len(nodes))
 	count := 0

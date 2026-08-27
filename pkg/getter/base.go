@@ -2,7 +2,6 @@ package getter
 
 import (
 	"errors"
-	"sync"
 
 	"github.com/One-Piecs/proxypool/pkg/proxy"
 	"github.com/One-Piecs/proxypool/pkg/tool"
@@ -12,7 +11,6 @@ import (
 type Getter interface {
 	Get() proxy.ProxyList
 	Get2Chan(pc chan proxy.Proxy)
-	Get2ChanWG(pc chan proxy.Proxy, wg *sync.WaitGroup)
 }
 
 // function type that creates getters

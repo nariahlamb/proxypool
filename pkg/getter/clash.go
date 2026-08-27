@@ -2,7 +2,6 @@ package getter
 
 import (
 	"io"
-	"sync"
 	"time"
 
 	"github.com/One-Piecs/proxypool/log"
@@ -44,15 +43,6 @@ func (c *Clash) Get() proxy.ProxyList {
 }
 
 func (c *Clash) Get2Chan(pc chan proxy.Proxy) {
-	nodes := c.Get()
-	log.Infoln("STATISTIC: Clash\tcount=%d\turl=%s", len(nodes), c.Url)
-	for _, node := range nodes {
-		pc <- node
-	}
-}
-
-func (c *Clash) Get2ChanWG(pc chan proxy.Proxy, wg *sync.WaitGroup) {
-	defer wg.Done()
 	start := time.Now()
 	nodes := c.Get()
 	log.Infoln("STATISTIC: Clash\tcost=%v\tcount=%d\turl=%s", time.Since(start), len(nodes), c.Url)

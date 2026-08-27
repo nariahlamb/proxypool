@@ -185,19 +185,10 @@ func (g *TGChannelGetter) Get() proxy.ProxyList {
 	return result
 }
 
-func (g *TGChannelGetter) Get2ChanWG(pc chan proxy.Proxy, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (g *TGChannelGetter) Get2Chan(pc chan proxy.Proxy) {
 	start := time.Now()
 	nodes := g.Get()
 	log.Infoln("STATISTIC: TGChannel\tcost=%v\tcount=%d\turl=%s", time.Since(start), len(nodes), g.Url)
-	for _, node := range nodes {
-		pc <- node
-	}
-}
-
-func (g *TGChannelGetter) Get2Chan(pc chan proxy.Proxy) {
-	nodes := g.Get()
-	log.Infoln("STATISTIC: TGChannel\tcount=%d\turl=%s", len(nodes), g.Url)
 	for _, node := range nodes {
 		pc <- node
 	}
