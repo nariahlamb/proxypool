@@ -19,9 +19,9 @@ var ErrorNotSSLink = errors.New("not a correct ss link")
 // Shadowsocks is a type of proxy
 type Shadowsocks struct {
 	Base
-	Password   string                 `yaml:"password" json:"password"`
-	Cipher     string                 `yaml:"cipher" json:"cipher"`
-	Plugin     string                 `yaml:"plugin,omitempty" json:"plugin,omitempty"`
+	Password   string         `yaml:"password" json:"password"`
+	Cipher     string         `yaml:"cipher" json:"cipher"`
+	Plugin     string         `yaml:"plugin,omitempty" json:"plugin,omitempty"`
 	PluginOpts map[string]any `yaml:"plugin-opts,omitempty" json:"plugin-opts,omitempty"`
 }
 

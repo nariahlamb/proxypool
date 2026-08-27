@@ -185,7 +185,7 @@ func pingTest(clashProxy C.Proxy, sURL string) time.Duration {
 	pingURL := strings.Split(sURL, "/upload")[0] + "/latency.txt"
 
 	l := time.Second * 10
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		sTime := time.Now()
 		err := HTTPGetViaProxy(clashProxy, pingURL)
 		fTime := time.Now()

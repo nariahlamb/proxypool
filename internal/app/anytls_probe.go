@@ -48,9 +48,10 @@ func probeAnyTLSCountry(cfg *config.SniProbeConfig) (string, bool) {
 // probeAnyTLSNode 探测单个 ip:port 是否可作为 anytls 的 SNI proxy 入口：
 // 构造临时 anytls 出站（server=候选 ip, port=候选 port, sni=源站域名），
 // 经 mihomo `URLTest` 做完整验证：
-//   L3 隧道建立：TCP + TLS + anytls 协议握手（SNI proxy 按 sni 路由到源站）
-//   L4 数据往返：经隧道发起真实 HTTP 请求（默认 https://cp.cloudflare.com/generate_204），
-//      收到 204 响应才算可用（仅握手成功但数据不转发视为不可用）
+//
+//	L3 隧道建立：TCP + TLS + anytls 协议握手（SNI proxy 按 sni 路由到源站）
+//	L4 数据往返：经隧道发起真实 HTTP 请求（默认 https://cp.cloudflare.com/generate_204），
+//	   收到 204 响应才算可用（仅握手成功但数据不转发视为不可用）
 func probeAnyTLSNode(ip string, port int, password, sni, testURL string, timeout time.Duration) bool {
 	at := &proxy.AnyTLS{
 		Base:     proxy.Base{Server: ip, Port: port, Type: "anytls"},

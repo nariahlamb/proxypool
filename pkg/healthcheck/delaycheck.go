@@ -27,10 +27,10 @@ var (
 	// - 每轮实际只试前 maxTestURLs 个，顺序即优先级
 	// 部署环境可用 config `healthcheck_test_urls` 覆盖（见 internal/app/task.go）
 	testURLs = []string{
-		"https://cp.cloudflare.com/generate_204",      // Cloudflare，国内一般可达
-		"https://connect.rom.miui.com/generate_204",   // 小米，国内稳定
-		"http://www.google.com/generate_204",          // 海外
-		"http://bing.com/generate_204",                // 海外
+		"https://cp.cloudflare.com/generate_204",    // Cloudflare，国内一般可达
+		"https://connect.rom.miui.com/generate_204", // 小米，国内稳定
+		"http://www.google.com/generate_204",        // 海外
+		"http://bing.com/generate_204",              // 海外
 		"http://edge-http.microsoft.com/captiveportal/generate_204",
 		"http://clients3.google.com/generate_204",
 		"http://apple-cloudkit.com/generate_204",

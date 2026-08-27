@@ -15,12 +15,12 @@ type SSSub struct {
 }
 
 type ssJson struct {
-	Remarks    string                 `json:"remarks"`
-	Server     string                 `json:"server"`
-	ServerPort string                 `json:"server_port"`
-	Method     string                 `json:"method"`
-	Password   string                 `json:"password"`
-	Plugin     string                 `json:"plugin"`
+	Remarks    string         `json:"remarks"`
+	Server     string         `json:"server"`
+	ServerPort string         `json:"server_port"`
+	Method     string         `json:"method"`
+	Password   string         `json:"password"`
+	Plugin     string         `json:"plugin"`
 	PluginOpts map[string]any `json:"plugin_opts"`
 }
 

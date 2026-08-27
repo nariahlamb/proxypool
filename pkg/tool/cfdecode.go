@@ -106,14 +106,13 @@ func ScriptReplace(js string, varname string) string {
 			strarr := strings.Split(strs[i], " = ")
 			if len(strarr) >= 2 { // get varname, _jzvXT = location  or  return '/t' } _qf14P = location
 				if strarr[len(strarr)-1] == "location" {
-					index := strings.LastIndex(strs[i], "}")
-					if index == -1 {
+					before, after, found := strings.CutLast(strs[i], "}")
+					if !found {
 						varLocation = strarr[0]
 						strs[i] = ""
 					} else {
-						strs[i] = strs[i][:index+1]
-						varLocation = strings.Split(strs[i][index+1:], " = ")[0]
-						varLocation = strings.TrimSpace(varLocation)
+						strs[i] = before + "}"
+						varLocation = strings.TrimSpace(strings.Split(after, " = ")[0])
 					}
 				}
 			} else { // set varname
@@ -140,14 +139,13 @@ func ScriptReplace(js string, varname string) string {
 		}
 		// remove window
 		if strings.Contains(strs[i], "window") {
-			index := strings.LastIndex(strs[i], "}")
-			if index == -1 {
+			before, after, found := strings.CutLast(strs[i], "}")
+			if !found {
 				varWindow = strings.Split(strs[i], " = window")[0]
 				strs[i] = ""
 			} else {
-				varWindow = strings.Split(strs[i][index+1:], " = ")[0]
-				varWindow = strings.TrimSpace(varWindow)
-				strs[i] = strs[i][:index+1]
+				varWindow = strings.TrimSpace(strings.Split(after, " = ")[0])
+				strs[i] = before + "}"
 			}
 		}
 	}

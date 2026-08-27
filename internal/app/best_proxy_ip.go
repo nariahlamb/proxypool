@@ -56,7 +56,7 @@ func CrawlBestNode() {
 				defer wg.Done()
 				log.Infoln("Starting Sub URL: %s", _url)
 
-				for retries := 0; retries < 3; retries++ {
+				for retries := range 3 {
 					resp, err := bestNodeClient.R().
 						SetQueryParams(map[string]string{
 							"host":       "p.laibbb.top",
@@ -161,7 +161,7 @@ func CrawlBestNode() {
 			for _, _url := range subIpListUrls {
 				log.Infoln("Starting Sub IP Sub URL: %s", _url)
 
-				for retries := 0; retries < 3; retries++ {
+				for retries := range 3 {
 					resp, err := bestNodeClient.R().Get(_url)
 					if err != nil {
 						log.Errorln("bestNodeClient.Get(): %s, retry: %d", err.Error(), retries)
@@ -836,8 +836,8 @@ func parseSubIpSubLine(line string) (addr string, ok bool) {
 		return "", false
 	}
 	// 去掉 # 注释（国家码等）
-	if idx := strings.Index(line, "#"); idx >= 0 {
-		line = strings.TrimSpace(line[:idx])
+	if before, _, found := strings.Cut(line, "#"); found {
+		line = strings.TrimSpace(before)
 	}
 	if line == "" {
 		return "", false
@@ -866,9 +866,9 @@ func parsePlainSubLine(line string) (host, port, name string, ok bool) {
 		return "", "", "", false
 	}
 	// # 后为注释（作为节点名）
-	if idx := strings.Index(line, "#"); idx >= 0 {
-		name = strings.TrimSpace(line[idx+1:])
-		line = strings.TrimSpace(line[:idx])
+	if before, after, found := strings.Cut(line, "#"); found {
+		name = strings.TrimSpace(after)
+		line = strings.TrimSpace(before)
 	}
 	if line == "" {
 		return "", "", "", false
@@ -901,7 +901,7 @@ func ipToUint32(ip string) uint32 {
 		return 0
 	}
 	var result uint32
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		val, err := strconv.Atoi(parts[i])
 		if err != nil {
 			return 0
