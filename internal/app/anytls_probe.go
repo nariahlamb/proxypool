@@ -19,6 +19,14 @@ import (
 // 确认数据能端到端转发（而非仅协议握手成功）。
 const anytlsProbeTestURL = "https://cp.cloudflare.com/generate_204"
 
+// 背景：对 anytls 这类 TLS over TCP 自定义协议，候选 ip:port 本质上是一个
+// SNI proxy（SNI 转发入口）——它只读 TLS ClientHello 中的 SNI 字段，把原始
+// TCP 流路由到对应域名源站，不解析应用层协议。因此：
+//   - 探测的 sni 参数（= proxy_info[country]["anytls"]["host"]）就是喂给 SNI proxy
+//     的路由键，必须指向真实可用的 anytls 源站域名
+//   - 443 端口是 HTTP 反向代理（读 SNI 后仍要求 HTTP 层），无法透传 anytls；
+//     2053/2083/2087/2096/8443 等端口是纯 SNI 路由的 TCP 隧道，才是可探测目标
+
 // probeAnyTLSCountry 选择探测用国家凭据：配置指定优先，缺省取 proxy_info 中
 // 第一个配置了 anytls 段的国家（map 遍历顺序不定，但任意一个含 anytls 凭据的国家即可，
 // 因为标记的是 ip:port 的透传能力，与具体凭据无关）。
@@ -37,9 +45,10 @@ func probeAnyTLSCountry(cfg *config.AnyTLSProbeConfig) (string, bool) {
 	return "", false
 }
 
-// probeAnyTLSNode 探测单个 ip:port 能否透传 anytls：构造临时 anytls 出站
-// （server=候选 ip, port=候选 port, sni=源站域名），经 mihomo `URLTest` 做完整验证：
-//   L3 隧道建立：TCP + TLS + anytls 协议握手
+// probeAnyTLSNode 探测单个 ip:port 是否可作为 anytls 的 SNI proxy 入口：
+// 构造临时 anytls 出站（server=候选 ip, port=候选 port, sni=源站域名），
+// 经 mihomo `URLTest` 做完整验证：
+//   L3 隧道建立：TCP + TLS + anytls 协议握手（SNI proxy 按 sni 路由到源站）
 //   L4 数据往返：经隧道发起真实 HTTP 请求（默认 https://cp.cloudflare.com/generate_204），
 //      收到 204 响应才算可用（仅握手成功但数据不转发视为不可用）
 func probeAnyTLSNode(ip string, port int, password, sni, testURL string, timeout time.Duration) bool {
@@ -65,7 +74,8 @@ func probeAnyTLSNode(ip string, port int, password, sni, testURL string, timeout
 	return err == nil
 }
 
-// ProbeAndMarkAnyTLS 并发探测 best 节点列表，返回带 AnyTLS 标记的新切片（不修改入参）。
+// ProbeAndMarkAnyTLS 并发探测 best 节点列表（SNI proxy 入口可用性），
+// 返回带 AnyTLS 标记的新切片（不修改入参）。
 // 未启用探测或无可探测国家凭据时原样返回。
 func ProbeAndMarkAnyTLS(nodes []cache.BestNode) []cache.BestNode {
 	cfg := config.Config().AnyTLSProbe
@@ -133,7 +143,7 @@ func ProbeAndMarkAnyTLS(nodes []cache.BestNode) []cache.BestNode {
 	return marked
 }
 
-// filterAnyTLSNodes 过滤仅可透传 anytls 的节点。
+// filterAnyTLSNodes 过滤仅可透传 anytls（SNI proxy 入口可用）的节点。
 // 未启用探测时返回空切片（无探测配置 → anytls 导出为空）。
 func filterAnyTLSNodes(nodes []cache.BestNode) []cache.BestNode {
 	cfg := config.Config().AnyTLSProbe

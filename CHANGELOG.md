@@ -5,6 +5,17 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.59] - 2026-08-17
+
+### 📝 anytls 探测注释对齐 SNI proxy 术语
+
+- 明确候选 ip:port 的本质是 **SNI proxy（SNI 转发入口）**：只读 TLS ClientHello
+  的 SNI 字段、把原始 TCP 流路由到对应域名源站，不解析应用层协议
+- `sni` 参数（= proxy_info anytls host）即 SNI proxy 的路由键，必须指向真实
+  可用的 anytls 源站域名；443 为 HTTP 反代无法透传，2053/2083/2087/2096/8443
+  等端口为纯 SNI 路由 TCP 隧道
+- 纯注释/术语更新，逻辑无变化
+
 ## [v1.1.58] - 2026-08-17
 
 ### 🚀 anytls 探测升级为数据往返验证（URLTest 204）
