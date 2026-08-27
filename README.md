@@ -11,8 +11,8 @@
   <a href="https://goreportcard.com/report/github.com/One-Piecs/proxypool">
     <img src="https://goreportcard.com/badge/github.com/One-Piecs/proxypool?style=flat-square">
   </a>
-  <a href="https://github.com/One-Piecs/proxypool/releases">
-    <img src="https://img.shields.io/github/release/One-Piecs/proxypool/all.svg?style=flat-square">
+  <a href="https://github.com/One-Piecs/proxypool/tags">
+    <img src="https://img.shields.io/github/v/tag/One-Piecs/proxypool.svg?style=flat-square">
   </a>
 </p>
 
@@ -59,9 +59,15 @@ docker build -t proxypool .
 docker run -d -p 12580:12580 -v $PWD/config:/app/config -v $PWD/data:/app/data proxypool -d -c config/config.yaml
 ```
 
-### 3. 下载预编译程序
+### 3. 使用发布版本（Docker 镜像）
 
-从 [releases](https://github.com/One-Piecs/proxypool/releases) 下载对应平台的预编译二进制。
+项目不提供独立二进制下载。打 tag（如 `v1.1.61`）后，GitHub Actions（`docker-release.yml`）自动构建 **linux/amd64、linux/arm64** 的 Docker 镜像并推送 Docker Hub（`<DOCKERHUB_USERNAME>/proxypool`，tag 与 `latest`）。
+
+```sh
+docker pull <dockerhub用户名>/proxypool:latest
+```
+
+历史版本号见 [CHANGELOG.md](CHANGELOG.md) 与 [Git tags](https://github.com/One-Piecs/proxypool/tags)。
 
 ### 4. 使用 fly.io
 
