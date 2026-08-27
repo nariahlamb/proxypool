@@ -2,121 +2,167 @@
   <br>proxypool<br>
 </h1>
 
-<h5 align="center">自动抓取tg频道、订阅地址、公开互联网上的ss、ssr、vmess、trojan、vless节点信息，聚合去重测试可用性后提供节点列表</h5>
+<h5 align="center">自动抓取 tg 频道、订阅地址、公开互联网上的 ss、ssr、vmess、trojan、vless、anytls 节点信息，聚合去重测试可用性后提供节点列表与 Cloudflare 优选 IP 订阅</h5>
 
 <p align="center">
-  <a href="https://github.com/Sansui233/proxypool/actions">
-    <img src="https://img.shields.io/github/workflow/status/Sansui233/proxypool/Go?style=flat-square" alt="Github Actions">
+  <a href="https://github.com/One-Piecs/proxypool/actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/One-Piecs/proxypool/docker-release.yml?style=flat-square" alt="Github Actions">
   </a>
-  <a href="https://goreportcard.com/report/github.com/Sansui233/proxypool">
-    <img src="https://goreportcard.com/badge/github.com/Sansui233/proxypool?style=flat-square">
+  <a href="https://goreportcard.com/report/github.com/One-Piecs/proxypool">
+    <img src="https://goreportcard.com/badge/github.com/One-Piecs/proxypool?style=flat-square">
   </a>
-  <a href="https://github.com/Sansui233/proxypool/releases">
-    <img src="https://img.shields.io/github/release/Sansui233/proxypool/all.svg?style=flat-square">
+  <a href="https://github.com/One-Piecs/proxypool/releases">
+    <img src="https://img.shields.io/github/release/One-Piecs/proxypool/all.svg?style=flat-square">
   </a>
 </p>
 
-## 支持
+## 功能特性
 
-- 支持ss、ssr、vmess、trojan、vless多种类型
-- Telegram频道抓取
-- 订阅地址抓取解析
-- 公开互联网页面模糊抓取
-- 定时抓取自动更新
-- 通过配置文件设置抓取源
-- 自动检测节点可用性
-- 提供clash、surge配置文件
-- 提供ss、ssr、vmess、sip002订阅
+- 支持 ss、ssr、vmess、trojan、vless、anytls 多种节点类型
+- Telegram 频道抓取、订阅地址抓取解析、公开互联网页面模糊抓取
+- 定时抓取自动更新，自动检测节点可用性（延迟/测速/中转/OpenAI 检测）
+- 节点去重、按国家聚合、测速结果持久化（SQLite）
+- 提供 clash、surge、shadowrocket、loon、quanx 配置
+- 提供 ss、ssr、vmess、trojan、vless、sip002 订阅
+- **Cloudflare 优选 IP**：多源采集（Top20/ISP/明文订阅）、多级排序、SNI 透传探测（sni_probe），输出各客户端格式优选订阅
 
 ## 安装
 
-以下五选一。
+以下四选一。
 
-### 1. 使用Heroku
+### 1. 从源码编译
 
-点击按钮进入部署页面，填写基本信息然后运行
-
-其中 `DOMAIN` 需要填写为你需要绑定的域名，`CONFIG_FILE` 需要填写你的配置文件路径。
-
-> heroku app域名为appname.herokuapp.com。项目内配置文件为./config/config.yaml
-
-配置文件模板见 config/config.yaml 文件，可选项区域均可不填。完整配置选项请查看[配置文件说明](https://github.com/Sansui233/proxypool/wiki/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%AF%B4%E6%98%8E)。
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-> 因为爬虫程序需要持续运行，所以至少选择 $7/月 的配置
-> 免费配置长时间无人访问会被heroku强制停止
-
-### 2. 使用[fly.io](https://fly.io)
-
-> 注册fly.io需要绑定银行卡，支持银联借记卡。同时使用fly.io主要通过命令行工具flyctl，详情到[fly.io](https://fly.io)官网了解。
-
-下载仓库源代码，修改 `fly.toml` 中的app与domain。在终端使用 `flyctl deploy` 部署即可。
-
-### 3. 从源码编译
-
-需要安装Golang 
+需要安装 Golang 1.27+：
 
 ```sh
-$ go get -u -v github.com/Sansui233/proxypool
+$ git clone https://github.com/One-Piecs/proxypool.git
+$ cd proxypool
+$ go build -o proxypool .
 ```
 
-运行
-```shell script
-$ go run main.go -c ./config/config.yaml
-```
-
-编译
-```
-make
-```
-
-### 4. 下载预编译程序
-
-从这里下载预编译好的程序 [release](https://github.com/Sansui233/proxypool/releases)。
-
-### 5. 使用docker
+运行：
 
 ```sh
-docker pull ghcr.io/sansui233/proxypool:v0.6.0
+$ ./proxypool -c ./config/config.yaml
+```
+
+交叉编译全部平台：
+
+```sh
+$ make
+```
+
+### 2. 使用 Docker
+
+```sh
+docker build -t proxypool .
+docker run -d -p 12580:12580 -v $PWD/config:/app/config -v $PWD/data:/app/data proxypool -d -c config/config.yaml
+```
+
+### 3. 下载预编译程序
+
+从 [releases](https://github.com/One-Piecs/proxypool/releases) 下载对应平台的预编译二进制。
+
+### 4. 使用 fly.io
+
+下载仓库源代码，修改 `fly.toml` 中的 app 与配置，使用 [flyctl](https://fly.io) 部署：
+
+```sh
+flyctl deploy
 ```
 
 ## 使用
 
-运行该程序需要具有访问完整互联网的能力。
+运行该程序需要具有访问完整互联网的能力。默认监听端口 **12580**（可用 `port` 配置项修改）。
 
-### 修改配置文件
+### 配置文件
 
-首先修改 config.yaml 中的必要配置信息。带有默认值的字段均可不填写。完整的配置选项见[配置文件说明](https://github.com/Sansui233/proxypool/wiki/%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%AF%B4%E6%98%8E)
+修改 `config/config.yaml`（或 `source.yaml` 中的抓取源）。带默认值的字段均可不填，关键配置项：
 
-### 启动程序
+| 配置 | 说明 |
+|------|------|
+| `domain` / `port` | 站点域名 / 监听端口（默认 12580） |
+| `source-files` | 抓取源列表文件（支持本地文件与 http 链接） |
+| `speedtest` / `speedtest-interval` | 测速开关 / 间隔 |
+| `sub-best-node-interval` | 优选 IP 任务刷新间隔（默认 60 min） |
+| `sub_ip_url` | Cloudflare 优选 IP 订阅源（域名/IP 列表） |
+| `sub_ip_list_url` | 明文 `ip:port#国家` 订阅源（端口白名单 443/2053/2083/2087/2096/8443，纯 IP 行默认补 443） |
+| `sni_probe` | 优选节点 SNI 透传探测（enable/concurrency/timeout/country/test_url） |
+| `healthcheck_test_urls` | 健康检查测试地址覆盖（默认内置国内可达 204 端点，不含 gstatic） |
+| `proxy_info` | 优选 IP 出站节点凭据（vmess/trojan/vless/anytls，按国家） |
+| `cf_best_ip` | 静态优选 IP 列表 |
+| `cf_email` / `cf_key` | Cloudflare API（可选） |
 
-使用 `-c` 参数指定配置文件路径，支持http链接
+`source.yaml` 中的 getter 类型：`subscribe`、`clash`、`webfuzz`、`webfuzzsub`、`tgchannel`、`web-fanqiangdang`、`web-freessrxyz` 等。
 
-```shell
-proxypool -c ./config/config.yaml
-```
+## API 文档
 
-如果需要部署到VPS，更多细节请[查看wiki](https://github.com/Sansui233/proxypool/wiki/%E9%83%A8%E7%BD%B2%E5%88%B0VPS-Step-by-Step)。
+以下均为 `GET` 请求，`[端口]` 为监听端口。
 
-## Clash配置文件
+### 页面
 
-远程部署时Clash配置文件访问：https://domain/clash/config
+| 路径 | 说明 |
+|------|------|
+| `/` | 首页 |
+| `/clash` | Clash 配置页面 |
+| `/surge` | Surge 配置页面 |
+| `/shadowrocket` | Shadowrocket 配置页面 |
+| `/loon` | Loon 配置页面 |
+| `/quanx` | Quantumult X 配置页面 |
 
-本地运行时Clash配置文件访问：http://127.0.0.1:[端口]/clash/localconfig
+### 客户端配置
+
+| 路径 | 说明 |
+|------|------|
+| `/clash/config` | Clash 远程配置 |
+| `/clash/localconfig` | Clash 本地配置（127.0.0.1） |
+| `/surge/config` | Surge 配置 |
+| `/clash/proxies` | Clash 节点列表（YAML） |
+| `/surge/proxies` | Surge 节点列表 |
+| `/loon/proxies` | Loon 节点列表 |
+| `/v2rayn/proxies` | v2rayN 节点列表 |
+| `/quanx/proxies` | Quantumult X 节点列表 |
+
+### 订阅
+
+| 路径 | 说明 |
+|------|------|
+| `/ss/sub`、`/sip002/sub` | SS / SIP002 订阅 |
+| `/ssr/sub` | SSR 订阅 |
+| `/vmess/sub`、`/vless/sub`、`/trojan/sub` | vmess / vless / trojan 订阅 |
+| `/link/:id` | 按 ID 查看单个节点 |
+
+### Cloudflare 优选 IP
+
+`/best*` 端点，`:format` 为客户端+类型组合（如 `clashVmess`、`surgeTrojan`、`quanxVless`、`loonAnytls`、`v2raynTrojan`、`clashAnytls` 等），支持参数 `country`、`limit`、`random`、`cdn`、`ipv6`：
+
+| 路径 | 说明 |
+|------|------|
+| `/bestProxyIp/:format` | 全部优选 IP 节点 |
+| `/bestCfProxyIp/:format` | Cloudflare 优选 IP |
+| `/bestCfProxyIpTop20/:format` | CF Top20 优选 |
+| `/bestCfProxyIpIsp/:format` | CF 各 ISP（电信/联通/移动）优选 |
+| `/bestCfProxyDomainTop20/:format` | CF 域名 Top20 优选 |
+| `/bestCfProxySub/:format` | CF 明文订阅源优选 |
+| `/bestIpKr/:format` | 韩国优选 |
+
+### 任务与运维
+
+| 路径 | 说明 |
+|------|------|
+| `/task/crawl` | 手动触发抓取 |
+| `/task/speedtest` | 手动触发测速 |
+| `/task/updateGeoIP` | 更新 GeoIP 数据库 |
+| `/task/updateBestNode` | 手动刷新优选 IP |
+| `/health` | 健康检查 |
+| `/debug/statsviz/*filepath` | [statsviz](https://github.com/arl/statsviz) 运行时指标 |
 
 ## 本地检查节点可用性
 
-此项非必须。为了提高实际可用性，可选择增加一个本地服务器，检测远程proxypool节点在本地的可用性并提供配置，见[proxypoolCheck](https://github.com/Sansui233/proxypoolCheck)。
-
-## 截图
-
-![Speedtest](docs/speedtest.png)
-
-![Fast](docs/fast.png)
+此项非必须。为了提高实际可用性，可选择增加一个本地服务器，检测远程 proxypool 节点在本地的可用性并提供配置，见 [proxypoolCheck](https://github.com/Sansui233/proxypoolCheck)。
 
 ## 声明
 
-本项目遵循 GNU General Public License v3.0 开源，在此基础上，所有使用本项目提供服务者都必须在网站首页保留指向本项目的链接
+本项目遵循 GNU General Public License v3.0 开源，在此基础上，所有使用本项目提供服务者都必须在网站首页保留指向本项目的链接。
 
-本项目仅限个人自己使用，禁止使用本项目进行营利和做其他违法事情，产生的一切后果本项目概不负责
+本项目仅限个人自己使用，禁止使用本项目进行营利和做其他违法事情，产生的一切后果本项目概不负责。
