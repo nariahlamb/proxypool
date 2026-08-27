@@ -69,14 +69,6 @@ docker pull <dockerhub用户名>/proxypool:latest
 
 历史版本号见 [CHANGELOG.md](CHANGELOG.md) 与 [Git tags](https://github.com/One-Piecs/proxypool/tags)。
 
-### 4. 使用 fly.io
-
-下载仓库源代码，修改 `fly.toml` 中的 app 与配置，使用 [flyctl](https://fly.io) 部署：
-
-```sh
-flyctl deploy
-```
-
 ## 使用
 
 运行该程序需要具有访问完整互联网的能力。默认监听端口 **12580**（可用 `port` 配置项修改）。
