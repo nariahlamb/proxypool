@@ -55,7 +55,7 @@ var SupportCountry = []string{"AL", "DZ", "AD", "AO", "AG", "AR", "AM", "AU", "A
 
 // Get openai
 func testOpenai(p proxy.Proxy) (ok bool, err error) {
-	pmap := make(map[string]interface{})
+	pmap := make(map[string]any)
 	err = json.Unmarshal([]byte(p.String()), &pmap)
 	if err != nil {
 		return false, fmt.Errorf("解析代理配置失败: %w", err)

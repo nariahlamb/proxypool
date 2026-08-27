@@ -6,7 +6,7 @@ import (
 )
 
 // TestToClashMap 验证 ToClashMap 与原先 String()→json.Unmarshal 的转换结果一致。
-// 以 JSON 序列化对比：归一化 int/float64、[]string/[]interface{}、struct/map 等类型差异，
+// 以 JSON 序列化对比：归一化 int/float64、[]string/[]any、struct/map 等类型差异，
 // 这正是 mihomo 旧路径实际接收到的形态，保证行为等价。
 func TestToClashMap(t *testing.T) {
 	proxies := []Proxy{
@@ -15,7 +15,7 @@ func TestToClashMap(t *testing.T) {
 			Password:   "pass123",
 			Cipher:     "aes-256-gcm",
 			Plugin:     "obfs",
-			PluginOpts: map[string]interface{}{"mode": "http", "host": "example.com"},
+			PluginOpts: map[string]any{"mode": "http", "host": "example.com"},
 		},
 		&ShadowsocksR{
 			Base:          Base{Name: "ssr1", Server: "5.6.7.8", Port: 443, Type: "ssr"},
@@ -50,7 +50,7 @@ func TestToClashMap(t *testing.T) {
 
 	for _, p := range proxies {
 		// 旧方式：JSON 往返
-		var oldMap map[string]interface{}
+		var oldMap map[string]any
 		if err := json.Unmarshal([]byte(p.String()), &oldMap); err != nil {
 			t.Fatalf("%s: json round-trip failed: %v", p.TypeName(), err)
 		}

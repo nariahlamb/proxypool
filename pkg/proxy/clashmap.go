@@ -7,7 +7,7 @@ import "encoding/json"
 // 会对每个代理调用一次，消除大批量检测时的 JSON 序列化/反序列化开销。
 // 键名与空值省略规则与各结构体的 json tag 完全一致，保证与旧行为等价
 // （mihomo 解码器按这些键读取，弱类型转换）。
-func ToClashMap(p Proxy) map[string]interface{} {
+func ToClashMap(p Proxy) map[string]any {
 	switch pp := p.(type) {
 	case *Shadowsocks:
 		m := clashBaseMap(pp.Base)
@@ -124,7 +124,7 @@ func ToClashMap(p Proxy) map[string]interface{} {
 		}
 		switch network {
 		case "ws":
-			wsOpts := map[string]interface{}{"path": "/"}
+			wsOpts := map[string]any{"path": "/"}
 			if pp.WSPath != "" {
 				wsOpts["path"] = pp.WSPath
 			}
@@ -138,12 +138,12 @@ func ToClashMap(p Proxy) map[string]interface{} {
 			m["ws-opts"] = wsOpts
 		case "grpc":
 			if pp.GrpcServiceName != "" {
-				m["grpc-opts"] = map[string]interface{}{"grpc-service-name": pp.GrpcServiceName}
+				m["grpc-opts"] = map[string]any{"grpc-service-name": pp.GrpcServiceName}
 			}
 		}
 		// Reality 参数
 		if pp.RealityPublicKey != "" {
-			realityOpts := map[string]interface{}{"public-key": pp.RealityPublicKey}
+			realityOpts := map[string]any{"public-key": pp.RealityPublicKey}
 			if pp.RealityShortID != "" {
 				realityOpts["short-id"] = pp.RealityShortID
 			}
@@ -155,8 +155,8 @@ func ToClashMap(p Proxy) map[string]interface{} {
 }
 
 // clashBaseMap 基础字段，country/udp/useable 遵循 omitempty 语义
-func clashBaseMap(b Base) map[string]interface{} {
-	m := map[string]interface{}{
+func clashBaseMap(b Base) map[string]any {
+	m := map[string]any{
 		"name": b.Name, "server": b.Server, "port": b.Port, "type": b.Type,
 	}
 	if b.Country != "" {
@@ -172,14 +172,14 @@ func clashBaseMap(b Base) map[string]interface{} {
 }
 
 // clashStructToMap 将嵌套结构体转为 map（等价于旧路径 JSON 解码得到的形态）
-func clashStructToMap(v any) map[string]interface{} {
+func clashStructToMap(v any) map[string]any {
 	b, err := json.Marshal(v)
 	if err != nil {
-		return map[string]interface{}{}
+		return map[string]any{}
 	}
-	var m map[string]interface{}
+	var m map[string]any
 	if err := json.Unmarshal(b, &m); err != nil {
-		return map[string]interface{}{}
+		return map[string]any{}
 	}
 	return m
 }

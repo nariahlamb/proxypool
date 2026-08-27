@@ -142,7 +142,7 @@ func (v *Vless) UnmarshalJSON(data []byte) error {
 
 // ToClash 输出 clash 配置（vless 使用 ws-opts 嵌套结构）
 func (v Vless) ToClash() string {
-	m := map[string]interface{}{
+	m := map[string]any{
 		"name": v.Name, "type": "vless", "server": v.Server, "port": v.Port,
 		"uuid": v.UUID, "udp": v.UDP,
 	}
@@ -169,7 +169,7 @@ func (v Vless) ToClash() string {
 	m["network"] = network
 	switch network {
 	case "ws":
-		wsOpts := map[string]interface{}{"path": "/"}
+		wsOpts := map[string]any{"path": "/"}
 		if v.WSPath != "" {
 			wsOpts["path"] = v.WSPath
 		}
@@ -183,13 +183,13 @@ func (v Vless) ToClash() string {
 		m["ws-opts"] = wsOpts
 	case "grpc":
 		if v.GrpcServiceName != "" {
-			m["grpc-opts"] = map[string]interface{}{"grpc-service-name": v.GrpcServiceName}
+			m["grpc-opts"] = map[string]any{"grpc-service-name": v.GrpcServiceName}
 		}
 	}
 
 	// Reality 参数
 	if v.RealityPublicKey != "" {
-		realityOpts := map[string]interface{}{"public-key": v.RealityPublicKey}
+		realityOpts := map[string]any{"public-key": v.RealityPublicKey}
 		if v.RealityShortID != "" {
 			realityOpts["short-id"] = v.RealityShortID
 		}

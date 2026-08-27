@@ -110,7 +110,7 @@ func ParseProxyFromLink(link string) (p Proxy, err error) {
 	return p, nil
 }
 
-func ParseProxyFromClashProxy(p map[string]interface{}) (proxy Proxy, err error) {
+func ParseProxyFromClashProxy(p map[string]any) (proxy Proxy, err error) {
 	p["name"] = ""
 	pjson, err := json.Marshal(p)
 	if err != nil {

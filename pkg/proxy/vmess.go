@@ -474,21 +474,21 @@ func GrepVmessLinkFromString(text string) []string {
 	return results
 }
 
-func str2jsonDynaUnmarshal(s string) (jsn map[string]interface{}, err error) {
-	var f interface{}
+func str2jsonDynaUnmarshal(s string) (jsn map[string]any, err error) {
+	var f any
 	err = json.Unmarshal([]byte(s), &f)
 	if err != nil {
 		return nil, err
 	}
 	var ok bool
-	jsn, ok = f.(map[string]interface{}) // f is pointer point to map struct
+	jsn, ok = f.(map[string]any) // f is pointer point to map struct
 	if jsn == nil || !ok {
 		return nil, ErrorVmessPayloadParseFail
 	}
 	return jsn, err
 }
 
-func mapStrInter2VmessLinkJson(jsn map[string]interface{}) (vmessLinkJson, error) {
+func mapStrInter2VmessLinkJson(jsn map[string]any) (vmessLinkJson, error) {
 	vmess := vmessLinkJson{}
 	var err error
 

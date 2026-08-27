@@ -194,7 +194,7 @@ func CrawlBestNode() {
 
 	// 收集去重后的地址
 	addrAll := make([]string, 0, 200)
-	addrMap.Range(func(key, value interface{}) bool {
+	addrMap.Range(func(key, value any) bool {
 		addrAll = append(addrAll, key.(string))
 		return true
 	})
@@ -717,7 +717,7 @@ func SubNiceCfProxySub(format string, sub string, distNodeCountry string, isIPV6
 	}
 
 	bestCfNodeList := make([]nodeBase, 0, 200)
-	addrMap.Range(func(key, value interface{}) bool {
+	addrMap.Range(func(key, value any) bool {
 		bestCfNodeList = append(bestCfNodeList, key.(nodeBase))
 		return true
 	})
@@ -1173,7 +1173,7 @@ func Unique[T comparable](s []T) []T {
 }
 
 func genV2raynVmessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
-	v := make(map[string]interface{})
+	v := make(map[string]any)
 	v["v"] = "2"
 	v["ps"] = fmt.Sprintf("%s %s:%d", country, ip, port)
 	v["add"] = ip
@@ -1193,7 +1193,7 @@ func genV2raynVmessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 }
 
 func genV2raynVmessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
-	v := make(map[string]interface{})
+	v := make(map[string]any)
 	v["v"] = "2"
 	v["ps"] = fmt.Sprintf("%s %s", country, nodeName)
 	v["add"] = ip
@@ -1317,7 +1317,7 @@ func genSurgeAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 
 // genClashAnytlsUrl clash/mihomo 格式（mihomo 原生支持 anytls）
 func genClashAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
-	m := map[string]interface{}{
+	m := map[string]any{
 		"name":     fmt.Sprintf("%s %s:%d", country, ip, port),
 		"type":     "anytls",
 		"server":   ip,
@@ -1394,7 +1394,7 @@ func genSurgeAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCo
 }
 
 func genClashAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
-	m := map[string]interface{}{
+	m := map[string]any{
 		"name":     fmt.Sprintf("%s %s", country, nodeName),
 		"type":     "anytls",
 		"server":   ip,

@@ -26,7 +26,7 @@ var bestNodeClient = resty.New().
 	SetHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
 // proxyInfoStr 从 proxy_info 类型配置中读取字符串值（缺失/类型不符返回空串）
-func proxyInfoStr(m map[string]interface{}, key string) string {
+func proxyInfoStr(m map[string]any, key string) string {
 	if v, ok := m[key]; ok {
 		if s, ok := v.(string); ok {
 			return s
@@ -36,7 +36,7 @@ func proxyInfoStr(m map[string]interface{}, key string) string {
 }
 
 // proxyInfoBool 从 proxy_info 类型配置中读取布尔值（缺失/类型不符返回 false）
-func proxyInfoBool(m map[string]interface{}, key string) bool {
+func proxyInfoBool(m map[string]any, key string) bool {
 	if v, ok := m[key]; ok {
 		if b, ok := v.(bool); ok {
 			return b

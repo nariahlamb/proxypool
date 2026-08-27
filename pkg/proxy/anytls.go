@@ -42,7 +42,7 @@ func (a AnyTLS) Clone() Proxy {
 
 // ToClash 输出 clash 配置
 func (a AnyTLS) ToClash() string {
-	m := map[string]interface{}{
+	m := map[string]any{
 		"name": a.Name, "type": "anytls", "server": a.Server, "port": a.Port,
 		"password": a.Password, "udp": a.UDP,
 	}
