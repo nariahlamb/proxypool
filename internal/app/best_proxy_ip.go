@@ -762,7 +762,7 @@ func checkFormat(format string, distNodeCountry string) (f Format, err error) {
 	} else if strings.Contains(format, "v2rayn") {
 		f.V2rayn = true
 	} else {
-		return f, fmt.Errorf("invaild client format")
+		return f, errors.New("invalid client format")
 	}
 
 	if _, ok := config.Config().ProxyInfo[distNodeCountry]; !ok {
@@ -771,26 +771,26 @@ func checkFormat(format string, distNodeCountry string) (f Format, err error) {
 
 	if strings.Contains(format, "Vmess") {
 		if _, ok := config.Config().ProxyInfo[distNodeCountry]["vmess"]; !ok {
-			return f, fmt.Errorf("not found vaild vmess node for country [%s]", distNodeCountry)
+			return f, fmt.Errorf("not found valid vmess node for country [%s]", distNodeCountry)
 		}
 		f.Vmess = true
 	} else if strings.Contains(format, "Trojan") {
 		if _, ok := config.Config().ProxyInfo[distNodeCountry]["trojan"]; !ok {
-			return f, fmt.Errorf("not found vaild trojan node for country [%s]", distNodeCountry)
+			return f, fmt.Errorf("not found valid trojan node for country [%s]", distNodeCountry)
 		}
 		f.Trojan = true
 	} else if strings.Contains(format, "Vless") {
 		if _, ok := config.Config().ProxyInfo[distNodeCountry]["vless"]; !ok {
-			return f, fmt.Errorf("not found vaild vless node for country [%s]", distNodeCountry)
+			return f, fmt.Errorf("not found valid vless node for country [%s]", distNodeCountry)
 		}
 		f.Vless = true
 	} else if strings.Contains(format, "Anytls") {
 		if _, ok := config.Config().ProxyInfo[distNodeCountry]["anytls"]; !ok {
-			return f, fmt.Errorf("not found vaild anytls node for country [%s], add 'anytls: {host, password}' to proxy_info in config.yaml", distNodeCountry)
+			return f, fmt.Errorf("not found valid anytls node for country [%s], add 'anytls: {host, password}' to proxy_info in config.yaml", distNodeCountry)
 		}
 		f.Anytls = true
 	} else {
-		return f, fmt.Errorf("invaild node type")
+		return f, errors.New("invalid node type")
 	}
 	return f, nil
 }
