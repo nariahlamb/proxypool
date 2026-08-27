@@ -1,7 +1,7 @@
 package healthcheck
 
 import (
-	"sort"
+	"slices"
 	"sync"
 
 	"github.com/One-Piecs/proxypool/pkg/proxy"
@@ -169,16 +169,24 @@ func (psList StatList) SortProxiesBySpeed(proxies []proxy.Proxy) []proxy.Proxy {
 	statsLock.RUnlock()
 
 	// 排序规则：有测速记录的排前面（速度从大到小），无记录的排后面
-	sort.SliceStable(proxies, func(i, j int) bool {
-		si, oki := speedMap[proxies[i].Identifier()]
-		sj, okj := speedMap[proxies[j].Identifier()]
+	slices.SortStableFunc(proxies, func(a, b proxy.Proxy) int {
+		si, oki := speedMap[a.Identifier()]
+		sj, okj := speedMap[b.Identifier()]
 		switch {
 		case oki && okj:
-			return si > sj
+			if si > sj {
+				return -1
+			}
+			if si < sj {
+				return 1
+			}
+			return 0
 		case oki:
-			return true
+			return -1
+		case okj:
+			return 1
 		default:
-			return false
+			return 0
 		}
 	})
 	return proxies

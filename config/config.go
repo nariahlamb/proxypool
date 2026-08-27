@@ -71,7 +71,7 @@ func (p *SniProbeConfig) Enabled() bool {
 	return *p.Enable
 }
 
-var gCfg atomic.Value
+var gCfg atomic.Pointer[ConfigOptions]
 
 // 配置解析缓存：避免每次请求都重新读取/解析配置文件。
 // 本地文件按 mtime 判断是否变化（保留热更新能力）；
@@ -92,7 +92,7 @@ type parsedMeta struct {
 // var Config ConfigOptions
 func Config() *ConfigOptions {
 	if v := gCfg.Load(); v != nil {
-		return v.(*ConfigOptions)
+		return v
 	}
 	return &ConfigOptions{}
 }

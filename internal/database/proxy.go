@@ -100,21 +100,20 @@ func GetAllProxies() (proxies proxy.ProxyList) {
 	proxies = make(proxy.ProxyList, 0, len(proxiesDB))
 
 	for _, proxyDB := range proxiesDB {
-		pDB := proxyDB
 		wp.Submit(func() {
-			p, err := proxy.ParseProxyFromLink(pDB.Link)
+			p, err := proxy.ParseProxyFromLink(proxyDB.Link)
 			if err == nil && p != nil {
 				p.SetUseable(false)
 				// 恢复上次爬取时保存的名称与国家（避免启动窗口期 name 为空）
-				if pDB.Name != "" {
-					p.SetName(pDB.Name)
+				if proxyDB.Name != "" {
+					p.SetName(proxyDB.Name)
 				}
-				if pDB.Country != "" {
-					p.SetCountry(pDB.Country)
+				if proxyDB.Country != "" {
+					p.SetCountry(proxyDB.Country)
 				}
 				// 恢复上次测速结果，重启后速度标签立即可用
-				if pDB.Speed > 0 {
-					healthcheck.InitSpeed(p.Identifier(), pDB.Speed)
+				if proxyDB.Speed > 0 {
+					healthcheck.InitSpeed(p.Identifier(), proxyDB.Speed)
 				}
 				m.Lock()
 				proxies = append(proxies, p)

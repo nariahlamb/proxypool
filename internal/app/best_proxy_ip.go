@@ -3,6 +3,7 @@ package app
 import (
 	"bufio"
 	"bytes"
+	"cmp"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -11,7 +12,7 @@ import (
 	"math/rand"
 	"net"
 	"net/url"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -317,24 +318,24 @@ func CrawlBestNode() {
 	wp.StopWait()
 
 	// 按照国家名称、IP和端口多级排序
-	sort.SliceStable(bestNodeList, func(i, j int) bool {
+	slices.SortStableFunc(bestNodeList, func(a, b cache.BestNode) int {
 		// 首先按国家排序
-		if bestNodeList[i].Country != bestNodeList[j].Country {
-			return bestNodeList[i].Country < bestNodeList[j].Country
+		if a.Country != b.Country {
+			return cmp.Compare(a.Country, b.Country)
 		}
 		// 国家相同时按IP排序，使用TCP数值比较
-		if bestNodeList[i].Ip != bestNodeList[j].Ip {
+		if a.Ip != b.Ip {
 			// 如果是IPv4地址，使用数值比较
-			ip1Parts := strings.Split(bestNodeList[i].Ip, ".")
-			ip2Parts := strings.Split(bestNodeList[j].Ip, ".")
-			if len(ip1Parts) == 4 && len(ip2Parts) == 4 {
-				return ipToUint32(bestNodeList[i].Ip) < ipToUint32(bestNodeList[j].Ip)
+			aParts := strings.Split(a.Ip, ".")
+			bParts := strings.Split(b.Ip, ".")
+			if len(aParts) == 4 && len(bParts) == 4 {
+				return cmp.Compare(ipToUint32(a.Ip), ipToUint32(b.Ip))
 			}
 			// 对于IPv6或其他格式，保持字符串比较
-			return bestNodeList[i].Ip < bestNodeList[j].Ip
+			return cmp.Compare(a.Ip, b.Ip)
 		}
 		// IP相同时按端口排序
-		return bestNodeList[i].Port < bestNodeList[j].Port
+		return cmp.Compare(a.Port, b.Port)
 	})
 
 	cache.SetBestNodeList("bestNode", bestNodeList)
