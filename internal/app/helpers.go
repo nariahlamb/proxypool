@@ -25,6 +25,26 @@ var bestNodeClient = resty.New().
 	SetTimeout(60*time.Second).
 	SetHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
 
+// proxyInfoStr 从 proxy_info 类型配置中读取字符串值（缺失/类型不符返回空串）
+func proxyInfoStr(m map[string]interface{}, key string) string {
+	if v, ok := m[key]; ok {
+		if s, ok := v.(string); ok {
+			return s
+		}
+	}
+	return ""
+}
+
+// proxyInfoBool 从 proxy_info 类型配置中读取布尔值（缺失/类型不符返回 false）
+func proxyInfoBool(m map[string]interface{}, key string) bool {
+	if v, ok := m[key]; ok {
+		if b, ok := v.(bool); ok {
+			return b
+		}
+	}
+	return false
+}
+
 // generatorKey 返回 Format 对应的 URL 生成器键名（未匹配返回空串）。
 // 原先 5 个 SubNice* 函数各自内联一份 15 分支 switch，收敛为单一定义。
 func generatorKey(f Format) string {
@@ -57,6 +77,16 @@ func generatorKey(f Format) string {
 		return "v2rayn_trojan"
 	case f.V2rayn && f.Vless:
 		return "v2rayn_vless"
+	case f.Surge && f.Anytls:
+		return "surge_anytls"
+	case f.Clash && f.Anytls:
+		return "clash_anytls"
+	case f.QuanX && f.Anytls:
+		return "quanx_anytls"
+	case f.Loon && f.Anytls:
+		return "loon_anytls"
+	case f.V2rayn && f.Anytls:
+		return "v2rayn_anytls"
 	}
 	return ""
 }
@@ -77,6 +107,11 @@ var urlGeneratorMap = map[string]func(*strings.Builder, config.ProxyInfo, string
 	"v2rayn_vmess":  genV2raynVmessUrl,
 	"v2rayn_trojan": genV2raynTrojanUrl,
 	"v2rayn_vless":  genV2raynVlessUrl,
+	"surge_anytls":  genSurgeAnytlsUrl,
+	"clash_anytls":  genClashAnytlsUrl,
+	"quanx_anytls":  genQuanXAnytlsUrl,
+	"loon_anytls":   genLoonAnytlsUrl,
+	"v2rayn_anytls": genV2raynAnytlsUrl,
 }
 
 // 7 参数生成器：额外携带 nodeName（用于 SubNiceCfProxySub）
@@ -95,6 +130,11 @@ var urlGeneratorMap2 = map[string]func(*strings.Builder, config.ProxyInfo, strin
 	"v2rayn_vmess":  genV2raynVmessUrl2,
 	"v2rayn_trojan": genV2raynTrojanUrl2,
 	"v2rayn_vless":  genV2raynVlessUrl2,
+	"surge_anytls":  genSurgeAnytlsUrl2,
+	"clash_anytls":  genClashAnytlsUrl2,
+	"quanx_anytls":  genQuanXAnytlsUrl2,
+	"loon_anytls":   genLoonAnytlsUrl2,
+	"v2rayn_anytls": genV2raynAnytlsUrl2,
 }
 
 // trackDuration 记录函数执行耗时（配合 defer 使用）

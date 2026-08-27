@@ -34,6 +34,7 @@ type Format struct {
 	Vmess  bool
 	Trojan bool
 	Vless  bool
+	Anytls bool
 	V2rayn bool
 }
 
@@ -781,6 +782,11 @@ func checkFormat(format string, distNodeCountry string) (f Format, err error) {
 			return f, fmt.Errorf("not found vaild vless node")
 		}
 		f.Vless = true
+	} else if strings.Contains(format, "Anytls") {
+		if _, ok := config.Config().ProxyInfo[distNodeCountry]["anytls"]; !ok {
+			return f, fmt.Errorf("not found vaild anytls node")
+		}
+		f.Anytls = true
 	} else {
 		return f, fmt.Errorf("invaild node type")
 	}
@@ -1280,6 +1286,159 @@ func genV2raynVlessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCo
 	q.Set("host", proxyInfo[nodeCountry]["vless"]["host"].(string))
 	q.Set("sni", proxyInfo[nodeCountry]["vless"]["host"].(string))
 	q.Set("fp", "chrome")
+	u.RawQuery = q.Encode()
+	buf.WriteString(u.String() + "\n")
+}
+
+// ============ anytls 生成器（6 参数版：节点名 = country ip:port） ============
+
+// genSurgeAnytlsUrl surge 格式（iOS 5.17.0+ / Mac 6.4.3+ 支持 AnyTLS v2）
+func genSurgeAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
+	buf.WriteString(fmt.Sprintf(`%s %s:%d = anytls, %-15s, %d, password=%v, sni=%v
+`,
+		country, ip, port, ip, port,
+		proxyInfo[nodeCountry]["anytls"]["password"],
+		proxyInfo[nodeCountry]["anytls"]["host"]))
+}
+
+// genClashAnytlsUrl clash/mihomo 格式（mihomo 原生支持 anytls）
+func genClashAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
+	m := map[string]interface{}{
+		"name":     fmt.Sprintf("%s %s:%d", country, ip, port),
+		"type":     "anytls",
+		"server":   ip,
+		"port":     port,
+		"password": proxyInfo[nodeCountry]["anytls"]["password"],
+		"udp":      true,
+	}
+	if sni := proxyInfoStr(proxyInfo[nodeCountry]["anytls"], "host"); sni != "" {
+		m["sni"] = sni
+	}
+	if alpn := proxyInfoStr(proxyInfo[nodeCountry]["anytls"], "alpn"); alpn != "" {
+		m["alpn"] = strings.Split(alpn, ",")
+	}
+	if proxyInfoBool(proxyInfo[nodeCountry]["anytls"], "skip_cert_verify") {
+		m["skip-cert-verify"] = true
+	}
+	data, _ := json.Marshal(m)
+	buf.WriteString("  - " + string(data) + "\n")
+}
+
+// genQuanXAnytlsUrl quanx 格式
+func genQuanXAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
+	buf.WriteString(fmt.Sprintf(`anytls=%s:%d, password=%v, over-tls=true, udp-relay=true, tls-host=%v, tag=%s %s:%d
+`,
+		ip, port,
+		proxyInfo[nodeCountry]["anytls"]["password"],
+		proxyInfo[nodeCountry]["anytls"]["host"],
+		country, ip, port))
+}
+
+// genLoonAnytlsUrl loon 格式（Loon 3.3+ 支持 anytls）
+func genLoonAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
+	buf.WriteString(fmt.Sprintf(`%s %s:%d = anytls, %s, %d, "%v", over-tls=true, tls-name=%v
+`,
+		country, ip, port, ip, port,
+		proxyInfo[nodeCountry]["anytls"]["password"],
+		proxyInfo[nodeCountry]["anytls"]["host"]))
+}
+
+// genV2raynAnytlsUrl v2rayN 格式（anytls:// 链接）
+func genV2raynAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
+	host := ip
+	if IsIPv6(ip) {
+		host = fmt.Sprintf("[%s]", ip)
+	}
+	u := url.URL{
+		Scheme:   "anytls",
+		User:     url.User(proxyInfoStr(proxyInfo[nodeCountry]["anytls"], "password")),
+		Host:     fmt.Sprintf("%s:%d", host, port),
+		Fragment: fmt.Sprintf("%s %s:%d", country, ip, port),
+	}
+	q := u.Query()
+	if sni := proxyInfoStr(proxyInfo[nodeCountry]["anytls"], "host"); sni != "" {
+		q.Set("sni", sni)
+	}
+	if alpn := proxyInfoStr(proxyInfo[nodeCountry]["anytls"], "alpn"); alpn != "" {
+		q.Set("alpn", alpn)
+	}
+	if proxyInfoBool(proxyInfo[nodeCountry]["anytls"], "skip_cert_verify") {
+		q.Set("allowInsecure", "1")
+	}
+	u.RawQuery = q.Encode()
+	buf.WriteString(u.String() + "\n")
+}
+
+// ============ anytls 生成器（7 参数版：节点名 = nodeName，用于 SubNiceCfProxySub） ============
+
+func genSurgeAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
+	buf.WriteString(fmt.Sprintf(`%s %s = anytls, %-15s, %d, password=%v, sni=%v
+`,
+		country, nodeName, ip, port,
+		proxyInfo[nodeCountry]["anytls"]["password"],
+		proxyInfo[nodeCountry]["anytls"]["host"]))
+}
+
+func genClashAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
+	m := map[string]interface{}{
+		"name":     fmt.Sprintf("%s %s", country, nodeName),
+		"type":     "anytls",
+		"server":   ip,
+		"port":     port,
+		"password": proxyInfo[nodeCountry]["anytls"]["password"],
+		"udp":      true,
+	}
+	if sni := proxyInfoStr(proxyInfo[nodeCountry]["anytls"], "host"); sni != "" {
+		m["sni"] = sni
+	}
+	if alpn := proxyInfoStr(proxyInfo[nodeCountry]["anytls"], "alpn"); alpn != "" {
+		m["alpn"] = strings.Split(alpn, ",")
+	}
+	if proxyInfoBool(proxyInfo[nodeCountry]["anytls"], "skip_cert_verify") {
+		m["skip-cert-verify"] = true
+	}
+	data, _ := json.Marshal(m)
+	buf.WriteString("  - " + string(data) + "\n")
+}
+
+func genQuanXAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
+	buf.WriteString(fmt.Sprintf(`anytls=%s:%d, password=%v, over-tls=true, udp-relay=true, tls-host=%v, tag=%s %s
+`,
+		ip, port,
+		proxyInfo[nodeCountry]["anytls"]["password"],
+		proxyInfo[nodeCountry]["anytls"]["host"],
+		country, nodeName))
+}
+
+func genLoonAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
+	buf.WriteString(fmt.Sprintf(`%s %s = anytls, %s, %d, "%v", over-tls=true, tls-name=%v
+`,
+		country, nodeName, ip, port,
+		proxyInfo[nodeCountry]["anytls"]["password"],
+		proxyInfo[nodeCountry]["anytls"]["host"]))
+}
+
+func genV2raynAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
+	host := ip
+	if IsIPv6(ip) {
+		host = fmt.Sprintf("[%s]", ip)
+	}
+	u := url.URL{
+		Scheme:   "anytls",
+		User:     url.User(proxyInfoStr(proxyInfo[nodeCountry]["anytls"], "password")),
+		Host:     fmt.Sprintf("%s:%d", host, port),
+		Fragment: fmt.Sprintf("%s %s", country, nodeName),
+	}
+	q := u.Query()
+	if sni := proxyInfoStr(proxyInfo[nodeCountry]["anytls"], "host"); sni != "" {
+		q.Set("sni", sni)
+	}
+	if alpn := proxyInfoStr(proxyInfo[nodeCountry]["anytls"], "alpn"); alpn != "" {
+		q.Set("alpn", alpn)
+	}
+	if proxyInfoBool(proxyInfo[nodeCountry]["anytls"], "skip_cert_verify") {
+		q.Set("allowInsecure", "1")
+	}
 	u.RawQuery = q.Encode()
 	buf.WriteString(u.String() + "\n")
 }

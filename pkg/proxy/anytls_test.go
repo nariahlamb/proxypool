@@ -71,9 +71,19 @@ func TestAnyTLSOutput(t *testing.T) {
 	if s := a.ToQuanX(); !strings.HasPrefix(s, "anytls=") || !strings.Contains(s, "password=secret") || !strings.Contains(s, "over-tls=true") {
 		t.Errorf("ToQuanX: %s", s)
 	}
-	// Surge 不支持
-	if s := a.ToSurge(); s != "" {
-		t.Errorf("ToSurge should be empty, got: %s", s)
+	// Surge（iOS 5.17.0+ / Mac 6.4.3+ 支持 AnyTLS v2）
+	s := a.ToSurge()
+	if !strings.HasPrefix(s, "AT-01 = anytls, example.com, 443, password=secret") {
+		t.Errorf("ToSurge prefix: %s", s)
+	}
+	if !strings.Contains(s, "sni=cdn.example.com") || !strings.Contains(s, "alpn=h2,http/1.1") || !strings.Contains(s, "skip-cert-verify=true") {
+		t.Errorf("ToSurge params: %s", s)
+	}
+
+	// 无 sni 时回退为 server
+	a2 := &AnyTLS{Base: Base{Name: "AT-02", Server: "1.2.3.4", Port: 443, Type: "anytls"}, Password: "pw"}
+	if s2 := a2.ToSurge(); !strings.Contains(s2, "sni=1.2.3.4") {
+		t.Errorf("ToSurge sni fallback: %s", s2)
 	}
 }
 

@@ -46,6 +46,9 @@ func checkSurgeSupport(p proxy.Proxy) bool {
 		}
 	case *proxy.Trojan:
 		return true
+	case *proxy.AnyTLS:
+		// Surge iOS 5.17.0+ / Mac 6.4.3+ 支持 AnyTLS v2
+		return true
 	default:
 		return false
 	}

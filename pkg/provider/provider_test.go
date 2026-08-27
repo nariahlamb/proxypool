@@ -30,6 +30,27 @@ func TestVlessSupport(t *testing.T) {
 	}
 }
 
+// TestAnyTLSSupport 验证各客户端对 anytls 的支持校验：
+// clash(mihomo)/loon/quanx/surge(iOS 5.17+ / Mac 6.4.3+) 均支持
+func TestAnyTLSSupport(t *testing.T) {
+	a := &proxy.AnyTLS{
+		Base:     proxy.Base{Name: "at1", Server: "example.com", Port: 443, Type: "anytls"},
+		Password: "secret",
+	}
+	if !checkSurgeSupport(a) {
+		t.Error("checkSurgeSupport should support anytls (Surge iOS 5.17+ / Mac 6.4.3+)")
+	}
+	if !checkClashSupport(a) {
+		t.Error("checkClashSupport should support anytls")
+	}
+	if !checkLoonSupport(a) {
+		t.Error("checkLoonSupport should support anytls")
+	}
+	if !checkQuanXSupport(a) {
+		t.Error("checkQuanXSupport should support anytls")
+	}
+}
+
 // TestTLSRealityFilter 验证 tls/reality 过滤条件生效
 func TestTLSRealityFilter(t *testing.T) {
 	vlessTLS := &proxy.Vless{Base: proxy.Base{Name: "t1", Server: "a.com", Port: 443, Type: "vless"}, UUID: "11111111-1111-1111-1111-111111111111", TLS: true, Network: "tcp"}

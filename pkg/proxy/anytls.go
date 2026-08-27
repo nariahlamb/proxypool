@@ -62,9 +62,26 @@ func (a AnyTLS) ToClash() string {
 	return "  - " + string(data)
 }
 
-// ToSurge 不支持 anytls（Surge 客户端无此协议）
+// ToSurge 输出 surge 配置（iOS 5.17.0+ / Mac 6.4.3+，Surge 支持 AnyTLS v2）
+// 参考 https://manual.nssurge.com/policies/anytls.html
 func (a AnyTLS) ToSurge() string {
-	return ""
+	text := fmt.Sprintf(`%s = anytls, %s, %d, password=%s`,
+		a.Name, a.Server, a.Port, a.Password)
+	sni := a.SNI
+	if sni == "" {
+		sni = a.Server
+	}
+	text += ", sni=" + sni
+	if len(a.ALPN) > 0 {
+		text += ", alpn=" + strings.Join(a.ALPN, ",")
+	}
+	if a.SkipCertVerify {
+		text += ", skip-cert-verify=true"
+	}
+	if a.UDP {
+		text += ", udp=true"
+	}
+	return text
 }
 
 // ToLoon 输出 loon 配置（anytls 在 Loon 3.3+ 支持）

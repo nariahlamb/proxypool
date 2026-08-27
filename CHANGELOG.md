@@ -5,6 +5,28 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.55] - 2026-08-17
+
+### 🚀 anytls 全客户端支持（含 surge，新增 5 个 /best* 格式）
+
+- **Surge 支持 AnyTLS**（iOS 5.17.0+ / Mac 6.4.3+，AnyTLS v2）：
+  实现 `AnyTLS.ToSurge()`（`name = anytls, server, port, password=..., sni=...`），
+  `checkSurgeSupport` 放行 anytls，`/surge/proxies?type=anytls` 恢复输出
+- **`/best*` 新增 5 个 anytls 格式**：`surgeAnytls` / `clashAnytls` / `loonAnytls` /
+  `quanxAnytls` / `v2raynAnytls`（含 `/bestCfProxySub` 的 7 参版生成器）
+  - surge：`= anytls, ip, port, password=..., sni=...`
+  - clash：`type:anytls` + `sni/alpn/skip-cert-verify`（mihomo 原生）
+  - loon：`= anytls, ..., "password", over-tls=true, tls-name=...`（Loon 3.3+）
+  - quanx：`anytls=ip:port, password=..., over-tls=true, udp-relay=true, tls-host=...`
+  - v2rayn：标准 `anytls://password@ip:port?sni=...&alpn=...#name` 链接
+- **`checkFormat` 支持 Anytls 类型**：`Format` 新增 `Anytls` 字段；
+  未配置 anytls 节点的国家返回 500（与 vmess/trojan 行为一致）
+- **`config.yaml` proxy_info 新增 `anytls` 段**（JP/KR）：必填 `host`(sni) + `password`，
+  可选 `alpn`(逗号分隔) / `skip_cert_verify`
+- 新增测试：`ToSurge` 输出/回退、`checkSurgeSupport` 放行、`generatorKey` 映射、
+  5 端生成器输出断言、`checkFormat` 配置校验（12 项）
+- 端到端验证：容器内 5 个 `/bestProxyIp/*Anytls` 接口输出全部正确
+
 ## [v1.1.54] - 2026-08-17
 
 ### 🚀 /bestCfProxySub 支持明文域名列表（bestcf.pages.dev 格式）

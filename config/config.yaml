@@ -71,6 +71,10 @@ proxy_info:
       host: "1.top"
       password: "tr0jan@^**))"
       path: "/websocket"
+    anytls:
+      host: "1.top"
+      password: "24b566e4-8ef6-4693-b502-26c43ac49fb7"
+      alpn: "h2,http/1.1"
   KR:
     vmess:
       host: "2.top"
@@ -80,6 +84,9 @@ proxy_info:
       host: "2.top"
       password: "password"
       path: "/websocket"
+    anytls:
+      host: "2.top"
+      password: "password"
 
 cf_best_ip:
   - "mfa.gov.ua"
