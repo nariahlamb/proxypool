@@ -5,6 +5,22 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.61] - 2026-08-17
+
+### ⚡ 健康检查测试地址优化（国内可达 204 端点优先，支持配置覆盖）
+
+- **默认测试地址列表重排**（原列表缺陷）：
+  - 剔除返回 200 的端点（msftconnecttest / captive.apple / msftncsi / apple.com/test），
+    它们在 204 状态码判定下永远失败，白白消耗请求
+  - **不含 gstatic**（部署 VPS 常因访问过度被拒/限流）
+  - 国内可达的 204 端点排前面：`https://cp.cloudflare.com/generate_204`、
+    `https://connect.rom.miui.com/generate_204`，海外端点（google/bing 等）作后备
+- **新增配置项 `healthcheck_test_urls`**（可选 []string）：部署环境可覆盖
+  默认列表；`CrawlGo` 启动时注入（热更新配置后自动生效）
+- 新增 `SetTestURLs`（RWMutex 保护 + 返回副本）与 `TestDefaultTestURLs` /
+  `TestSetTestURLs` 测试
+- 验证：容器内 cp.cloudflare / 小米 miui 的 generate_204 均可达
+
 ## [v1.1.60] - 2026-08-17
 
 ### 🚀 探测配置改名 anytls_probe → sni_probe（语义对齐 SNI proxy）

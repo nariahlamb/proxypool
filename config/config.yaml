@@ -67,6 +67,12 @@ sni_probe:
   country: "JP"
   # test_url: "https://cp.cloudflare.com/generate_204"  # 可选，数据往返验证地址
 
+# 健康检查(延迟检测)测试地址列表（可选；默认内置 204 端点：cp.cloudflare/小米 miui 优先，
+# 不含 gstatic——部署 VPS 常因访问过度被拒）
+# healthcheck_test_urls:
+#   - "https://cp.cloudflare.com/generate_204"
+#   - "https://connect.rom.miui.com/generate_204"
+
 proxy_info:
   JP:
     vless:

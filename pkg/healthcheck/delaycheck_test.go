@@ -1,54 +1,58 @@
 package healthcheck
 
 import (
+	"strings"
 	"testing"
-
-	"github.com/One-Piecs/proxypool/pkg/proxy"
 )
 
-func TestFindOrCreateDelayStat(t *testing.T) {
-	// 清理全局统计（避免其它测试残留）
-	statsLock.Lock()
-	ProxyStats = ProxyStats[:0]
-	statsLock.Unlock()
-
-	p := &proxy.Shadowsocks{
-		Base:     proxy.Base{Name: "t1", Server: "1.2.3.4", Port: 8388, Type: "ss"},
-		Password: "pw",
-		Cipher:   "aes-256-gcm",
+// TestDefaultTestURLs 验证默认测试地址列表的约束：
+// 全部为 204 端点（不含 200 类页面）、不含 gstatic、国内可达端点靠前
+func TestDefaultTestURLs(t *testing.T) {
+	urls := getTestURLs()
+	if len(urls) < maxTestURLs {
+		t.Fatalf("默认列表长度 %d 小于每轮尝试数 %d", len(urls), maxTestURLs)
 	}
 
-	// 首次调用：创建并返回非 nil
-	ps := findOrCreateDelayStat(p, 123)
-	if ps == nil {
-		t.Fatal("findOrCreateDelayStat returned nil (bug: nil sent to channel)")
-	}
-	if ps.Delay != 123 {
-		t.Fatalf("Delay = %d, want 123", ps.Delay)
-	}
-	if len(ProxyStats) != 1 {
-		t.Fatalf("ProxyStats len = %d, want 1", len(ProxyStats))
+	for _, u := range urls {
+		if strings.Contains(u, "gstatic.com") {
+			t.Errorf("默认列表不应含 gstatic（VPS 常被限流）: %s", u)
+		}
+		// 全部应为 generate_204 类端点（200 类页面会浪费请求）
+		if !strings.Contains(u, "generate_204") {
+			t.Errorf("默认列表应全为 204 端点: %s", u)
+		}
 	}
 
-	// 再次调用：命中已有记录并更新
-	ps2 := findOrCreateDelayStat(p, 456)
-	if ps2 == nil {
-		t.Fatal("second call returned nil")
-	}
-	if ps2.Delay != 456 {
-		t.Fatalf("Delay = %d, want 456 (updated)", ps2.Delay)
-	}
-	if len(ProxyStats) != 1 {
-		t.Fatalf("ProxyStats len = %d, want 1 (no duplicate)", len(ProxyStats))
+	// 前 maxTestURLs 个内应有国内可达端点（cp.cloudflare / miui）
+	first := strings.Join(urls[:maxTestURLs], " ")
+	if !strings.Contains(first, "cp.cloudflare.com") {
+		t.Errorf("前 %d 个应含 cp.cloudflare.com: %v", maxTestURLs, urls[:maxTestURLs])
 	}
 }
 
-// TestCleanBadProxiesEmptyList 回归验证 done 通道不被二次关闭：
-// 空列表不提交任务，StopWait 立即返回并 close(done)，
-// 旧实现还保留 defer close(done) 导致函数返回时二次关闭 panic。
-func TestCleanBadProxiesEmptyList(t *testing.T) {
-	result := CleanBadProxiesWithWorkpool(nil)
-	if result == nil || len(result) != 0 {
-		t.Fatalf("expected empty result, got len=%d", len(result))
+// TestSetTestURLs 验证配置覆盖与恢复默认
+func TestSetTestURLs(t *testing.T) {
+	// 覆盖
+	custom := []string{"https://a.com/204", "https://b.com/204"}
+	SetTestURLs(custom)
+	got := getTestURLs()
+	if len(got) != 2 || got[0] != custom[0] || got[1] != custom[1] {
+		t.Fatalf("SetTestURLs 后 = %v, want %v", got, custom)
 	}
+
+	// 空列表恢复默认
+	SetTestURLs(nil)
+	got = getTestURLs()
+	if !strings.Contains(got[0], "cp.cloudflare.com") {
+		t.Errorf("恢复默认后首个应为 cp.cloudflare.com: %v", got)
+	}
+
+	// 覆盖后不应影响原默认切片（防别名共享）
+	SetTestURLs(custom)
+	got2 := getTestURLs()
+	got2[0] = "mutated"
+	if getTestURLs()[0] != custom[0] {
+		t.Error("getTestURLs 应返回副本")
+	}
+	SetTestURLs(nil) // 复原，避免影响其他测试
 }

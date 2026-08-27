@@ -3,6 +3,7 @@ package healthcheck
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/gammazero/workerpool"
@@ -15,23 +16,60 @@ import (
 
 var (
 	defaultURLTestTimeout = time.Second * 5
-	testURLs              = []string{
-		"http://www.msftconnecttest.com/connecttest.txt",
-		"http://captive.apple.com/hotspot-detect.html",
-		"http://www.google.com/generate_204",
-		"http://bing.com/generate_204",
-		"http://play.googleapis.com/generate_204",
-		"http://clients3.google.com/generate_204",
-		"http://www.msftncsi.com/ncsi.txt",
+
+	// testURLsMu 保护 testURLs（可通过 SetTestURLs 配置覆盖）
+	testURLsMu sync.RWMutex
+
+	// testURLs 延迟检测（健康检查）的测试地址列表：
+	// - 全部为返回 204 的端点（期望状态码判定，200 类端点会白白浪费请求，已剔除）
+	// - 国内可达的 204 端点排前面（cp.cloudflare / 小米 miui），海外端点作后备
+	// - 不含 gstatic（部署 VPS 上常因访问过度被拒/限流）
+	// - 每轮实际只试前 maxTestURLs 个，顺序即优先级
+	// 部署环境可用 config `healthcheck_test_urls` 覆盖（见 internal/app/task.go）
+	testURLs = []string{
+		"https://cp.cloudflare.com/generate_204",      // Cloudflare，国内一般可达
+		"https://connect.rom.miui.com/generate_204",   // 小米，国内稳定
+		"http://www.google.com/generate_204",          // 海外
+		"http://bing.com/generate_204",                // 海外
 		"http://edge-http.microsoft.com/captiveportal/generate_204",
-		"http://www.apple.com/library/test/success.html",
+		"http://clients3.google.com/generate_204",
 		"http://apple-cloudkit.com/generate_204",
+		"http://play.googleapis.com/generate_204",
 	}
+
 	maxRetries = 2
 	// 每轮重试最多尝试的 URL 数：健康代理在 2 个 URL 成功后即提前返回，
-	// 失效代理无需把 10 个 URL 全部试完（30 次请求）才判定失败
+	// 失效代理无需把全部 URL 试完才判定失败
 	maxTestURLs = 4
 )
+
+// SetTestURLs 覆盖延迟检测的测试地址列表（config `healthcheck_test_urls`）。
+// 传入空列表时恢复默认。调用时机：爬取任务启动前。
+func SetTestURLs(urls []string) {
+	testURLsMu.Lock()
+	defer testURLsMu.Unlock()
+	if len(urls) == 0 {
+		testURLs = []string{
+			"https://cp.cloudflare.com/generate_204",
+			"https://connect.rom.miui.com/generate_204",
+			"http://www.google.com/generate_204",
+			"http://bing.com/generate_204",
+			"http://edge-http.microsoft.com/captiveportal/generate_204",
+			"http://clients3.google.com/generate_204",
+			"http://apple-cloudkit.com/generate_204",
+			"http://play.googleapis.com/generate_204",
+		}
+		return
+	}
+	testURLs = append([]string(nil), urls...)
+}
+
+// getTestURLs 返回当前测试地址列表（副本）
+func getTestURLs() []string {
+	testURLsMu.RLock()
+	defer testURLsMu.RUnlock()
+	return append([]string(nil), testURLs...)
+}
 
 // CleanBadProxiesWithWorkpool 对代理做延迟检测，返回可用（延迟非 0）的代理列表。
 func CleanBadProxiesWithWorkpool(proxies []proxy.Proxy) (cproxies []proxy.Proxy) {
@@ -134,7 +172,8 @@ func testDelay(p proxy.Proxy) (delay uint16, err error) {
 		}
 
 		// 遍历测试URL（只取前 maxTestURLs 个）
-		for _, testURL := range testURLs[:min(maxTestURLs, len(testURLs))] {
+		urls := getTestURLs()
+		for _, testURL := range urls[:min(maxTestURLs, len(urls))] {
 			ctx, cancel := context.WithTimeout(context.Background(), timeout)
 			currentDelay, err := clashProxy.URLTest(ctx, testURL, expectedStatus)
 			cancel()

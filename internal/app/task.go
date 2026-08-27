@@ -19,6 +19,14 @@ import (
 var location, _ = time.LoadLocation("PRC")
 
 func CrawlGo() {
+	// 健康检查测试地址：config `healthcheck_test_urls` 可覆盖默认列表
+	// （默认国内可达 204 端点优先，不含 gstatic）。空列表 = 使用默认。
+	if urls := config.Config().HealthcheckTestURLs; len(urls) > 0 {
+		healthcheck.SetTestURLs(urls)
+	} else {
+		healthcheck.SetTestURLs(nil) // 恢复默认（热更新配置后生效）
+	}
+
 	wg := &sync.WaitGroup{}
 	pc := make(chan proxy.Proxy)
 	for _, g := range Getters {

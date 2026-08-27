@@ -38,12 +38,13 @@ type ConfigOptions struct {
 	V2WsHeaderUserAgent   string   `json:"v2_ws_header_user_agent" yaml:"v2_ws_header_user_agent"`
 	GeoipDbUrl            string   `json:"geoip_db_url" yaml:"geoip_db_url"`
 
-	SubBestNodeInterval uint64    `json:"sub-best-node-interval" yaml:"sub-best-node-interval"`
-	SubIpUrl            []string  `json:"sub_ip_url" yaml:"sub_ip_url"`
-	SubIpListUrl        []string  `json:"sub_ip_list_url" yaml:"sub_ip_list_url"`
-	SniProbe         *SniProbeConfig `json:"sni_probe" yaml:"sni_probe"`
-	ProxyInfo           ProxyInfo `json:"proxy_info" yaml:"proxy_info"`
-	CfBestIp            []string  `json:"cf_best_ip" yaml:"cf_best_ip"`
+	SubBestNodeInterval uint64          `json:"sub-best-node-interval" yaml:"sub-best-node-interval"`
+	SubIpUrl            []string        `json:"sub_ip_url" yaml:"sub_ip_url"`
+	SubIpListUrl        []string        `json:"sub_ip_list_url" yaml:"sub_ip_list_url"`
+	SniProbe            *SniProbeConfig `json:"sni_probe" yaml:"sni_probe"`
+	HealthcheckTestURLs []string        `json:"healthcheck_test_urls" yaml:"healthcheck_test_urls"`
+	ProxyInfo           ProxyInfo       `json:"proxy_info" yaml:"proxy_info"`
+	CfBestIp            []string        `json:"cf_best_ip" yaml:"cf_best_ip"`
 }
 
 // SniProbeConfig best 节点 SNI proxy（TCP 透传入口）可用性探测配置。
