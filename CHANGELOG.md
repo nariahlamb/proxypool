@@ -5,6 +5,35 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.0.0] - 2026-08-27
+
+### 🔧 代码现代化（Modern Go 规范，Go 1.27）
+
+- `interface{}` 全部替换为 `any`（45 处 / 17 文件）
+- `strings.Cut` / `strings.CutLast` 替代 `Index/LastIndex + 手动切片`（注释剥离、CF 反混淆）
+- `slices.SortStableFunc` + `cmp.Compare` 替代 `sort.SliceStable`（优选 IP 多级排序、测速排序）
+- `atomic.Pointer[ConfigOptions]` 替代 `atomic.Value + 类型断言`（配置热加载）
+- 计数循环 `for i := 0; i < n; i++` → `for i := range n`
+- 移除 Go 1.22+ 后冗余的循环变量拷贝（workerpool 闭包）
+- **Getter 接口去除 wg 参数**：`Get2ChanWG(pc, wg)` 合并为 `Get2Chan(pc)`，
+  调用点改用 `wg.Go`（Go 1.23+）
+- workerpool 场景用 `StopWait()` 替代冗余 WaitGroup（CrawlBestNode / anytls 探测），
+  净删 90 行并发样板代码
+- 无参 `fmt.Errorf` → `errors.New`，修正 `vaild`/`invaild` 拼写
+
+### 🧪 测试
+
+- 新增 `cfdecode`（ScriptReplace）、`SortProxiesBySpeed`、`sortBestNodes` 单元测试（16 用例），
+  并在旧实现上验证行为等价
+- 优选 IP 多级排序提取为可测函数 `sortBestNodes`
+- 新增 `scripts/verify-go.sh`：Docker 内一键 gofmt / vet / build / test 验证
+
+### 📝 文档与发布
+
+- README 重写：anytls 协议、优选 IP 使用、完整 API 文档、默认端口 12580
+- 移除 fly.io 部署方式与过时的 `fly.toml`
+- 删除过期 `README_NEW.md`，修正 release 说明（Docker 镜像发布，无预编译二进制）
+
 ## [v1.1.61] - 2026-08-17
 
 ### ⚡ 健康检查测试地址优化（国内可达 204 端点优先，支持配置覆盖）
