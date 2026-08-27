@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"net/netip"
 	"sync"
 	"time"
 
@@ -12,8 +11,13 @@ import (
 	"github.com/One-Piecs/proxypool/pkg/proxy"
 	"github.com/gammazero/workerpool"
 	"github.com/metacubex/mihomo/adapter"
-	C "github.com/metacubex/mihomo/constant"
+	"github.com/metacubex/mihomo/common/utils"
 )
+
+// anytlsProbeTestURL anytls 可转发探测的数据往返测试地址：
+// 隧道建立后经代理发起真实 HTTP 请求，校验 204 状态码，
+// 确认数据能端到端转发（而非仅协议握手成功）。
+const anytlsProbeTestURL = "https://cp.cloudflare.com/generate_204"
 
 // probeAnyTLSCountry 选择探测用国家凭据：配置指定优先，缺省取 proxy_info 中
 // 第一个配置了 anytls 段的国家（map 遍历顺序不定，但任意一个含 anytls 凭据的国家即可，
@@ -34,9 +38,11 @@ func probeAnyTLSCountry(cfg *config.AnyTLSProbeConfig) (string, bool) {
 }
 
 // probeAnyTLSNode 探测单个 ip:port 能否透传 anytls：构造临时 anytls 出站
-// （server=候选 ip, port=候选 port, sni=源站域名），mihomo 完整握手
-// （TCP + TLS + anytls 协议鉴权），DialContext 成功即代表可转发。
-func probeAnyTLSNode(ip string, port int, password, sni string, timeout time.Duration) bool {
+// （server=候选 ip, port=候选 port, sni=源站域名），经 mihomo `URLTest` 做完整验证：
+//   L3 隧道建立：TCP + TLS + anytls 协议握手
+//   L4 数据往返：经隧道发起真实 HTTP 请求（默认 https://cp.cloudflare.com/generate_204），
+//      收到 204 响应才算可用（仅握手成功但数据不转发视为不可用）
+func probeAnyTLSNode(ip string, port int, password, sni, testURL string, timeout time.Duration) bool {
 	at := &proxy.AnyTLS{
 		Base:     proxy.Base{Server: ip, Port: port, Type: "anytls"},
 		Password: password,
@@ -50,13 +56,13 @@ func probeAnyTLSNode(ip string, port int, password, sni string, timeout time.Dur
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	addr := C.Metadata{Host: "1.1.1.1", DstIP: netip.Addr{}, DstPort: 80}
-	conn, err := clashProxy.DialContext(ctx, &addr)
+	expected, err := utils.NewUnsignedRanges[uint16]("204")
 	if err != nil {
+		log.Errorln("anytls probe: invalid expected status: %v", err)
 		return false
 	}
-	_ = conn.Close()
-	return true
+	_, err = clashProxy.URLTest(ctx, testURL, expected)
+	return err == nil
 }
 
 // ProbeAndMarkAnyTLS 并发探测 best 节点列表，返回带 AnyTLS 标记的新切片（不修改入参）。
@@ -87,11 +93,15 @@ func ProbeAndMarkAnyTLS(nodes []cache.BestNode) []cache.BestNode {
 	if cfg.Timeout <= 0 {
 		timeout = 5 * time.Second
 	}
+	testURL := anytlsProbeTestURL
+	if cfg.TestURL != "" {
+		testURL = cfg.TestURL
+	}
 	if len(nodes) == 0 {
 		return nodes
 	}
 
-	log.Infoln("anytls probe: testing %d nodes (country=%s, concurrency=%d, timeout=%ds)", len(nodes), country, concurrency, int(timeout/time.Second))
+	log.Infoln("anytls probe: testing %d nodes (country=%s, concurrency=%d, timeout=%ds, url=%s)", len(nodes), country, concurrency, int(timeout/time.Second), testURL)
 
 	results := make([]bool, len(nodes))
 	wp := workerpool.New(concurrency)
@@ -101,7 +111,7 @@ func ProbeAndMarkAnyTLS(nodes []cache.BestNode) []cache.BestNode {
 		wg.Add(1)
 		wp.Submit(func() {
 			defer wg.Done()
-			results[i] = probeAnyTLSNode(node.Ip, node.Port, password, sni, timeout)
+			results[i] = probeAnyTLSNode(node.Ip, node.Port, password, sni, testURL, timeout)
 		})
 	}
 	wg.Wait()
@@ -117,6 +127,9 @@ func ProbeAndMarkAnyTLS(nodes []cache.BestNode) []cache.BestNode {
 		}
 	}
 	log.Infoln("anytls probe done: %d/%d nodes can relay anytls", count, len(nodes))
+	if count == 0 {
+		log.Warnln("anytls probe: all nodes failed, check anytls origin reachability (host=%s) and test url (%s)", sni, testURL)
+	}
 	return marked
 }
 

@@ -94,9 +94,9 @@ func TestAnyTLSProbeDefaults(t *testing.T) {
 		t.Error("enable: false 应关闭探测")
 	}
 
-	// 显式 enable: true + 自定义并发/超时
-	p = parse("anytls_probe:\n  enable: true\n  concurrency: 5\n  timeout: 3\n  country: \"KR\"\n")
-	if !p.Enabled() || p.Concurrency != 5 || p.Timeout != 3 || p.Country != "KR" {
+	// 显式 enable: true + 自定义并发/超时/测试地址
+	p = parse("anytls_probe:\n  enable: true\n  concurrency: 5\n  timeout: 3\n  country: \"KR\"\n  test_url: \"https://example.com/204\"\n")
+	if !p.Enabled() || p.Concurrency != 5 || p.Timeout != 3 || p.Country != "KR" || p.TestURL != "https://example.com/204" {
 		t.Errorf("自定义配置未生效: %+v", p)
 	}
 }

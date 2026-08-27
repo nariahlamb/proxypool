@@ -5,6 +5,21 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.58] - 2026-08-17
+
+### 🚀 anytls 探测升级为数据往返验证（URLTest 204）
+
+- **探测判定从"协议握手成功"升级为"数据端到端可转发"**：
+  原 `DialContext` 只验证 TCP+TLS+anytls 握手；现改用 mihomo `URLTest`——
+  经隧道发起真实 HTTP 请求到 `https://cp.cloudflare.com/generate_204`，
+  收到 **204** 才标记可用（握手成功但数据不转发的节点不再误标）
+- **测试地址可配置**：`anytls_probe.test_url`（可选，默认
+  `https://cp.cloudflare.com/generate_204`），适配不同部署网络
+- 探测全部失败时 Warn 提示检查源站（anytls host）可达性与 test_url
+- 验证：mihomo URLTest 调用链独立验证通过（direct 出站 + cp.cloudflare.com/204 →
+  713ms 无错）；当前示例配置源站 1.top 被 fake-ip 劫持、无真实 anytls 服务，
+  端到端 0/389 属正确判定（部署真实源站后生效）
+
 ## [v1.1.57] - 2026-08-17
 
 ### 🚀 best 节点 anytls 可转发性探测（xxxAnytls 仅导出可透传节点）

@@ -64,6 +64,7 @@ anytls_probe:
   concurrency: 20
   timeout: 5
   country: "JP"
+  # test_url: "https://cp.cloudflare.com/generate_204"  # 可选，数据往返验证地址
 
 proxy_info:
   JP:

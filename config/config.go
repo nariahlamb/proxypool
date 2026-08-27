@@ -54,6 +54,7 @@ type AnyTLSProbeConfig struct {
 	Concurrency int    `json:"concurrency" yaml:"concurrency"`
 	Timeout     int    `json:"timeout" yaml:"timeout"`
 	Country     string `json:"country" yaml:"country"`
+	TestURL     string `json:"test_url" yaml:"test_url"`
 }
 
 // Enabled 探测开关：段缺失=false；段存在且 enable 未写=默认 true；显式 false=关闭
