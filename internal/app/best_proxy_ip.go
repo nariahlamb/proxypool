@@ -769,22 +769,22 @@ func checkFormat(format string, distNodeCountry string) (f Format, err error) {
 
 	if strings.Contains(format, "Vmess") {
 		if _, ok := config.Config().ProxyInfo[distNodeCountry]["vmess"]; !ok {
-			return f, fmt.Errorf("not found vaild vmess node")
+			return f, fmt.Errorf("not found vaild vmess node for country [%s]", distNodeCountry)
 		}
 		f.Vmess = true
 	} else if strings.Contains(format, "Trojan") {
 		if _, ok := config.Config().ProxyInfo[distNodeCountry]["trojan"]; !ok {
-			return f, fmt.Errorf("not found vaild trojan node")
+			return f, fmt.Errorf("not found vaild trojan node for country [%s]", distNodeCountry)
 		}
 		f.Trojan = true
 	} else if strings.Contains(format, "Vless") {
 		if _, ok := config.Config().ProxyInfo[distNodeCountry]["vless"]; !ok {
-			return f, fmt.Errorf("not found vaild vless node")
+			return f, fmt.Errorf("not found vaild vless node for country [%s]", distNodeCountry)
 		}
 		f.Vless = true
 	} else if strings.Contains(format, "Anytls") {
 		if _, ok := config.Config().ProxyInfo[distNodeCountry]["anytls"]; !ok {
-			return f, fmt.Errorf("not found vaild anytls node")
+			return f, fmt.Errorf("not found vaild anytls node for country [%s], add 'anytls: {host, password}' to proxy_info in config.yaml", distNodeCountry)
 		}
 		f.Anytls = true
 	} else {

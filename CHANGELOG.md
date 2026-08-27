@@ -5,6 +5,19 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.56] - 2026-08-17
+
+### 🐛 /best* anytls 配置缺失报错提示优化 + /surge/proxies?type=anytls 验证
+
+- **`checkFormat` 错误信息可操作化**：`not found vaild anytls node for country [X],
+  add 'anytls: {host, password}' to proxy_info in config.yaml`（vmess/trojan/vless
+  同步附带国家名 `[X]`），部署环境未配置 anytls 时不再是一句模糊报错
+- **`/surge/proxies?type=anytls` 全链路验证**：新增 `TestSurgeAnyTLSProvide`，
+  覆盖 type 精确匹配过滤 → `checkSurgeSupport` 放行 → `ToSurge` 输出；
+  无 type 过滤时 anytls 与其他协议同池输出
+- 若代理池中无 anytls 节点，`/surge/proxies?type=anytls` 返回空属正常
+  （池内无此类节点，需订阅源含 anytls 链接）
+
 ## [v1.1.55] - 2026-08-17
 
 ### 🚀 anytls 全客户端支持（含 surge，新增 5 个 /best* 格式）

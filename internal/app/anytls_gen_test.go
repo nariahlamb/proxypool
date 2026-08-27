@@ -151,9 +151,11 @@ proxy_info:
 		}
 	}
 
-	// CN 未配置 anytls → 报错
+	// CN 未配置 anytls → 报错（信息应指出国家与配置方法）
 	if _, err := checkFormat("surgeAnytls", "CN"); err == nil {
 		t.Error("checkFormat(surgeAnytls, CN) should fail (no anytls node)")
+	} else if !strings.Contains(err.Error(), "CN") || !strings.Contains(err.Error(), "config.yaml") {
+		t.Errorf("错误信息应包含国家名与配置指引: %v", err)
 	}
 	// 未知国家 → 报错
 	if _, err := checkFormat("surgeAnytls", "US"); err == nil {

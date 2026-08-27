@@ -51,6 +51,40 @@ func TestAnyTLSSupport(t *testing.T) {
 	}
 }
 
+// TestSurgeAnyTLSProvide 验证 /surge/proxies?type=anytls 全链路：
+// type 精确匹配过滤 → checkSurgeSupport → ToSurge 输出
+func TestSurgeAnyTLSProvide(t *testing.T) {
+	anytls := &proxy.AnyTLS{
+		Base:     proxy.Base{Name: "at1", Server: "1.2.3.4", Port: 443, Type: "anytls"},
+		Password: "secret",
+		SNI:      "1.top",
+	}
+	ss := &proxy.Shadowsocks{Base: proxy.Base{Name: "s1", Server: "d.com", Port: 8388, Type: "ss"}, Password: "p", Cipher: "aes-256-gcm"}
+	vmess := &proxy.Vmess{Base: proxy.Base{Name: "v1", Server: "e.com", Port: 443, Type: "vmess"}, UUID: "24b566e4-8ef6-4693-b502-26c43ac49fb7", AlterID: 0, Cipher: "auto", Network: "ws", TLS: true}
+
+	pl := make(proxy.ProxyList, 3)
+	copy(pl, []proxy.Proxy{anytls, ss, vmess})
+
+	// type=anytls：只输出 anytls 节点
+	surge := Surge{Base: Base{Proxies: &pl, Types: "anytls"}}
+	out := surge.Provide()
+	if !strings.Contains(out, "at1 = anytls, 1.2.3.4, 443, password=secret, sni=1.top") {
+		t.Errorf("Surge.Provide type=anytls 缺少 anytls 节点: %q", out)
+	}
+	if strings.Contains(out, "s1 =") || strings.Contains(out, "v1 =") {
+		t.Errorf("type=anytls 不应输出 ss/vmess 节点: %q", out)
+	}
+
+	// 无 type 过滤：三个节点均输出（anytls 已放行）
+	surgeAll := Surge{Base: Base{Proxies: &pl}}
+	outAll := surgeAll.Provide()
+	for _, name := range []string{"at1 =", "s1 =", "v1 ="} {
+		if !strings.Contains(outAll, name) {
+			t.Errorf("无过滤输出缺少 %q: %q", name, outAll)
+		}
+	}
+}
+
 // TestTLSRealityFilter 验证 tls/reality 过滤条件生效
 func TestTLSRealityFilter(t *testing.T) {
 	vlessTLS := &proxy.Vless{Base: proxy.Base{Name: "t1", Server: "a.com", Port: 443, Type: "vless"}, UUID: "11111111-1111-1111-1111-111111111111", TLS: true, Network: "tcp"}
