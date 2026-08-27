@@ -50,10 +50,10 @@ func TestParseInvalidPath(t *testing.T) {
 	}
 }
 
-// TestAnyTLSProbeDefaults 验证 anytls_probe 配置的默认行为：
+// TestSniProbeDefaults 验证 sni_probe 配置的默认行为：
 // 段缺失=未启用；段存在但 enable 未写=默认开启；显式 false=关闭；并发/超时默认值
-func TestAnyTLSProbeDefaults(t *testing.T) {
-	parse := func(content string) *AnyTLSProbeConfig {
+func TestSniProbeDefaults(t *testing.T) {
+	parse := func(content string) *SniProbeConfig {
 		path := filepath.Join(t.TempDir(), "config.yaml")
 		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
 			t.Fatal(err)
@@ -61,21 +61,21 @@ func TestAnyTLSProbeDefaults(t *testing.T) {
 		if err := Parse(path); err != nil {
 			t.Fatalf("parse: %v", err)
 		}
-		return Config().AnyTLSProbe
+		return Config().SniProbe
 	}
 
-	// 无 anytls_probe 段 → nil（未启用）
+	// 无 sni_probe 段 → nil（未启用）
 	if p := parse("port: \"12580\"\n"); p != nil {
-		t.Errorf("无 anytls_probe 段应为 nil, got %+v", p)
+		t.Errorf("无 sni_probe 段应为 nil, got %+v", p)
 	}
 
-	// 纯空段 `anytls_probe:` 在 yaml 中为 null → nil（等同未配置）
-	if p := parse("anytls_probe:\n"); p != nil {
+	// 纯空段 `sni_probe:` 在 yaml 中为 null → nil（等同未配置）
+	if p := parse("sni_probe:\n"); p != nil {
 		t.Errorf("空段解析为 null 应为 nil, got %+v", p)
 	}
 
 	// 段存在但未写 enable（如只写 country）→ 默认开启，并发/超时默认值生效
-	p := parse("anytls_probe:\n  country: \"JP\"\n")
+	p := parse("sni_probe:\n  country: \"JP\"\n")
 	if p == nil {
 		t.Fatal("段存在不应为 nil")
 	}
@@ -90,12 +90,12 @@ func TestAnyTLSProbeDefaults(t *testing.T) {
 	}
 
 	// 显式 enable: false → 关闭
-	if p := parse("anytls_probe:\n  enable: false\n"); p.Enabled() {
+	if p := parse("sni_probe:\n  enable: false\n"); p.Enabled() {
 		t.Error("enable: false 应关闭探测")
 	}
 
 	// 显式 enable: true + 自定义并发/超时/测试地址
-	p = parse("anytls_probe:\n  enable: true\n  concurrency: 5\n  timeout: 3\n  country: \"KR\"\n  test_url: \"https://example.com/204\"\n")
+	p = parse("sni_probe:\n  enable: true\n  concurrency: 5\n  timeout: 3\n  country: \"KR\"\n  test_url: \"https://example.com/204\"\n")
 	if !p.Enabled() || p.Concurrency != 5 || p.Timeout != 3 || p.Country != "KR" || p.TestURL != "https://example.com/204" {
 		t.Errorf("自定义配置未生效: %+v", p)
 	}

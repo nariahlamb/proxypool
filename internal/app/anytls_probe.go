@@ -30,7 +30,7 @@ const anytlsProbeTestURL = "https://cp.cloudflare.com/generate_204"
 // probeAnyTLSCountry 选择探测用国家凭据：配置指定优先，缺省取 proxy_info 中
 // 第一个配置了 anytls 段的国家（map 遍历顺序不定，但任意一个含 anytls 凭据的国家即可，
 // 因为标记的是 ip:port 的透传能力，与具体凭据无关）。
-func probeAnyTLSCountry(cfg *config.AnyTLSProbeConfig) (string, bool) {
+func probeAnyTLSCountry(cfg *config.SniProbeConfig) (string, bool) {
 	if cfg != nil && cfg.Country != "" {
 		if _, ok := config.Config().ProxyInfo[cfg.Country]["anytls"]; ok {
 			return cfg.Country, true
@@ -67,7 +67,7 @@ func probeAnyTLSNode(ip string, port int, password, sni, testURL string, timeout
 	defer cancel()
 	expected, err := utils.NewUnsignedRanges[uint16]("204")
 	if err != nil {
-		log.Errorln("anytls probe: invalid expected status: %v", err)
+		log.Errorln("sni probe: invalid expected status: %v", err)
 		return false
 	}
 	_, err = clashProxy.URLTest(ctx, testURL, expected)
@@ -78,20 +78,20 @@ func probeAnyTLSNode(ip string, port int, password, sni, testURL string, timeout
 // 返回带 AnyTLS 标记的新切片（不修改入参）。
 // 未启用探测或无可探测国家凭据时原样返回。
 func ProbeAndMarkAnyTLS(nodes []cache.BestNode) []cache.BestNode {
-	cfg := config.Config().AnyTLSProbe
+	cfg := config.Config().SniProbe
 	if cfg == nil || !cfg.Enabled() {
 		return nodes
 	}
 	country, ok := probeAnyTLSCountry(cfg)
 	if !ok {
-		log.Errorln("anytls probe: no country with anytls credentials configured in proxy_info")
+		log.Errorln("sni probe: no country with anytls credentials configured in proxy_info")
 		return nodes
 	}
 	anytlsInfo := config.Config().ProxyInfo[country]["anytls"]
 	password, _ := anytlsInfo["password"].(string)
 	sni, _ := anytlsInfo["host"].(string)
 	if password == "" || sni == "" {
-		log.Errorln("anytls probe: country [%s] anytls missing password/host", country)
+		log.Errorln("sni probe: country [%s] anytls missing password/host", country)
 		return nodes
 	}
 
@@ -111,7 +111,7 @@ func ProbeAndMarkAnyTLS(nodes []cache.BestNode) []cache.BestNode {
 		return nodes
 	}
 
-	log.Infoln("anytls probe: testing %d nodes (country=%s, concurrency=%d, timeout=%ds, url=%s)", len(nodes), country, concurrency, int(timeout/time.Second), testURL)
+	log.Infoln("sni probe: testing %d nodes (country=%s, concurrency=%d, timeout=%ds, url=%s)", len(nodes), country, concurrency, int(timeout/time.Second), testURL)
 
 	results := make([]bool, len(nodes))
 	wp := workerpool.New(concurrency)
@@ -138,7 +138,7 @@ func ProbeAndMarkAnyTLS(nodes []cache.BestNode) []cache.BestNode {
 	}
 	log.Infoln("anytls probe done: %d/%d nodes can relay anytls", count, len(nodes))
 	if count == 0 {
-		log.Warnln("anytls probe: all nodes failed, check anytls origin reachability (host=%s) and test url (%s)", sni, testURL)
+		log.Warnln("sni probe: all nodes failed, check anytls origin reachability (host=%s) and test url (%s)", sni, testURL)
 	}
 	return marked
 }
@@ -146,9 +146,9 @@ func ProbeAndMarkAnyTLS(nodes []cache.BestNode) []cache.BestNode {
 // filterAnyTLSNodes 过滤仅可透传 anytls（SNI proxy 入口可用）的节点。
 // 未启用探测时返回空切片（无探测配置 → anytls 导出为空）。
 func filterAnyTLSNodes(nodes []cache.BestNode) []cache.BestNode {
-	cfg := config.Config().AnyTLSProbe
+	cfg := config.Config().SniProbe
 	if cfg == nil || !cfg.Enabled() {
-		log.Warnln("anytls export: probe disabled (missing anytls_probe config), exporting empty list")
+		log.Warnln("anytls export: probe disabled (missing sni_probe config), exporting empty list")
 		return nil
 	}
 	filtered := make([]cache.BestNode, 0, len(nodes))

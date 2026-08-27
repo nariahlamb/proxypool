@@ -5,6 +5,21 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v1.1.60] - 2026-08-17
+
+### 🚀 探测配置改名 anytls_probe → sni_probe（语义对齐 SNI proxy）
+
+- 配置段 `anytls_probe` → **`sni_probe`**（`SniProbe` / `SniProbeConfig`），
+  语义为"best 节点 SNI proxy（TCP 透传入口）可用性探测"；日志统一为 `sni probe`
+- **保留真实 anytls 握手验证，不改为普通 HTTPS 探测**。容器内真网络实验证明：
+  - `443` 端口对未接入 CF 的域名也会透传握手（104.16.0.1:443 SNI=microsoft.com
+    返回真实证书）→ 普通 TLS/HTTPS 探测会把 HTTP 反代误判为可用
+  - 探测结果对测试域名高度敏感（microsoft.com 在 2053 失败、example.org 成功）
+  - 真实 anytls 握手 + 数据往返（URLTest）才是与用途语义完全匹配的可靠判定
+- 配置示例与注释同步更新（config.yaml / bin/*.yaml）
+- 兼容性：旧 `anytls_probe` 配置不再识别（等同未配置 → xxxAnytls 导出空），
+  升级需改名为 `sni_probe`
+
 ## [v1.1.59] - 2026-08-17
 
 ### 📝 anytls 探测注释对齐 SNI proxy 术语

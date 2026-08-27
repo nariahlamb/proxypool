@@ -9,7 +9,7 @@ import (
 	"github.com/One-Piecs/proxypool/internal/cache"
 )
 
-// setupProbeConfig 构造含 proxy_info(anytls) 与 anytls_probe 的临时配置
+// setupProbeConfig 构造含 proxy_info(anytls) 与 sni_probe 的临时配置
 func setupProbeConfig(t *testing.T, probeYAML string) {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "config.yaml")
@@ -39,10 +39,10 @@ proxy_info:
 
 // TestProbeAnyTLSCountry 验证探测国家选择：配置指定优先，缺省自动选择第一个含 anytls 的国家
 func TestProbeAnyTLSCountry(t *testing.T) {
-	setupProbeConfig(t, "anytls_probe:\n  enable: true\n")
+	setupProbeConfig(t, "sni_probe:\n  enable: true\n")
 
 	// 缺省：自动选择（JP/KR 都含 anytls，取其一即可，须为配置过的国家）
-	country, ok := probeAnyTLSCountry(config.Config().AnyTLSProbe)
+	country, ok := probeAnyTLSCountry(config.Config().SniProbe)
 	if !ok {
 		t.Fatal("should find a probe country automatically")
 	}
@@ -51,18 +51,18 @@ func TestProbeAnyTLSCountry(t *testing.T) {
 	}
 
 	// 配置指定：KR
-	cfg := &config.AnyTLSProbeConfig{Country: "KR"}
+	cfg := &config.SniProbeConfig{Country: "KR"}
 	if c, ok := probeAnyTLSCountry(cfg); !ok || c != "KR" {
 		t.Errorf("specified country = %q/%v, want KR/true", c, ok)
 	}
 
 	// 配置指定但该国家无 anytls → 失败
-	bad := &config.AnyTLSProbeConfig{Country: "CN"}
+	bad := &config.SniProbeConfig{Country: "CN"}
 	if _, ok := probeAnyTLSCountry(bad); ok {
 		t.Error("CN has no anytls, should fail")
 	}
 
-	// 无 anytls_probe 段（nil）→ 缺省自动选择仍可用（探测国家与段是否启用无关）
+	// 无 sni_probe 段（nil）→ 缺省自动选择仍可用（探测国家与段是否启用无关）
 	if _, ok := probeAnyTLSCountry(nil); !ok {
 		t.Error("nil config should still auto-select country from proxy_info")
 	}
@@ -78,7 +78,7 @@ func TestFilterAnyTLSNodes(t *testing.T) {
 	}
 
 	t.Run("启用探测", func(t *testing.T) {
-		setupProbeConfig(t, "anytls_probe:\n  enable: true\n")
+		setupProbeConfig(t, "sni_probe:\n  enable: true\n")
 		got := filterAnyTLSNodes(nodes)
 		if len(got) != 2 {
 			t.Fatalf("len = %d, want 2: %+v", len(got), got)
@@ -91,7 +91,7 @@ func TestFilterAnyTLSNodes(t *testing.T) {
 	})
 
 	t.Run("显式关闭", func(t *testing.T) {
-		setupProbeConfig(t, "anytls_probe:\n  enable: false\n")
+		setupProbeConfig(t, "sni_probe:\n  enable: false\n")
 		if got := filterAnyTLSNodes(nodes); len(got) != 0 {
 			t.Errorf("enable=false 应导出空, got %d 节点", len(got))
 		}
@@ -100,7 +100,7 @@ func TestFilterAnyTLSNodes(t *testing.T) {
 	t.Run("无配置段", func(t *testing.T) {
 		setupProbeConfig(t, "")
 		if got := filterAnyTLSNodes(nodes); len(got) != 0 {
-			t.Errorf("无 anytls_probe 段应导出空, got %d 节点", len(got))
+			t.Errorf("无 sni_probe 段应导出空, got %d 节点", len(got))
 		}
 	})
 }

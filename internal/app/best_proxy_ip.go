@@ -341,7 +341,7 @@ func CrawlBestNode() {
 
 	// anytls 可转发性探测：异步执行，完成后原子替换缓存（不阻塞爬取主流程）。
 	// 探测用任一配置了 anytls 凭据的国家（默认自动选择），标记的是 ip:port 透传能力。
-	if cfg := config.Config().AnyTLSProbe; cfg != nil && cfg.Enabled() {
+	if cfg := config.Config().SniProbe; cfg != nil && cfg.Enabled() {
 		go func(base []cache.BestNode) {
 			marked := ProbeAndMarkAnyTLS(base)
 			cache.SetBestNodeList("bestNode", marked)
