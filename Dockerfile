@@ -25,13 +25,10 @@ RUN mkdir -p /app/config /app/data
 
 WORKDIR /app
 
-# 创建文件夹
-RUN mkdir -p /app/assets
-
 # 复制配置文件（显式创建目录）
 COPY ./config/config.yaml ./config/source.yaml /app/config/
-# 复制 GeoIP 数据库（运行时文件，非 embed）：缺失时启动 InitGeoIpDB 失败会 os.Exit(1)
-COPY --from=builder /proxypool-src/assets/Country.mmdb /proxypool-src/assets/GeoLite2-ASN.mmdb /proxypool-src/assets/version /app/assets/
+# GeoIP 数据库不内置：运行时按 geoip_db_url 自动下载（首次启动下载到 assets/）
+RUN mkdir -p /app/assets
 COPY --from=builder /proxypool /app/
 
 # 设置时区

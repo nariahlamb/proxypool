@@ -16,8 +16,8 @@ WORKDIR /app
 
 # 复制配置文件
 COPY ./config/config.yaml ./config/source.yaml /app/config/
-# 复制 GeoIP 数据库（运行时文件，非 embed）：缺失时启动 InitGeoIpDB 失败会 os.Exit(1)
-COPY ./assets/Country.mmdb ./assets/GeoLite2-ASN.mmdb ./assets/version /app/assets/
+# GeoIP 数据库不内置：运行时按 geoip_db_url 自动下载（首次启动下载到 assets/）
+RUN mkdir -p /app/assets
 
 # 复制预编译的二进制文件
 # 注意：构建上下文中必须包含 bin/ 目录，且文件名格式必须为 proxypool-<os>-<arch>

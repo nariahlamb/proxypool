@@ -59,7 +59,9 @@ func main() {
 	// return: struct geoIp (dbreader, emojimap)
 	err = geoIp.InitGeoIpDB()
 	if err != nil {
-		os.Exit(1)
+		// GeoIP 数据库缺失/下载失败时降级运行（国家显示默认值，后续 GeoIPTask 可重试下载），
+		// 不再 os.Exit(1) 导致容器崩溃重启
+		log.Errorln("GeoIP init failed (will degrade, retry via /task/updateGeoIP): %s", err.Error())
 	}
 	// CDN IP 段后台异步加载：某些源（如 Google）在部分环境被访问限制，
 	// 同步加载会阻塞 web 服务启动（超时+重试最多约 30s）
