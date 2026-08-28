@@ -21,16 +21,23 @@ function getBasePath() {
 function getSubURL(rel) {
     if (!rel) return "";
     var url = location.origin + getBasePath() + (rel.charAt(0) === "/" ? rel : "/" + rel);
-    // best 优选订阅鉴权：复制/渲染 /best* 链接时自动拼 best_token（localStorage 输入一次）
+    // best 优选订阅鉴权：链接自动拼已保存的 best_token（无则不拼，不弹窗；
+    // 输入提示仅在用户主动点击复制时由 ensureBestToken 触发）
     if (rel.indexOf("/best") === 0) {
         var token = localStorage.getItem("proxypool_best_token") || "";
-        if (!token) {
-            token = window.prompt("请输入 best_token（config.yaml 中配置，用于优选订阅鉴权）：");
-            if (token) localStorage.setItem("proxypool_best_token", token);
-        }
         if (token) url += (url.indexOf("?") >= 0 ? "&" : "?") + "token=" + encodeURIComponent(token);
     }
     return url;
+}
+
+// ensureBestToken 复制 /best* 链接前确保有 token（无则提示输入一次并存 localStorage）
+function ensureBestToken() {
+    var token = localStorage.getItem("proxypool_best_token") || "";
+    if (!token) {
+        token = window.prompt("请输入 best_token（config.yaml 中配置，用于优选订阅鉴权）：");
+        if (token) localStorage.setItem("proxypool_best_token", token);
+    }
+    return token;
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -98,6 +105,7 @@ function showTip(msg) {
 function onCopy(e) {
     var cell = e.parentNode.previousElementSibling;
     var rel = cell ? cell.getAttribute("data-sub-path") : "";
+    if (rel && rel.indexOf("/best") === 0) ensureBestToken();
     copyText(getSubURL(rel)).then(function (ok) {
         showTip(ok ? "复制成功" : "复制失败");
     });
@@ -105,7 +113,9 @@ function onCopy(e) {
 
 // 复制按钮：从 data-sub-path 拼接完整 URL
 function onCopyThis(e) {
-    copyText(getSubURL(e.getAttribute("data-sub-path"))).then(function (ok) {
+    var rel = e.getAttribute("data-sub-path");
+    if (rel && rel.indexOf("/best") === 0) ensureBestToken();
+    copyText(getSubURL(rel)).then(function (ok) {
         showTip(ok ? "复制成功" : "复制失败");
     });
 }

@@ -7,6 +7,16 @@
 
 ## [v2.5.10] - 2026-08-28
 
+### 🐛 紧急修复：首页加载被 best_token prompt 拦截
+
+- 首页 index.html 含多个 /best* 订阅链接，getSubURL 在页面渲染阶段就对 /best*
+  链接弹 prompt 要求输入 best_token → 配置 best_token 后打开首页即弹窗（误以为需要鉴权）
+- 修复：渲染阶段只拼已保存的 token（不弹窗）；仅用户主动点击「复制」best 订阅时
+  才由 ensureBestToken 提示输入一次并存储
+- JS 行为验证：渲染不弹窗/不拼 token，复制拼 token 且只弹一次，普通订阅不受影响
+
+### 🌐 best 订阅 ipv6 参数改为三态
+
 ### 🌐 best 订阅 ipv6 参数改为三态
 
 - 默认（不带 ipv6 参数）：IPv4 + IPv6 都输出
