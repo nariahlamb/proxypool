@@ -5,9 +5,9 @@
 .vscode
 
 # 本地数据与日志
+# 注意：log/ 是 Go 源码包（日志封装），不可排除；日志数据仅位于容器 /var/log 或挂载卷
 data
 *.db
-log
 
 # 仓库根目录的预编译产物（63MB）
 proxypool
