@@ -6,19 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
-    <title>Free Proxies</title>
-    <meta property="og:description" content="免费的ss、ssr、vmess、trojan、vless节点">
-    <meta name="keywords" content="免费的ss、ssr、vmess、torjan、vless节点">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <!-- <link rel="stylesheet" type="text/css" href="css/client/metron-icon.css" /> -->
+    <title>Surge - Free Proxies</title>
+    <meta property="og:description" content="Surge 订阅：ss、vmess、trojan、vless 节点">
+    <link rel="stylesheet" type="text/css" href="static/css/index.css" />
     <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
-    <!-- <link rel="stylesheet" type="text/css" href="css/index.css" /> -->
-    <link rel="stylesheet" type="text/css" href="static/css/index.css">
-    
 </head>
 
 <body>
-    <!-- Navigation -->
     <nav class="navbar is-primary pl-2 pr-2" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a href="#" id="brand-home" class="navbar-item">
@@ -32,30 +26,32 @@
         </div>
         <div id="clients" class="navbar-menu">
             <div class="navbar-start is-size-6">
-                <a href="./clash" class="navbar-item"><span class="icon"><i class="metron-clash"></i></span>&nbspClash</a>
-                <a href="./shadowrocket" class="navbar-item"><span class="icon"><i class="metron-shadowrocket"></i></span>&nbspShadowRocket</a>
-                <a href="./surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
-                <a href="./loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
-                <a href="./quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
+                <a href="clash" class="navbar-item"><span class="icon"><i class="metron-clash"></i></span>&nbspClash</a>
+                <a href="shadowrocket" class="navbar-item"><span class="icon"><i class="metron-shadowrocket"></i></span>&nbspShadowRocket</a>
+                <a href="surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
+                <a href="loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
+                <a href="quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
                 <a href="v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
                 <a href="best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
             </div>
         </div>
     </nav>
-    <!-- Body -->
     <div class="container">
         <div class="section pb-0">
             <h1 class="title is-2"><i class="metron-surge"></i>&nbspSurge</h1>
         </div>
-        <section class='section'>
-            <h5 class="title is-4 mt-3">配置文件</h5>
-            <div class="table-container mt-2">
+        <section class="section">
+            <h5 class="title is-4">配置文件</h5>
+            <div class="table-container">
                 <table class="table is-fullwidth">
                     <tbody>
                         <tr>
-                            <th>Surge配置文件</th>
+                            <th>Surge 配置文件（含节点与规则）</th>
                             <td data-sub-path="/surge/config"></td>
-                            <td class="has-text-right"><a href="#" data-sub-path="/surge/config" data-install-scheme="surge3" class="button is-small is-link">一键导入</a></td>
+                            <td class="has-text-right">
+                                <a href="#" data-sub-path="/surge/config" data-install-scheme="surge3" class="button is-small is-link">一键导入</a>
+                                <button class="button is-small is-primary" data-sub-path="/surge/config" onclick="onCopyThis(this)">复制</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -64,24 +60,36 @@
         <section class="section">
             <h5 class="title is-4">节点列表</h5>
             <div class="table-container">
-                <div class="table-container">
-                    <table class="table is-fullwidth">
-                        <tbody>
-                            <tr>
-                                <th>Surge节点</th>
-                                <td data-sub-path="/surge/proxies"></td>
-                                <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <table class="table is-fullwidth">
+                    <tbody>
+                        <tr>
+                            <th>全部节点订阅</th>
+                            <td data-sub-path="/surge/proxies"></td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/surge/proxies" onclick="onCopyThis(this)">复制</button></td>
+                        </tr>
+                        <tr>
+                            <th>按类型订阅</th>
+                            <td data-sub-path="/surge/proxies?type=vless"></td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/surge/proxies?type=vless" onclick="onCopyThis(this)">复制</button></td>
+                        </tr>
+                        <tr>
+                            <th>常用国家订阅</th>
+                            <td data-sub-path="/surge/proxies?c=CN,HK,TW,JP,US"></td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/surge/proxies?c=CN,HK,TW,JP,US" onclick="onCopyThis(this)">复制</button></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+            <article class="message is-info">
+                <div class="message-body">
+                    Surge 导入方法：点击「一键导入」自动跳转安装配置；或手动在 <b>设置 → 配置 → 从 URL 下载配置</b>
+                    填入配置地址。节点列表也可粘贴到 <b>代理 → 手动添加</b> 使用。
+                    支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。
+                </div>
+            </article>
         </section>
     </div>
     <footer class="footer has-text-centered">
-        <!-- 所有使用本代码提供服务的禁止删除、修改版权信息 -->
-        <p>欢迎关注tg频道：<a href="https://t.me/peekfun">@peekfun</a></p>
-        
         <p>本程序为 fork 版：<a href="https://github.com/One-Piecs/proxypool">One-Piecs/proxypool</a><br>{{ .version }}</p>
         <p>上游项目：<a href="https://github.com/zu1k/proxypool">zu1k/proxypool</a> · <a href="https://github.com/sansui233/proxypool">sansui233/proxypool</a></p>
         <br>
@@ -89,16 +97,6 @@
     </footer>
     <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
     <script src="static/index.js"></script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-<!--    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VK0B43EQ3"></script>-->
-<!--    <script>-->
-<!--    window.dataLayer = window.dataLayer || [];-->
-
-<!--    function gtag() { dataLayer.push(arguments); }-->
-<!--    gtag('js', new Date());-->
-
-<!--    gtag('config', 'G-9VK0B43EQ3');-->
-<!--    </script>-->
 </body>
 
 </html>

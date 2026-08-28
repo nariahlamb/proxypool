@@ -48,22 +48,28 @@ func urlToMetadata(rawURL string) (addr C.Metadata, err error) {
 
 // doViaProxy 通过 clashProxy 发起 GET 请求并返回响应体。
 func doViaProxy(clashProxy C.Proxy, method, url string, timeout time.Duration) ([]byte, error) {
+	body, _, err := doViaProxyWithStatus(clashProxy, method, url, timeout)
+	return body, err
+}
+
+// doViaProxyWithStatus 与 doViaProxy 相同，额外返回 HTTP 状态码（供 OpenAI 等需要区分 401/403 的检测使用）。
+func doViaProxyWithStatus(clashProxy C.Proxy, method, url string, timeout time.Duration) ([]byte, int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	addr, err := urlToMetadata(url)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	conn, err := clashProxy.DialContext(ctx, &addr) // 建立到proxy server的connection，对Proxy的类别做了自适应相当于泛型
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer conn.Close()
 
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	req = req.WithContext(ctx)
 
@@ -89,11 +95,12 @@ func doViaProxy(clashProxy C.Proxy, method, url string, timeout time.Duration) (
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer resp.Body.Close()
 
-	return io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	return body, resp.StatusCode, err
 }
 
 func HTTPGetViaProxy(clashProxy C.Proxy, url string) error {
@@ -112,6 +119,11 @@ func HTTPGetBodyViaProxy(clashProxy C.Proxy, url string) ([]byte, error) {
 
 func HTTPGetBodyViaProxyWithTime(clashProxy C.Proxy, url string, t time.Duration) ([]byte, error) {
 	return doViaProxy(clashProxy, http.MethodGet, url, t)
+}
+
+// HTTPGetBodyStatusViaProxyWithTime 额外返回 HTTP 状态码。
+func HTTPGetBodyStatusViaProxyWithTime(clashProxy C.Proxy, url string, t time.Duration) ([]byte, int, error) {
+	return doViaProxyWithStatus(clashProxy, http.MethodGet, url, t)
 }
 
 func HTTPGetBodyForSpeedTest(clashProxy C.Proxy, url string, t time.Duration) error {
