@@ -37,6 +37,8 @@ config/assets/html/*
 !config/assets/html/*.html
 config/assets/css/*
 config/assets/static/*
+!config/assets/static/css/*
+!config/assets/static/css/fonts/*
 !config/assets/static/index.js
 
 # 运行时下载的 GeoIP 数据库(首次启动自动下载到本地缓存)
