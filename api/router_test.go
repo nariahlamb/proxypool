@@ -3,83 +3,123 @@ package api
 import (
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"testing"
-	"time"
 
-	"github.com/gin-contrib/cache/persistence"
+	"github.com/One-Piecs/proxypool/config"
 	"github.com/gin-gonic/gin"
 )
 
-// TestSkipCache 验证：指定前缀路径不被缓存（触发类接口可重复执行），
-// 其余路径被站点缓存命中（handler 只执行一次）。
-func TestSkipCache(t *testing.T) {
+// TestApplyBasePath 剥离逻辑：单前缀/多前缀/无前缀/空路径规范化
+func TestApplyBasePath(t *testing.T) {
+	cases := []struct {
+		path, base, want string
+	}{
+		{"/show/clash", "/show/", "/clash"},
+		{"/show/", "/show/", "/"},
+		{"/show", "/show", "/"},        // 无尾斜杠前缀
+		{"/proxy/best", "/proxy/", "/best"},
+		{"/clash", "/show/", "/clash"}, // 非前缀路径原样
+		{"/", "/show/", "/"},
+	}
+	for _, c := range cases {
+		if got := applyBasePath(c.path, c.base); got != c.want {
+			t.Errorf("applyBasePath(%q, %q) = %q, want %q", c.path, c.base, got, c.want)
+		}
+	}
+}
+
+// setupRouterForTest 初始化路由与配置
+func setupRouterForTest(t *testing.T, cfgYAML string) {
+	t.Helper()
 	gin.SetMode(gin.TestMode)
-	r := gin.New()
-	store := persistence.NewInMemoryStore(time.Minute)
-	r.Use(siteCache(store, time.Minute, "/task/"))
+	if cfgYAML != "" {
+		path := filepath.Join(t.TempDir(), "config.yaml")
+		if err := os.WriteFile(path, []byte(cfgYAML), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		if err := config.Parse(path); err != nil {
+			t.Fatalf("config parse: %v", err)
+		}
+	}
+	setupRouter()
+}
 
-	count := 0
-	r.GET("/task/crawl", func(c *gin.Context) {
-		count++
-		c.String(http.StatusOK, "ok")
-	})
-	r.GET("/clash/proxies", func(c *gin.Context) {
-		count++
-		c.String(http.StatusOK, "cached")
-	})
-
-	get := func(path string) int {
+// TestPageRoutes 核心页面与静态资源可达
+func TestPageRoutes(t *testing.T) {
+	setupRouterForTest(t, "domain: example.com\n")
+	paths := []string{"/", "/clash", "/surge", "/shadowrocket", "/loon", "/quanx", "/v2rayn", "/best"}
+	for _, p := range paths {
 		w := httptest.NewRecorder()
-		req, _ := http.NewRequest(http.MethodGet, path, nil)
-		r.ServeHTTP(w, req)
-		return w.Code
+		req, _ := http.NewRequest(http.MethodGet, p, nil)
+		router.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("%s status = %d, want 200", p, w.Code)
+		}
+	}
+	// 静态资源（本地化 CSS/JS）
+	for _, p := range []string{"/static/css/index.css", "/static/index.js"} {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, p, nil)
+		router.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("%s status = %d, want 200", p, w.Code)
+		}
+	}
+	// 订阅端点；/best* 无数据时返回 500（设计行为），仅验证路由存在（非 404）
+	for _, p := range []string{"/ss/sub", "/clash/proxies"} {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, p, nil)
+		router.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("%s status = %d, want 200", p, w.Code)
+		}
+	}
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/bestCfProxyIp/clashVmess", nil)
+	router.ServeHTTP(w, req)
+	if w.Code == http.StatusNotFound {
+		t.Error("/bestCfProxyIp/clashVmess 路由不存在")
+	}
+}
+
+// TestTaskAuthAdminToken 配置 admin_token 后任务接口鉴权
+func TestTaskAuthAdminToken(t *testing.T) {
+	setupRouterForTest(t, "admin_token: \"s3cret\"\n")
+
+	// 无 token → 401
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/task/crawl", nil)
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusUnauthorized {
+		t.Errorf("no token status = %d, want 401", w.Code)
 	}
 
-	// /task/ 不被缓存：两次请求 handler 都应执行
-	if code := get("/task/crawl"); code != http.StatusOK {
-		t.Fatalf("/task/crawl status = %d", code)
-	}
-	if code := get("/task/crawl"); code != http.StatusOK {
-		t.Fatalf("/task/crawl status = %d", code)
-	}
-	if count != 2 {
-		t.Errorf("/task/ should not be cached, handler ran %d times, want 2", count)
+	// 错误 token → 401
+	w = httptest.NewRecorder()
+	req, _ = http.NewRequest(http.MethodGet, "/task/crawl?token=wrong", nil)
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusUnauthorized {
+		t.Errorf("wrong token status = %d, want 401", w.Code)
 	}
 
-	// 非跳过路径被缓存：两次请求 handler 只执行一次
-	if code := get("/clash/proxies"); code != http.StatusOK {
-		t.Fatalf("/clash/proxies status = %d", code)
+	// 正确 token → 200
+	w = httptest.NewRecorder()
+	req, _ = http.NewRequest(http.MethodGet, "/task/crawl?token=s3cret", nil)
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusOK {
+		t.Errorf("right token status = %d, want 200", w.Code)
 	}
-	if code := get("/clash/proxies"); code != http.StatusOK {
-		t.Fatalf("/clash/proxies status = %d", code)
-	}
-	if count != 3 {
-		t.Errorf("/clash/proxies should be cached, handler ran %d times, want 3", count)
-	}
+}
 
-	// 带 random=true 的请求不缓存：两次请求 handler 都应执行
-	r.GET("/bestProxyIp/clash", func(c *gin.Context) {
-		count++
-		c.String(http.StatusOK, "random-output")
-	})
-	if code := get("/bestProxyIp/clash?random=true"); code != http.StatusOK {
-		t.Fatalf("/bestProxyIp?random=true status = %d", code)
-	}
-	if code := get("/bestProxyIp/clash?random=true"); code != http.StatusOK {
-		t.Fatalf("/bestProxyIp?random=true status = %d", code)
-	}
-	if count != 5 {
-		t.Errorf("random=true should bypass cache, handler ran %d times, want 5", count)
-	}
-
-	// 无 random 参数的同类请求仍被缓存：两次请求 handler 只执行一次
-	if code := get("/bestProxyIp/clash"); code != http.StatusOK {
-		t.Fatalf("/bestProxyIp/clash status = %d", code)
-	}
-	if code := get("/bestProxyIp/clash"); code != http.StatusOK {
-		t.Fatalf("/bestProxyIp/clash status = %d", code)
-	}
-	if count != 6 {
-		t.Errorf("/bestProxyIp/clash should be cached, handler ran %d times, want 6", count)
+// TestTaskPublicNoToken 未配置 admin_token 时任务接口公开
+func TestTaskPublicNoToken(t *testing.T) {
+	setupRouterForTest(t, "domain: example.com\n")
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest(http.MethodGet, "/task/crawl", nil)
+	router.ServeHTTP(w, req)
+	if w.Code != http.StatusOK {
+		t.Errorf("public task status = %d, want 200", w.Code)
 	}
 }

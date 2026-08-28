@@ -73,7 +73,7 @@ func getTestURLs() []string {
 
 // CleanBadProxiesWithWorkpool 对代理做延迟检测，返回可用（延迟非 0）的代理列表。
 func CleanBadProxiesWithWorkpool(proxies []proxy.Proxy) (cproxies []proxy.Proxy) {
-	pool := workerpool.New(500)
+	pool := workerpool.New(healthcheckConcurrency())
 	c := make(chan *Stat)
 	defer close(c)
 

@@ -121,6 +121,23 @@ func CrawlGo() {
 		roundIDs = append(roundIDs, p.Identifier())
 	}
 
+	// 冻结节点 TCP 预检：端口可达才进入完整 URLTest，否则直接记失败并剔除。
+	// 冻结节点多数持续不可用，TCP 预检（成本约 URLTest 的 1/10）可大幅降低冻结期检查开销；
+	// 连通后仍需完整 URLTest 通过才积累 passStreak（解锁判定不变）。
+	if frozen := database.GetFrozenMap(); len(frozen) > 0 {
+		kept := make(proxy.ProxyList, 0, len(proxies))
+		for _, p := range proxies {
+			if _, isFrozen := frozen[p.Identifier()]; isFrozen {
+				if !healthcheck.TCPCheck(p.BaseInfo().Server, p.BaseInfo().Port, 3*time.Second) {
+					healthcheck.RecordHealthResult(p.Identifier(), false)
+					continue
+				}
+			}
+			kept = append(kept, p)
+		}
+		proxies = kept
+	}
+
 	proxies = healthcheck.CleanBadProxiesWithWorkpool(proxies)
 
 	// 失效节点冻结状态机：连续失败达阈值 → 冻结；冻结中连续通过/超窗口 → 解冻

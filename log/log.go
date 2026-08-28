@@ -1,78 +1,86 @@
 package log
 
 import (
+	"context"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"sync"
 
+	// 仅用于静默第三方库（mihomo 等）写入 logrus 默认 logger 的日志
 	log "github.com/sirupsen/logrus"
-	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 )
 
 var (
-	level = INFO
-	// logger 是应用自己的 logrus 实例。
-	// 第三方库（如 metacubex/mihomo）直接使用 logrus 默认 logger，
-	// 若共用会导致健康检查/测速时 mihomo 内部噪音（如 vision 握手失败）
-	// 以 ERROR 级别刷屏；因此应用使用独立实例，默认 logger 输出丢弃。
-	logger     = log.New()
-	fileLogger = log.New()
-	fileMux    = sync.Mutex{}
+	level     = INFO
+	levelVar  = &slog.LevelVar{}
+	// logger 是应用自己的 slog 实例（标准库，TextHandler 文本格式）。
+	logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level: levelVar,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			// 时间格式对齐原有 logrus 前缀格式
+			if a.Key == slog.TimeKey {
+				return slog.Attr{Key: a.Key, Value: slog.StringValue(a.Value.Time().Format("2006-01-02 15:04:05"))}
+			}
+			return a
+		},
+	}))
+	fileMux = sync.Mutex{}
 )
 
 func init() {
-	logger.SetFormatter(&prefixed.TextFormatter{
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
-		ForceFormatting: true,
-	})
-	logger.SetOutput(os.Stdout)
-	logger.SetLevel(log.InfoLevel)
-	fileLogger.SetFormatter(&prefixed.TextFormatter{
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
-		DisableColors:   true,
-		ForceFormatting: true,
-	})
-	fileLogger.SetLevel(levelMapping[TRACE])
-
+	levelVar.Set(slog.LevelInfo)
 	// 静默第三方库写入 logrus 默认 logger 的输出（mihomo 内部日志）
 	log.SetOutput(io.Discard)
 }
 
+// toSlogLevel 映射应用日志级别到 slog 级别（TRACE 归入 DEBUG）
+func toSlogLevel(l LogLevel) slog.Level {
+	switch l {
+	case TRACE, DEBUG:
+		return slog.LevelDebug
+	case INFO:
+		return slog.LevelInfo
+	case WARNING:
+		return slog.LevelWarn
+	default:
+		return slog.LevelError
+	}
+}
+
 func SetLevel(l LogLevel) {
 	level = l
-	logger.SetLevel(levelMapping[level])
+	levelVar.Set(toSlogLevel(l))
 }
 
 func Traceln(format string, v ...any) {
-	logger.Traceln(fmt.Sprintf(format, v...))
+	logger.Debug(fmt.Sprintf(format, v...))
 }
 
 func Debugln(format string, v ...any) {
-	logger.Debugln(fmt.Sprintf(format, v...))
+	logger.Debug(fmt.Sprintf(format, v...))
 }
 
 func Infoln(format string, v ...any) {
-	logger.Infoln(fmt.Sprintf(format, v...))
+	logger.Info(fmt.Sprintf(format, v...))
 }
 
 func Warnln(format string, v ...any) {
-	logger.Warnln(fmt.Sprintf(format, v...))
+	logger.Warn(fmt.Sprintf(format, v...))
 }
 
 func Errorln(format string, v ...any) {
-	logger.Errorln(fmt.Sprintf(format, v...))
+	logger.Error(fmt.Sprintf(format, v...))
 }
 
 func Fileln(l LogLevel, data string) {
 	if l >= level {
 		if f := initFile(filepath.Join(logDir, logFile)); f != nil {
 			fileMux.Lock()
-			fileLogger.SetOutput(f)
-			fileLogger.Logln(levelMapping[l], data)
+			flog := slog.New(slog.NewTextHandler(f, &slog.HandlerOptions{Level: toSlogLevel(l)}))
+			flog.Log(context.Background(), toSlogLevel(l), data)
 			fileMux.Unlock()
 			_ = f.Close()
 		}

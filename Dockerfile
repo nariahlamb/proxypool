@@ -35,8 +35,9 @@ ENV TZ=Asia/Shanghai
 # 暴露端口
 EXPOSE 12580
 
-# 健康检查（如果应用支持）
-#HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:12580/health || exit 1
+# 健康检查（alpine 自带 busybox wget）
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -q -O- http://localhost:12580/health || exit 1
 
 # 启动命令（使用 CMD 允许覆盖参数）
 ENTRYPOINT ["/app/proxypool"]

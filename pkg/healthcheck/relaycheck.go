@@ -15,7 +15,7 @@ import (
 
 // RelayCheckWorkpool 检测代理是否经过中转/池化，结果写入 ProxyStats。
 func RelayCheckWorkpool(proxies proxy.ProxyList) {
-	pool := workerpool.New(500)
+	pool := workerpool.New(healthcheckConcurrency())
 	progress := newProgress(len(proxies))
 
 	log.Infoln("Relay Test ON")

@@ -46,6 +46,7 @@ type ConfigOptions struct {
 	FreezeFailures      int                `json:"freeze-failures" yaml:"freeze-failures"`
 	UnlockPasses        int                `json:"unlock-passes" yaml:"unlock-passes"`
 	FreezeWindow        int                `json:"freeze-window" yaml:"freeze-window"`
+	HealthcheckConcurrency int             `json:"healthcheck-concurrency" yaml:"healthcheck-concurrency"`
 	HealthcheckTestURLs []string           `json:"healthcheck_test_urls" yaml:"healthcheck_test_urls"`
 	ProxyInfo           ProxyInfo          `json:"proxy_info" yaml:"proxy_info"`
 	CfBestIp            []string           `json:"cf_best_ip" yaml:"cf_best_ip"`
@@ -223,6 +224,9 @@ func Parse(path string) error {
 	}
 	if cfg.FreezeWindow == 0 {
 		cfg.FreezeWindow = 30
+	}
+	if cfg.HealthcheckConcurrency == 0 {
+		cfg.HealthcheckConcurrency = 200
 	}
 
 	if cfg.SniProbe != nil {

@@ -5,6 +5,30 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.5.0] - 2026-08-28
+
+### ⚙️ 性能与可靠性
+
+- **SQLite WAL 模式**：读写不互斥，多 goroutine 并发写（健康检查 upsert/冻结/best 保存）
+  减少锁冲突；busy_timeout 5s 避免偶发 database is locked；连接池上限 5
+- **健康检查并发可配置**：新增 `healthcheck-concurrency`（默认 200，原硬编码 500）
+  应用于延迟检测与中转检测
+- **冻结节点 TCP 预检**：端口可达才进入完整 URLTest（成本约 1/10），失败直接记失败并剔除，
+  降低冻结期检查开销；解锁判定语义不变
+- Dockerfile 启用 **HEALTHCHECK**（/health 探活）
+
+### 🔧 日志切换标准库 slog
+
+- log 包内部由 logrus 迁移到 **log/slog**（TextHandler，时间格式对齐原样）；
+  保留 `Infoln/Debugln/Warnln/Errorln/SetLevel` 等 API，全项目调用点不变
+- 仍静默第三方库（mihomo）写入 logrus 默认 logger 的日志
+
+### 🧪 测试补强（api 包）
+
+- `TestApplyBasePath`：部署前缀剥离逻辑单测
+- `TestPageRoutes`：页面/静态资源/订阅端点可达性
+- `TestTaskAuthAdminToken` / `TestTaskPublicNoToken`：任务鉴权（401/200）
+
 ## [v2.4.1] - 2026-08-28
 
 ### 🐛 启动统计恢复

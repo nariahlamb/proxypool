@@ -511,6 +511,18 @@ func templateBasePath(c *gin.Context) string {
 	return ""
 }
 
+// applyBasePath 剥离部署前缀并规范化路径（确保以 / 开头）。
+// 供 serveHandler 与单元测试复用。
+func applyBasePath(path, basePath string) string {
+	if basePath != "" && strings.HasPrefix(path, basePath) {
+		path = strings.TrimPrefix(path, basePath)
+		if !strings.HasPrefix(path, "/") {
+			path = "/" + path
+		}
+	}
+	return path
+}
+
 // knownRoutePrefixes 注册路由的静态前缀（供子路径自动推断使用，setupRouter 后构建）。
 // 例如 "/bestProxyIp/:format" → "/bestProxyIp/"，"/static/*filepath" → "/static/"，"/task/crawl" → "/task/crawl"。
 var knownRoutePrefixes []string
@@ -612,12 +624,7 @@ func Run() {
 
 	serveHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		basePath := resolveBasePath(r)
-		if basePath != "" && strings.HasPrefix(r.URL.Path, basePath) {
-			r.URL.Path = strings.TrimPrefix(r.URL.Path, basePath)
-			if !strings.HasPrefix(r.URL.Path, "/") {
-				r.URL.Path = "/" + r.URL.Path
-			}
-		}
+		r.URL.Path = applyBasePath(r.URL.Path, basePath)
 		router.ServeHTTP(w, r)
 	})
 
