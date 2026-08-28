@@ -39,6 +39,16 @@ func CrawlGo() {
 		cache.SetProxies("proxies", dbProxies)
 		cache.LastCrawlTime = "抓取中，已载入上次数据库数据"
 		log.Infoln("Database loaded count: %d", len(dbProxies))
+		// 同步首页统计（避免启动窗口期全部显示 0）：以库内节点作为启动快照
+		cache.AllProxiesCount = dbProxies.Len()
+		cache.UsefullProxiesCount = dbProxies.Len()
+		ss, ssr, vmess, trojan, vless, anytls := dbProxies.TypeCounts()
+		cache.SSProxiesCount, cache.UsefullSSProxiesCount = ss, ss
+		cache.SSRProxiesCount, cache.UsefullSSRProxiesCount = ssr, ssr
+		cache.VmessProxiesCount, cache.UsefullVmessProxiesCount = vmess, vmess
+		cache.TrojanProxiesCount, cache.UsefullTrojanProxiesCount = trojan, trojan
+		cache.VlessProxiesCount, cache.UsefullVlessProxiesCount = vless, vless
+		cache.AnyTLSProxiesCount, cache.UsefullAnyTLSProxiesCount = anytls, anytls
 	}
 	if dbProxies != nil {
 		proxies = dbProxies.UniqAppendProxyList2(proxies)
