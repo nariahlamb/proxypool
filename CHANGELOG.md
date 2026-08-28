@@ -5,6 +5,14 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.5.2] - 2026-08-28
+
+### 🐛 Docker 构建与运行修复
+
+- Dockerfile / Dockerfile.release 运行镜像**内置 GeoIP 数据库**（Country.mmdb / GeoLite2-ASN.mmdb / version），
+  不再依赖外部挂载 assets 目录（缺失时启动 InitGeoIpDB 失败会 os.Exit(1)）
+- 修复 .dockerignore 误排除 `log/` Go 源码包导致 `docker build` 失败
+
 ## [v2.5.1] - 2026-08-28
 
 ### 🐛 日志格式人性化
