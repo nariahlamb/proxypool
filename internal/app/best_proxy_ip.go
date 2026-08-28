@@ -464,10 +464,11 @@ func SubNiceProxyIp(format string, distNodeCountry string, proxyCountryIsoCode s
 			}
 
 			if generator != nil {
-				if isIPV6 && !IsIPv6(node.Ip) {
+				// 双向过滤：ipv6=true 仅 IPv6，否则仅 IPv4（IPv6 缺方括号会生成坏链接）
+				if isIPV6 != IsIPv6(node.Ip) {
 					continue
 				}
-				generator(&buf, proxyInfo, distNodeCountry, node.Country, node.Ip, node.Port)
+				generator(&buf, proxyInfo, distNodeCountry, node.Country, formatNodeHost(node.Ip), node.Port)
 			}
 		}
 	}
@@ -776,10 +777,11 @@ func SubNiceCfProxySub(format string, sub string, distNodeCountry string, isIPV6
 		node.fragment = node.fragment + fmt.Sprintf(" %d", idx)
 
 		if generator != nil {
-			if isIPV6 && !IsIPv6(node.hostname) {
+			// 双向过滤：ipv6=true 仅 IPv6，否则仅 IPv4（IPv6 缺方括号会生成坏链接）
+			if isIPV6 != IsIPv6(node.hostname) {
 				continue
 			}
-			generator(&buf, proxyInfo, distNodeCountry, country, node.fragment, node.hostname, port)
+			generator(&buf, proxyInfo, distNodeCountry, country, node.fragment, formatNodeHost(node.hostname), port)
 		}
 	}
 
@@ -829,6 +831,14 @@ func checkFormat(format string, distNodeCountry string) (f Format, err error) {
 		return f, errors.New("invalid node type")
 	}
 	return f, nil
+}
+
+// formatNodeHost 输出用 host：IPv6 补方括号（vless://uuid@[2001:db8::1]:443），IPv4 原样。
+func formatNodeHost(addr string) string {
+	if IsIPv6(addr) {
+		return "[" + addr + "]"
+	}
+	return addr
 }
 
 // maskURLHost 日志脱敏：仅保留 URL 的 host 部分，隐藏 uuid/password/path 等凭据。

@@ -5,6 +5,17 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.5.10] - 2026-08-28
+
+### 🐛 best 订阅 IPv6 输出修复
+
+- 源（如 steep.laibas.top/sub）含 IPv6 节点（54 个中 15 个），解析链路原本正常，
+  但输出端缺陷：默认（ipv6=false）时 IPv6 节点也输出且缺方括号 → 生成坏链接
+  （vless://uuid@2001:db8::1:443 端口解析错误，客户端连不上）
+- 双向过滤：ipv6=true 仅输出 IPv6；默认仅输出 IPv4（不影响既有订阅）
+- IPv6 输出补方括号：vless://uuid@[2001:db8::1]:443
+- 单测：formatNodeHost 方括号 + 双向过滤 + 真实源 IPv6 解析链路验证
+
 ## [v2.5.9] - 2026-08-28
 
 ### 🔒 best 优选订阅接口鉴权（自用 VPS 凭据防泄露）
