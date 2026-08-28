@@ -5,7 +5,7 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [v2.5.8] - 2026-08-28
+## [v2.5.9] - 2026-08-28
 
 ### 🔒 best 优选订阅接口鉴权（自用 VPS 凭据防泄露）
 
@@ -16,6 +16,8 @@
 - 前端 best 订阅链接复制/渲染时自动拼 token（localStorage 输入一次）
 - 日志脱敏：sub_ip_url 只打印 host，隐藏 uuid/password 防泄入日志
 - 路由测试补 best 鉴权 4 用例（含公开兼容 + proxy_info 场景）
+
+## [v2.5.8] - 2026-08-28
 
 ### 🌐 Surge / Loon / QuanX 页面对齐 v2rayN
 
