@@ -230,6 +230,19 @@ func isTrue(v string) bool {
 	return v == "true" || v == "1"
 }
 
+// parseIPV6Mode 解析 ipv6 查询参数为三态：
+// 空/未传 → 0（IPv4+IPv6 都输出）；true/1 → 1（仅 IPv6）；false/0 → 2（仅 IPv4）
+func parseIPV6Mode(c *gin.Context) int {
+	switch strings.ToLower(c.Query("ipv6")) {
+	case "true", "1":
+		return 1
+	case "false", "0":
+		return 2
+	default:
+		return 0
+	}
+}
+
 func setupRouter() {
 	gin.SetMode(gin.ReleaseMode)
 	router = gin.New()              // 没有任何中间件的路由
@@ -460,37 +473,37 @@ func setupRouter() {
 			}
 			limit = n
 		}
-		return app.SubNiceProxyIp(format, distCountry, c.Query("c"), limit, isTrue(c.Query("random")), isTrue(c.Query("ipv6")), c.Query("cdn"))
+		return app.SubNiceProxyIp(format, distCountry, c.Query("c"), limit, isTrue(c.Query("random")), parseIPV6Mode(c), c.Query("cdn"))
 	}))
 
 	router.GET("/bestCfProxyIp/:format", bestIPHandler(func(c *gin.Context) (string, error) {
 		format, distCountry := parseBestIPParams(c)
-		return app.SubNiceCfProxyIp(format, distCountry, isTrue(c.Query("ipv6")))
+		return app.SubNiceCfProxyIp(format, distCountry, parseIPV6Mode(c))
 	}))
 
 	router.GET("/bestCfProxyDomainTop20/:format", bestIPHandler(func(c *gin.Context) (string, error) {
 		format, distCountry := parseBestIPParams(c)
-		return app.SubNiceCfProxyIpTop20(format, distCountry, isTrue(c.Query("ips")), isTrue(c.Query("ipv6")))
+		return app.SubNiceCfProxyIpTop20(format, distCountry, isTrue(c.Query("ips")), parseIPV6Mode(c))
 	}))
 
 	router.GET("/bestCfProxyIpTop20/:format", bestIPHandler(func(c *gin.Context) (string, error) {
 		format, distCountry := parseBestIPParams(c)
-		return app.SubNiceCfProxyIpTop20(format, distCountry, true, isTrue(c.Query("ipv6")))
+		return app.SubNiceCfProxyIpTop20(format, distCountry, true, parseIPV6Mode(c))
 	}))
 
 	router.GET("/bestCfProxyIpIsp/:format", bestIPHandler(func(c *gin.Context) (string, error) {
 		format, distCountry := parseBestIPParams(c)
-		return app.SubNiceCfProxyIpProvider(format, c.Query("isp"), distCountry, isTrue(c.Query("ipv6")))
+		return app.SubNiceCfProxyIpProvider(format, c.Query("isp"), distCountry, parseIPV6Mode(c))
 	}))
 
 	router.GET("/bestCfProxySub/:format", bestIPHandler(func(c *gin.Context) (string, error) {
 		format, distCountry := parseBestIPParams(c)
-		return app.SubNiceCfProxySub(format, c.Query("sub"), distCountry, isTrue(c.Query("ipv6")))
+		return app.SubNiceCfProxySub(format, c.Query("sub"), distCountry, parseIPV6Mode(c))
 	}))
 
 	router.GET("/bestIpKr/:format", bestIPHandler(func(c *gin.Context) (string, error) {
 		format, _ := parseBestIPParams(c)
-		return app.SubNiceProxyIp(format, "KR", c.Query("c"), 0, isTrue(c.Query("random")), isTrue(c.Query("ipv6")), c.Query("cdn"))
+		return app.SubNiceProxyIp(format, "KR", c.Query("c"), 0, isTrue(c.Query("random")), parseIPV6Mode(c), c.Query("cdn"))
 	}))
 }
 

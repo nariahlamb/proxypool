@@ -175,7 +175,7 @@ func finishOutput(buf *strings.Builder, f Format) string {
 
 // buildNodeOutput 生成以 ip 为节点地址的订阅输出（SubNiceCfProxyIp/Top20/Provider 共用）。
 // 原先三个函数各约 90 行重复逻辑，收敛为单一实现。
-func buildNodeOutput(nodes []string, f Format, proxyInfo config.ProxyInfo, distNodeCountry string, isIPV6 bool, port int) string {
+func buildNodeOutput(nodes []string, f Format, proxyInfo config.ProxyInfo, distNodeCountry string, ipv6Mode int, port int) string {
 	buf := strings.Builder{}
 	buf.Grow(len(nodes) * 60)
 
@@ -188,7 +188,8 @@ func buildNodeOutput(nodes []string, f Format, proxyInfo config.ProxyInfo, distN
 		if generator == nil {
 			break
 		}
-		if isIPV6 && !IsIPv6(node) {
+		// 三态过滤：默认 IPv4+IPv6 都输出；ipv6=true 仅 IPv6；ipv6=false 仅 IPv4
+		if !matchIPV6Mode(ipv6Mode, node) {
 			continue
 		}
 		generator(&buf, proxyInfo, distNodeCountry, country, node, port)

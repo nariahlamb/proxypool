@@ -18,21 +18,31 @@ func TestFormatNodeHost(t *testing.T) {
 	}
 }
 
-func TestIPv6Filter(t *testing.T) {
-	// 双向过滤语义：ipv6=true 仅 IPv6；ipv6=false 仅 IPv4
-	ipv4 := "1.2.3.4"
-	ipv6 := "2001:db8::1"
-	if IsIPv6(ipv4) {
+// TestMatchIPV6Mode 三态过滤语义：
+// 默认(0) IPv4+IPv6 都输出；1 仅 IPv6；2 仅 IPv4。
+func TestMatchIPV6Mode(t *testing.T) {
+	v4 := "1.2.3.4"
+	v6 := "2001:db8::1"
+
+	// 默认：都输出
+	if !matchIPV6Mode(0, v4) || !matchIPV6Mode(0, v6) {
+		t.Error("mode=0 应同时输出 IPv4 与 IPv6")
+	}
+	// 仅 IPv6
+	if matchIPV6Mode(1, v4) || !matchIPV6Mode(1, v6) {
+		t.Error("mode=1 应仅输出 IPv6")
+	}
+	// 仅 IPv4
+	if !matchIPV6Mode(2, v4) || matchIPV6Mode(2, v6) {
+		t.Error("mode=2 应仅输出 IPv4")
+	}
+}
+
+func TestIsIPv6(t *testing.T) {
+	if IsIPv6("1.2.3.4") {
 		t.Error("IsIPv6(1.2.3.4) = true, want false")
 	}
-	if !IsIPv6(ipv6) {
+	if !IsIPv6("2001:db8::1") {
 		t.Error("IsIPv6(2001:db8::1) = false, want true")
-	}
-	// 模拟过滤条件
-	if v6 := true; v6 != IsIPv6(ipv6) || v6 == IsIPv6(ipv4) {
-		t.Error("ipv6=true 过滤失败")
-	}
-	if v6 := false; v6 != IsIPv6(ipv4) || v6 == IsIPv6(ipv6) {
-		t.Error("ipv6=false 过滤失败")
 	}
 }

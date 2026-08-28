@@ -7,6 +7,16 @@
 
 ## [v2.5.10] - 2026-08-28
 
+### 🌐 best 订阅 ipv6 参数改为三态
+
+- 默认（不带 ipv6 参数）：IPv4 + IPv6 都输出
+- ipv6=true：仅输出 IPv6（补方括号 [addr]）
+- ipv6=false：仅输出 IPv4
+- 此前默认仅输出 IPv4（v2.5.10 双向过滤的回归修正）
+- matchIPV6Mode 三态过滤 + SubNiceProxyIp 集成测试（注入 IPv4/IPv6 节点断言三态输出）
+
+### 🐛 best 订阅 IPv6 输出修复
+
 ### 🐛 best 订阅 IPv6 输出修复
 
 - 源（如 steep.laibas.top/sub）含 IPv6 节点（54 个中 15 个），解析链路原本正常，

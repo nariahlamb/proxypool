@@ -368,7 +368,20 @@ func CrawlBestNode() {
 	log.Infoln("Completed processing %d nodes", len(bestNodeList))
 }
 
-func SubNiceProxyIp(format string, distNodeCountry string, proxyCountryIsoCode string, limit int, random bool, isIPV6 bool, cdnFilter string) (s string, err error) {
+// ipv6Mode 三态：0=IPv4+IPv6 都输出（默认），1=仅 IPv6，2=仅 IPv4。
+// matchIPV6Mode 返回 addr 是否满足当前模式。
+func matchIPV6Mode(mode int, addr string) bool {
+	switch mode {
+	case 1:
+		return IsIPv6(addr)
+	case 2:
+		return !IsIPv6(addr)
+	default:
+		return true
+	}
+}
+
+func SubNiceProxyIp(format string, distNodeCountry string, proxyCountryIsoCode string, limit int, random bool, ipv6Mode int, cdnFilter string) (s string, err error) {
 	defer trackDuration("SubNiceProxyIp")()
 
 	// 检查格式并获取配置
@@ -464,8 +477,8 @@ func SubNiceProxyIp(format string, distNodeCountry string, proxyCountryIsoCode s
 			}
 
 			if generator != nil {
-				// 双向过滤：ipv6=true 仅 IPv6，否则仅 IPv4（IPv6 缺方括号会生成坏链接）
-				if isIPV6 != IsIPv6(node.Ip) {
+				// 三态过滤：默认 IPv4+IPv6 都输出；ipv6=true 仅 IPv6；ipv6=false 仅 IPv4
+				if !matchIPV6Mode(ipv6Mode, node.Ip) {
 					continue
 				}
 				generator(&buf, proxyInfo, distNodeCountry, node.Country, formatNodeHost(node.Ip), node.Port)
@@ -479,7 +492,7 @@ func SubNiceProxyIp(format string, distNodeCountry string, proxyCountryIsoCode s
 	return buf.String(), nil
 }
 
-func SubNiceCfProxyIp(format string, distNodeCountry string, isIPV6 bool) (s string, err error) {
+func SubNiceCfProxyIp(format string, distNodeCountry string, ipv6Mode int) (s string, err error) {
 	defer trackDuration("SubNiceCfProxyIp")()
 	f, err := checkFormat(format, distNodeCountry)
 	if err != nil {
@@ -495,7 +508,7 @@ func SubNiceCfProxyIp(format string, distNodeCountry string, isIPV6 bool) (s str
 	if err != nil {
 		return "", err
 	}
-	return buildNodeOutput(bestCfNodeList, f, proxyInfo, distNodeCountry, isIPV6, 443), nil
+	return buildNodeOutput(bestCfNodeList, f, proxyInfo, distNodeCountry, ipv6Mode, 443), nil
 }
 
 // vps789 openapi
@@ -530,7 +543,7 @@ type CfIpTop20 struct {
 }
 
 // SubNiceCfProxyIpTop20 获取 https://vps789.com/openApi/cfIpTop20
-func SubNiceCfProxyIpTop20(format string, distNodeCountry string, isConvertIp bool, isIPV6 bool) (s string, err error) {
+func SubNiceCfProxyIpTop20(format string, distNodeCountry string, isConvertIp bool, ipv6Mode int) (s string, err error) {
 	defer trackDuration("SubNiceCfProxyIpTop20")()
 	f, err := checkFormat(format, distNodeCountry)
 	if err != nil {
@@ -564,7 +577,7 @@ func SubNiceCfProxyIpTop20(format string, distNodeCountry string, isConvertIp bo
 	if err != nil {
 		return "", err
 	}
-	return buildNodeOutput(bestCfNodeList, f, proxyInfo, distNodeCountry, isIPV6, 443), nil
+	return buildNodeOutput(bestCfNodeList, f, proxyInfo, distNodeCountry, ipv6Mode, 443), nil
 }
 
 type cfIpItem struct {
@@ -596,7 +609,7 @@ type CfIpProvider struct {
 }
 
 // SubNiceCfProxyIpProvider 获取 https://vps789.com/openApi/cfIpApi
-func SubNiceCfProxyIpProvider(format string, isp string, distNodeCountry string, isIPV6 bool) (s string, err error) {
+func SubNiceCfProxyIpProvider(format string, isp string, distNodeCountry string, ipv6Mode int) (s string, err error) {
 	defer trackDuration("SubNiceCfProxyIpProvider")()
 	f, err := checkFormat(format, distNodeCountry)
 	if err != nil {
@@ -614,7 +627,7 @@ func SubNiceCfProxyIpProvider(format string, isp string, distNodeCountry string,
 	if err != nil {
 		return "", err
 	}
-	return buildNodeOutput(bestCfNodeList, f, proxyInfo, distNodeCountry, isIPV6, 443), nil
+	return buildNodeOutput(bestCfNodeList, f, proxyInfo, distNodeCountry, ipv6Mode, 443), nil
 }
 
 // ---------------- Helper Functions for Fetching Data ----------------
@@ -690,7 +703,7 @@ type nodeBase struct {
 }
 
 // SubNiceCfProxySub 从 cf sub 订阅连接替换为自己的 IP
-func SubNiceCfProxySub(format string, sub string, distNodeCountry string, isIPV6 bool) (s string, err error) {
+func SubNiceCfProxySub(format string, sub string, distNodeCountry string, ipv6Mode int) (s string, err error) {
 	defer trackDuration("SubNiceCfProxySub")()
 
 	// 检查格式并获取配置
@@ -777,8 +790,8 @@ func SubNiceCfProxySub(format string, sub string, distNodeCountry string, isIPV6
 		node.fragment = node.fragment + fmt.Sprintf(" %d", idx)
 
 		if generator != nil {
-			// 双向过滤：ipv6=true 仅 IPv6，否则仅 IPv4（IPv6 缺方括号会生成坏链接）
-			if isIPV6 != IsIPv6(node.hostname) {
+			// 三态过滤：默认 IPv4+IPv6 都输出；ipv6=true 仅 IPv6；ipv6=false 仅 IPv4
+			if !matchIPV6Mode(ipv6Mode, node.hostname) {
 				continue
 			}
 			generator(&buf, proxyInfo, distNodeCountry, country, node.fragment, formatNodeHost(node.hostname), port)
