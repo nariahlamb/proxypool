@@ -543,13 +543,15 @@ func Run() {
 		servePort = envp
 	}
 
-	// 部署子路径支持（自动适配，base_path 非必填）：
+	// 部署子路径支持（自动适配，base_path 非必填，支持多个前缀）：
 	//  1) 显式配置 base_path → 直接使用
 	//  2) 反向代理设置 X-Forwarded-Prefix 头 → 使用（nginx 可配 proxy_set_header X-Forwarded-Prefix /show/）
-	//  3) 自动推断：请求路径中识别出已知路由的静态前缀，其前方即部署前缀（识别后进程内缓存，
-	//     前缀部署固定不变）；推断失败则按根路径处理
-	var detectedOnce sync.Once
-	var detectedBasePath string
+	//  3) 自动推断：请求路径中识别出已知路由的静态前缀，其前方即部署前缀；
+	//     支持同时存在多个前缀（如 /show/ 与 /proxy/ 都转发到本服务），识别后缓存
+	var (
+		prefixesMu       sync.Mutex
+		detectedPrefixes = make(map[string]struct{})
+	)
 	resolveBasePath := func(r *http.Request) string {
 		if bp := config.Config().BasePath; bp != "" {
 			return bp
@@ -557,21 +559,32 @@ func Run() {
 		if bp := r.Header.Get("X-Forwarded-Prefix"); bp != "" {
 			return bp
 		}
-		detectedOnce.Do(func() {
-			p := r.URL.Path
-			if matchKnownRoute(p) {
-				return // 已是根路径路由，无前缀
+		p := r.URL.Path
+		prefixesMu.Lock()
+		defer prefixesMu.Unlock()
+		// 1) 命中已缓存前缀（最长优先，避免 /a/ 误匹配 /a/b/）
+		best := ""
+		for prefix := range detectedPrefixes {
+			if strings.HasPrefix(p, prefix) && len(prefix) > len(best) {
+				best = prefix
 			}
-			// 第一段作为候选前缀："/show/clash" → 候选 "/show/"，剩余 "/clash"
-			if i := strings.Index(p[1:], "/"); i >= 0 {
-				prefix := p[:i+1] + "/"
-				rest := p[i+1:]
-				if matchKnownRoute(rest) {
-					detectedBasePath = prefix
-				}
+		}
+		if best != "" {
+			return best
+		}
+		// 2) 根路径路由，无前缀
+		if matchKnownRoute(p) {
+			return ""
+		}
+		// 3) 尝试推断新前缀："/show/clash" → 候选 "/show/"，剩余 "/clash" 命中已知路由
+		if i := strings.Index(p[1:], "/"); i >= 0 {
+			prefix := p[:i+1] + "/"
+			if matchKnownRoute(p[i+1:]) {
+				detectedPrefixes[prefix] = struct{}{}
+				return prefix
 			}
-		})
-		return detectedBasePath
+		}
+		return ""
 	}
 
 	serveHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
