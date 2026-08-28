@@ -35,6 +35,7 @@ type ConfigOptions struct {
 	TgChannelProxyUrl     string   `json:"tg_channel_proxy_url" yaml:"tg_channel_proxy_url"`
 	V2WsHeaderUserAgent   string   `json:"v2_ws_header_user_agent" yaml:"v2_ws_header_user_agent"`
 	GeoipDbUrl            string   `json:"geoip_db_url" yaml:"geoip_db_url"`
+	AdminToken            string   `json:"admin_token" yaml:"admin_token"`
 
 	SubBestNodeInterval uint64             `json:"sub-best-node-interval" yaml:"sub-best-node-interval"`
 	SubIpUrl            []string           `json:"sub_ip_url" yaml:"sub_ip_url"`

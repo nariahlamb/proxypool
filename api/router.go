@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"html/template"
+	"io/fs"
 	"net/http"
 	"os"
 	"strconv"
@@ -251,13 +252,23 @@ func setupRouter() {
 		index(context.Writer, context.Request)
 	})
 
-	router.GET("/static/index.js", func(c *gin.Context) {
-		c.Header("Content-Type", "text/javascript")
-		data, _ := config.StaticFS.ReadFile("assets/static/index.js")
-		c.String(http.StatusOK, string(data))
-	})
+	// 静态资源（本地化 CSS/JS/字体，无外部 CDN 依赖）
+	if staticSub, err := fs.Sub(config.StaticFS, "assets/static"); err == nil {
+		router.StaticFS("/static", http.FS(staticSub))
+	}
 
 	router.GET("/", func(c *gin.Context) {
+		bestNodes := appcache.GetBestNodeList("bestNode")
+		bestTotal, bestHealthy, bestAnyTLS := 0, 0, 0
+		for _, n := range bestNodes {
+			bestTotal++
+			if n.Healthy {
+				bestHealthy++
+			}
+			if n.AnyTLS {
+				bestAnyTLS++
+			}
+		}
 		c.HTML(http.StatusOK, "index.html", gin.H{
 			"domain":                      config.Config().Domain,
 			"getters_count":               appcache.GettersCount,
@@ -275,6 +286,10 @@ func setupRouter() {
 			"useful_vless_proxies_count":  appcache.UsefullVlessProxiesCount,
 			"anytls_proxies_count":        appcache.AnyTLSProxiesCount,
 			"useful_anytls_proxies_count": appcache.UsefullAnyTLSProxiesCount,
+			"best_total":                  bestTotal,
+			"best_healthy":                bestHealthy,
+			"best_anytls":                 bestAnyTLS,
+			"best_last_update":            appcache.GetString("bestNodeLastUpdateTime"),
 			"last_crawl_time":             appcache.LastCrawlTime,
 			"is_speed_test":               appcache.IsSpeedTest,
 			"version":                     version,
@@ -313,6 +328,19 @@ func setupRouter() {
 
 	router.GET("/quanx", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "quanx.html", gin.H{
+			"domain": config.Config().Domain,
+		})
+	})
+
+	router.GET("/v2rayn", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "v2rayn.html", gin.H{
+			"domain": config.Config().Domain,
+		})
+	})
+
+	// 优选 IP 订阅说明页
+	router.GET("/best", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "best.html", gin.H{
 			"domain": config.Config().Domain,
 		})
 	})
@@ -389,23 +417,22 @@ func setupRouter() {
 		c.String(http.StatusOK, proxies[id].Link())
 	})
 
-	// 任务接口：后台执行，任务实现（含互斥防并发与 GC）收敛在 internal/app
-	router.GET("/task/crawl", func(c *gin.Context) {
-		go app.CrawlTask()
-		c.String(http.StatusOK, "ok")
-	})
-	router.GET("/task/speedtest", func(c *gin.Context) {
-		go app.SpeedTestTask()
-		c.String(http.StatusOK, "ok")
-	})
-	router.GET("/task/updateGeoIP", func(c *gin.Context) {
-		go app.GeoIPTask()
-		c.String(http.StatusOK, "ok")
-	})
-	router.GET("/task/updateBestNode", func(c *gin.Context) {
-		go app.BestNodeTask()
-		c.String(http.StatusOK, "ok")
-	})
+	// 任务接口：后台执行，任务实现（含互斥防并发与 GC）收敛在 internal/app。
+	// 配置 admin_token 后需携带 ?token=xxx 才可触发（未配置则保持公开，兼容旧部署）。
+	taskHandler := func(fn func()) gin.HandlerFunc {
+		return func(c *gin.Context) {
+			if token := config.Config().AdminToken; token != "" && c.Query("token") != token {
+				c.String(http.StatusUnauthorized, "unauthorized")
+				return
+			}
+			go fn()
+			c.String(http.StatusOK, "ok")
+		}
+	}
+	router.GET("/task/crawl", taskHandler(app.CrawlTask))
+	router.GET("/task/speedtest", taskHandler(app.SpeedTestTask))
+	router.GET("/task/updateGeoIP", taskHandler(app.GeoIPTask))
+	router.GET("/task/updateBestNode", taskHandler(app.BestNodeTask))
 
 	router.GET("/bestProxyIp/:format", bestIPHandler(func(c *gin.Context) (string, error) {
 		format, distCountry := parseBestIPParams(c)

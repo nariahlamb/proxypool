@@ -154,10 +154,10 @@ docker pull <dockerhub用户名>/proxypool:latest
 
 | 路径 | 说明 |
 |------|------|
-| `/task/crawl` | 手动触发抓取 |
-| `/task/speedtest` | 手动触发测速 |
-| `/task/updateGeoIP` | 更新 GeoIP 数据库 |
-| `/task/updateBestNode` | 手动刷新优选 IP |
+| `/task/crawl` | 手动触发抓取（配置 `admin_token` 后需携带 `?token=xxx`） |
+| `/task/speedtest` | 手动触发测速（同上） |
+| `/task/updateGeoIP` | 更新 GeoIP 数据库（同上） |
+| `/task/updateBestNode` | 手动刷新优选 IP（同上） |
 | `/health` | 健康检查 |
 | `/debug/statsviz/*filepath` | [statsviz](https://github.com/arl/statsviz) 运行时指标 |
 

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <title>优选IP - Free Proxies</title>
+    <meta property="og:description" content="Cloudflare 优选 IP 订阅：clash、surge、loon、quanx、v2rayN、anytls 格式">
+    <link rel="stylesheet" type="text/css" href="/static/css/index.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/metron-icon.css" />
+</head>
+
+<body>
+    <nav class="navbar is-primary pl-2 pr-2" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a href="https://{{ .domain }}" class="navbar-item">
+                <h1 class="title is-4">Free Proxies</h1>
+            </a>
+            <a role="button" class="navbar-burger burger is-white" aria-label="menu" aria-expanded="false" data-target="clients">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="clients" class="navbar-menu">
+            <div class="navbar-start is-size-6">
+                <a href="/clash" class="navbar-item"><span class="icon"><i class="metron-clash"></i></span>&nbspClash</a>
+                <a href="/shadowrocket" class="navbar-item"><span class="icon"><i class="metron-shadowrocket"></i></span>&nbspShadowRocket</a>
+                <a href="/surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
+                <a href="/loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
+                <a href="/quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
+                <a href="/v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
+                <a href="/best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="section pb-0">
+            <h1 class="title is-2"><span class="icon">★</span>&nbspCloudflare 优选 IP</h1>
+            <p>多源采集 + 端口白名单 + 多级排序；<b>bestip_probe</b>（vless 健康检查）与 <b>sni_probe</b>（anytls 透传探测）对入口做真实可用性验证。</p>
+        </div>
+
+        <section class="section">
+            <h5 class="title is-4">订阅端点</h5>
+            <p>格式参数 <code>:format</code> = 客户端 + 节点类型，例如 <code>clashVmess</code>、<code>surgeTrojan</code>、<code>quanxVless</code>、<code>loonAnytls</code>、<code>v2raynVmess</code>。</p>
+            <div class="table-container mt-2">
+                <table class="table is-fullwidth">
+                    <tbody>
+                        <tr>
+                            <th>全部优选节点</th>
+                            <td>https://{{ .domain }}/bestProxyIp/clashVmess</td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}/bestProxyIp/clashVmess" onclick="onCopyThis(this)">复制</button></td>
+                        </tr>
+                        <tr>
+                            <th>CF 优选 IP</th>
+                            <td>https://{{ .domain }}/bestCfProxyIp/surgeTrojan</td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}/bestCfProxyIp/surgeTrojan" onclick="onCopyThis(this)">复制</button></td>
+                        </tr>
+                        <tr>
+                            <th>CF Top20</th>
+                            <td>https://{{ .domain }}/bestCfProxyIpTop20/quanxVless</td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}/bestCfProxyIpTop20/quanxVless" onclick="onCopyThis(this)">复制</button></td>
+                        </tr>
+                        <tr>
+                            <th>CF 运营商优选</th>
+                            <td>https://{{ .domain }}/bestCfProxyIpIsp/loonVmess</td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}/bestCfProxyIpIsp/loonVmess" onclick="onCopyThis(this)">复制</button></td>
+                        </tr>
+                        <tr>
+                            <th>CF 域名 Top20</th>
+                            <td>https://{{ .domain }}/bestCfProxyDomainTop20/v2raynVmess</td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}/bestCfProxyDomainTop20/v2raynVmess" onclick="onCopyThis(this)">复制</button></td>
+                        </tr>
+                        <tr>
+                            <th>CF 明文订阅源</th>
+                            <td>https://{{ .domain }}/bestCfProxySub/clashAnytls</td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}/bestCfProxySub/clashAnytls" onclick="onCopyThis(this)">复制</button></td>
+                        </tr>
+                        <tr>
+                            <th>韩国优选</th>
+                            <td>https://{{ .domain }}/bestIpKr/clashTrojan</td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}/bestIpKr/clashTrojan" onclick="onCopyThis(this)">复制</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="section">
+            <h5 class="title is-4">筛选参数</h5>
+            <div class="table-container">
+                <table class="table is-fullwidth">
+                    <tbody>
+                        <tr><th>country</th><td>目标国家，如 <code>?country=US</code></td></tr>
+                        <tr><th>limit</th><td>限制返回数量，如 <code>?limit=20</code></td></tr>
+                        <tr><th>random</th><td>随机返回，如 <code>?random=true</code></td></tr>
+                        <tr><th>cdn</th><td>仅保留 CDN 节点，如 <code>?cdn=true</code></td></tr>
+                        <tr><th>ipv6</th><td>仅保留 IPv6 节点，如 <code>?ipv6=true</code></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <article class="message is-warning">
+                <div class="message-body">
+                    <b>探测语义：</b>vless/vmess/trojan 格式在启用 <code>bestip_probe</code> 时仅导出健康节点；
+                    <code>xxxAnytls</code> 格式在启用 <code>sni_probe</code> 时仅导出可透传 anytls 的节点；未启用相应探测时该格式导出为空。
+                </div>
+            </article>
+        </section>
+    </div>
+    <footer class="footer has-text-centered">
+        <p>本程序为 fork 版：<a href="https://github.com/One-Piecs/proxypool">One-Piecs/proxypool</a><br>{{ .version }}</p>
+        <p>上游项目：<a href="https://github.com/zu1k/proxypool">zu1k/proxypool</a> · <a href="https://github.com/sansui233/proxypool">sansui233/proxypool</a></p>
+        <br>
+        <p><b>Theme</b>&nbspby&nbsp<a href="https://github.com/sansui233/" class="has-text-primary"><b>Sansui233</b></a> Powered&nbspby&nbsp<b>Bulma</b></p>
+    </footer>
+    <script src="/static/index.js"></script>
+</body>
+
+</html>

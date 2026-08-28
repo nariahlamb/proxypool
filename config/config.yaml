@@ -5,6 +5,9 @@ tls_enable:
 cert_file: ""
 key_file: ""
 
+# 任务接口鉴权 Token（可选）：配置后 /task/* 需携带 ?token=xxx 才可触发；留空则任务接口公开
+admin_token: ""
+
 # source list file
 source-files:
   # use local file

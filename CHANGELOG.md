@@ -5,6 +5,22 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.3.0] - 2026-08-28
+
+### 🌐 网站功能完善（无 CDN 依赖）
+
+- **CSS/JS 全部本地化**：移除 jsdelivr/bootcdn 外部依赖（页面不再受 CDN 可用性影响）
+- **index.js 原生 JS 重写**（去 jQuery）：导航切换 / 复制（clipboard 优先）/ 任务触发
+- 首页新增：**优选 IP 统计**（节点/健康/anytls 透传数）、**优选 IP 订阅区块**、**任务区**、v2rayN 导航
+- 新增 **`/v2rayn` 导出页**（v2rayN 订阅说明）与 **`/best` 优选 IP 说明页**（7 端点 + 参数 + 探测语义）
+- 修正 anytls 订阅链接（指向 best 的 xxxAnytls）、更新仓库链接、lang=zh-CN、移除禁缩放与旧推广位
+
+### 🔐 任务接口鉴权
+
+- 新增配置 `admin_token`：配置后 `/task/*`（crawl/speedtest/updateBestNode/updateGeoIP）
+  需携带 `?token=xxx`，否则 401；**留空则保持公开**（向后兼容）
+- 前端任务按钮自动携带 Token（localStorage 记忆，可清除）
+
 ## [v2.2.0] - 2026-08-28
 
 ### 🧊 失效节点冻结机制（解决失效节点被源站持续返回导致永远留库）
