@@ -108,25 +108,60 @@ func CrawlBestNode() {
 						continue
 					}
 
-					de64, err := base64.StdEncoding.DecodeString(resp.String())
-					if err != nil {
-						log.Errorln("url[%s] base64 decode error: %s", _url, err.Error())
-						time.Sleep(time.Duration(retries+1) * 2 * time.Second)
-						continue
+					// 兼容两种订阅格式（免费源常不稳定，返回内容五花八门）：
+					// 1. base64 编码的 URL 订阅（标准格式）。先 TrimSpace：部分源在尾部带换行/空白，
+					//    严格 base64 解码会报 "illegal base64 data"；
+					// 2. 明文 vless:// 等 URL 行或 host:port#注释 行（部分源直接返回明文，
+					//    或临时返回 HTML/JSON 错误页）——解码失败时回退明文解析，避免整源被丢弃。
+					body := strings.TrimSpace(resp.String())
+					count := 0
+					if de64, err := base64.StdEncoding.DecodeString(body); err == nil {
+						r := bufio.NewScanner(bytes.NewReader(de64))
+						for r.Scan() {
+							addr, err := ExtractHostPort(r.Text())
+							if err != nil || addr == "" {
+								continue
+							}
+							addrMap.Store(addr, struct{}{})
+							count++
+						}
+					} else {
+						log.Warnln("url[%s] not base64 (%s), fallback to plaintext parse", maskURLHost(_url), err.Error())
+						r := bufio.NewScanner(strings.NewReader(body))
+						for r.Scan() {
+							line := strings.TrimSpace(r.Text())
+							if line == "" || strings.HasPrefix(line, "<") || strings.HasPrefix(line, "{") {
+								continue // 错误页/JSON 噪音行
+							}
+							var addr string
+							if strings.Contains(line, "://") {
+								// vless:// 等 URL 行：取 host:port，缺端口补 443（白名单内）
+								if u, err := url.Parse(line); err == nil && u.Hostname() != "" {
+									port := u.Port()
+									if port == "" {
+										port = "443"
+									}
+									if _, ok := bestIpPortWhitelist[port]; ok {
+										addr = net.JoinHostPort(u.Hostname(), port)
+									}
+								}
+							} else if h, p, _, ok := parsePlainSubLine(line); ok {
+								// host:port#注释 行
+								addr = net.JoinHostPort(h, p)
+							}
+							if addr != "" {
+								addrMap.Store(addr, struct{}{})
+								count++
+							}
+						}
 					}
 
-					r := bufio.NewScanner(bytes.NewReader(de64))
-					count := 0
-					for r.Scan() {
-						addr, err := ExtractHostPort(r.Text())
-						if err != nil {
-							continue
-						}
-						addrMap.Store(addr, struct{}{})
-						count++
+					log.Infoln("Processed %s, found %d nodes", maskURLHost(_url), count)
+					if count > 0 {
+						break
 					}
-					log.Infoln("Processed %s, found %d nodes", _url, count)
-					break
+					// 源返回空/不可解析内容（如临时错误页）：稍后重试，避免本周期永久跳过该源
+					time.Sleep(time.Duration(retries+1) * 2 * time.Second)
 				}
 			})
 		}
