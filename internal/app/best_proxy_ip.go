@@ -88,7 +88,8 @@ func CrawlBestNode() {
 	if len(urls) > 0 {
 		for _, _url := range urls {
 			wp.Submit(func() {
-				log.Infoln("Starting Sub URL: %s", _url)
+				// 脱敏打印：订阅 URL 可能携带 uuid/password 等自用凭据，只打印 host 防泄入日志
+				log.Infoln("Starting Sub URL: %s", maskURLHost(_url))
 
 				for retries := range 3 {
 					resp, err := bestNodeClient.R().
@@ -828,6 +829,14 @@ func checkFormat(format string, distNodeCountry string) (f Format, err error) {
 		return f, errors.New("invalid node type")
 	}
 	return f, nil
+}
+
+// maskURLHost 日志脱敏：仅保留 URL 的 host 部分，隐藏 uuid/password/path 等凭据。
+func maskURLHost(rawURL string) string {
+	if u, err := url.Parse(rawURL); err == nil && u.Host != "" {
+		return u.Host
+	}
+	return rawURL
 }
 
 func ExtractHostPort(link string) (addr string, err error) {

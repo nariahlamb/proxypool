@@ -7,6 +7,18 @@
 
 ## [v2.5.8] - 2026-08-28
 
+### 🔒 best 优选订阅接口鉴权（自用 VPS 凭据防泄露）
+
+- 风险：best 节点链接基于 proxy_info（自用 VPS 的 host/uuid/password/path）生成，
+  /best* 接口此前无鉴权公开输出完整可用节点链接，攻击者可免密直连自用 VPS
+- 新增 `best_token` 配置：配置后所有 /best* 接口需 ?token=xxx 否则 401；
+  未配置保持公开（兼容旧部署），建议公网部署务必配置
+- 前端 best 订阅链接复制/渲染时自动拼 token（localStorage 输入一次）
+- 日志脱敏：sub_ip_url 只打印 host，隐藏 uuid/password 防泄入日志
+- 路由测试补 best 鉴权 4 用例（含公开兼容 + proxy_info 场景）
+
+### 🌐 Surge / Loon / QuanX 页面对齐 v2rayN
+
 ### 🌐 Surge / Loon / QuanX 页面对齐 v2rayN
 
 - 三客户端页面重写为 v2rayn.html 风格：统一导航（无 ./ 前缀，适配子路径）、

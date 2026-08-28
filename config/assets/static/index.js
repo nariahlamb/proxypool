@@ -20,7 +20,17 @@ function getBasePath() {
 // 拼接完整订阅 URL：origin + 部署前缀 + 相对路径
 function getSubURL(rel) {
     if (!rel) return "";
-    return location.origin + getBasePath() + (rel.charAt(0) === "/" ? rel : "/" + rel);
+    var url = location.origin + getBasePath() + (rel.charAt(0) === "/" ? rel : "/" + rel);
+    // best 优选订阅鉴权：复制/渲染 /best* 链接时自动拼 best_token（localStorage 输入一次）
+    if (rel.indexOf("/best") === 0) {
+        var token = localStorage.getItem("proxypool_best_token") || "";
+        if (!token) {
+            token = window.prompt("请输入 best_token（config.yaml 中配置，用于优选订阅鉴权）：");
+            if (token) localStorage.setItem("proxypool_best_token", token);
+        }
+        if (token) url += (url.indexOf("?") >= 0 ? "&" : "?") + "token=" + encodeURIComponent(token);
+    }
+    return url;
 }
 
 document.addEventListener("DOMContentLoaded", function () {

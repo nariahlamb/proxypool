@@ -200,6 +200,12 @@ func bestIPHandler(fn func(c *gin.Context) (string, error)) gin.HandlerFunc {
 			c.String(http.StatusInternalServerError, err.Error())
 			return
 		}
+		// 优选订阅鉴权：best 节点链接基于 proxy_info（自用 VPS 凭据）生成，
+		// 配置 best_token 后必须携带 ?token=xxx（未配置保持公开，兼容旧部署）。
+		if token := config.Config().BestToken; token != "" && c.Query("token") != token {
+			c.String(http.StatusUnauthorized, "unauthorized")
+			return
+		}
 		text, err := fn(c)
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())

@@ -36,6 +36,7 @@ type ConfigOptions struct {
 	V2WsHeaderUserAgent   string   `json:"v2_ws_header_user_agent" yaml:"v2_ws_header_user_agent"`
 	GeoipDbUrl            string   `json:"geoip_db_url" yaml:"geoip_db_url"`
 	AdminToken            string   `json:"admin_token" yaml:"admin_token"`
+	BestToken             string   `json:"best_token" yaml:"best_token"`
 	BasePath              string   `json:"base_path" yaml:"base_path"`
 
 	SubBestNodeInterval uint64             `json:"sub-best-node-interval" yaml:"sub-best-node-interval"`
