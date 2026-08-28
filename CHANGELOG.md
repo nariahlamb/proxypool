@@ -1,11 +1,21 @@
-# Changelog
+## [v2.5.13] - 2026-08-28
 
-本项目的所有重要变更都会记录在此文件中。
+### 🔧 sub_ip_url 解析健壮性增强
 
-格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
-版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+- base64 解码前 TrimSpace：部分源尾部带换行/空白导致严格解码失败整源被丢弃
+- 解码失败回退明文解析：vless:// URL 行（缺端口补 443 + 白名单校验）、host:port#注释 行；
+  过滤 HTML/JSON 错误页噪音行
+- 日志脱敏（maskURLHost）；源返回空/错误页时退避重试，不再本周期永久跳过
 
-## [v2.5.10] - 2026-08-28
+## [v2.5.12] - 2026-08-28
+
+### 📊 首页优选 IP 统计增加「IPv6 可用」
+
+- best 健康检查后新增可用 IPv6 节点数统计（Healthy 且 IPv6），首页展示：
+  优选 IP：节点 N 个，健康 N，IPv6 可用 N，anytls 透传 N
+- CountBestV6Healthy + 单测（IPv4/健康/不健康/未探测区分）
+
+## [v2.5.11] - 2026-08-28
 
 ### 🐛 紧急修复：首页加载被 best_token prompt 拦截
 
@@ -15,23 +25,20 @@
   才由 ensureBestToken 提示输入一次并存储
 - JS 行为验证：渲染不弹窗/不拼 token，复制拼 token 且只弹一次，普通订阅不受影响
 
-### 🌐 best 订阅 ipv6 参数改为三态
+## [v2.5.10] - 2026-08-28
 
 ### 🌐 best 订阅 ipv6 参数改为三态
 
 - 默认（不带 ipv6 参数）：IPv4 + IPv6 都输出
 - ipv6=true：仅输出 IPv6（补方括号 [addr]）
 - ipv6=false：仅输出 IPv4
-- 此前默认仅输出 IPv4（v2.5.10 双向过滤的回归修正）
+- 此前默认仅输出 IPv4（双向过滤的回归修正）
 - matchIPV6Mode 三态过滤 + SubNiceProxyIp 集成测试（注入 IPv4/IPv6 节点断言三态输出）
 
 ### 🐛 best 订阅 IPv6 输出修复
 
-### 🐛 best 订阅 IPv6 输出修复
-
 - 源（如 steep.laibas.top/sub）含 IPv6 节点（54 个中 15 个），解析链路原本正常，
-  但输出端缺陷：默认（ipv6=false）时 IPv6 节点也输出且缺方括号 → 生成坏链接
-  （vless://uuid@2001:db8::1:443 端口解析错误，客户端连不上）
+  但输出端缺陷：默认时 IPv6 节点也输出且缺方括号 → 生成坏链接
 - 双向过滤：ipv6=true 仅输出 IPv6；默认仅输出 IPv4（不影响既有订阅）
 - IPv6 输出补方括号：vless://uuid@[2001:db8::1]:443
 - 单测：formatNodeHost 方括号 + 双向过滤 + 真实源 IPv6 解析链路验证
