@@ -5,6 +5,14 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.5.5] - 2026-08-28
+
+### 🐛 修复 CI 镜像构建失败（构建上下文缺 GeoIP 数据库）
+
+- GeoIP 数据库（Country.mmdb / GeoLite2-ASN.mmdb / version）原被 .gitignore 排除、
+  不在 git 仓库 → CI checkout 后 Dockerfile.release 的 COPY 失败（"assets/version not found"）
+- 改为**纳入版本控制**（+20MB），任何构建（本地/CI）均可靠；首次缺失时仍会自动下载
+
 ## [v2.5.4] - 2026-08-28
 
 ### 🐛 修复 CI 构建失败（go vet copylocks）
