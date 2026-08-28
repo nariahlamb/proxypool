@@ -26,6 +26,11 @@
 - 提供 ss、ssr、vmess、trojan、vless、sip002 订阅
 - **Cloudflare 优选 IP**：多源采集（Top20/ISP/明文订阅）、多级排序、SNI 透传探测（sni_probe），输出各客户端格式优选订阅
 
+## 架构与处理逻辑
+
+- [系统架构图](docs/archify/proxypool-architecture.html)：组件/功能/存储全景（内联 SVG，支持暗/亮主题、缩放、搜索、聚焦视图）
+- [处理逻辑图](docs/archify/proxypool-dataflow.html)：抓取→检测→入库→清理→输出的数据流，以及失效节点冻结生命周期与优选 IP 探测链路
+
 ## 安装
 
 以下三选一。
