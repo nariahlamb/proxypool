@@ -5,6 +5,13 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.5.4] - 2026-08-28
+
+### 🐛 修复 CI 构建失败（go vet copylocks）
+
+- `log/pretty.go` WithAttrs 复制含 sync.Mutex 的 handler 触发 go vet copylocks 检查，
+  mutex 改为指针修复；v2.5.2/v2.5.3 的 CI 构建因此失败
+
 ## [v2.5.3] - 2026-08-28
 
 ### 📦 部署示例

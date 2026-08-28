@@ -16,11 +16,12 @@ type prettyHandler struct {
 	level *slog.LevelVar
 	out   io.Writer
 	attrs []slog.Attr
-	mu    sync.Mutex
+	// 指针而非值：WithAttrs 会复制 handler，值类型 sync.Mutex 会触发 go vet copylocks
+	mu *sync.Mutex
 }
 
 func newPrettyHandler(out io.Writer, level *slog.LevelVar) *prettyHandler {
-	return &prettyHandler{level: level, out: out}
+	return &prettyHandler{level: level, out: out, mu: &sync.Mutex{}}
 }
 
 func (h *prettyHandler) Enabled(_ context.Context, level slog.Level) bool {
