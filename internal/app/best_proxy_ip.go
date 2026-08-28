@@ -20,6 +20,7 @@ import (
 
 	"github.com/One-Piecs/proxypool/config"
 	"github.com/One-Piecs/proxypool/internal/cache"
+	"github.com/One-Piecs/proxypool/internal/database"
 	"github.com/One-Piecs/proxypool/log"
 	"github.com/One-Piecs/proxypool/pkg/cdn"
 	"github.com/One-Piecs/proxypool/pkg/geoIp"
@@ -37,6 +38,18 @@ type Format struct {
 	Vless  bool
 	Anytls bool
 	V2rayn bool
+}
+
+// RestoreBestNodes 启动时从数据库恢复 best 节点缓存（含探测标记），
+// 重启后 /best* 订阅秒级可用，无需等待采集 + 探测完成。
+func RestoreBestNodes() {
+	nodes := database.LoadBestNodes()
+	if len(nodes) == 0 {
+		return
+	}
+	cache.SetBestNodeList("bestNode", nodes)
+	cache.SetString("bestNodeLastUpdateTime", time.Now().Format(time.RFC3339))
+	log.Infoln("Restored %d best nodes from database", len(nodes))
 }
 
 // sortBestNodes 按照国家名称、IP 和端口多级排序（稳定）。
@@ -331,18 +344,23 @@ func CrawlBestNode() {
 	sortBestNodes(bestNodeList)
 
 	cache.SetBestNodeList("bestNode", bestNodeList)
+	database.SaveBestNodes(bestNodeList) // 采集后持久化（未标记；探测完成后再次覆盖为带标记）
 
-	// best 节点探测（异步执行，完成后原子替换缓存，不阻塞爬取主流程）：
+	// best 节点探测（异步执行，完成后原子替换缓存与数据库，不阻塞爬取主流程）：
 	// 1) 优选 IP 健康检查（bestip_probe，vless 协议）——全失败则短路，跳过 anytls；
 	// 2) anytls 透传探测（sni_probe）。
 	// 合并到单个 goroutine 顺序执行，一次写缓存，两个标记互不覆盖。
 	if cfg := config.Config().SniProbe; cfg != nil && cfg.Enabled() {
 		go func(base []cache.BestNode) {
-			cache.SetBestNodeList("bestNode", ProbeAndMarkNodes(base))
+			marked := ProbeAndMarkNodes(base)
+			cache.SetBestNodeList("bestNode", marked)
+			database.SaveBestNodes(marked)
 		}(bestNodeList)
 	} else if cfg := config.Config().BestIPProbe; cfg != nil && cfg.Enabled() {
 		go func(base []cache.BestNode) {
-			cache.SetBestNodeList("bestNode", ProbeAndMarkNodes(base))
+			marked := ProbeAndMarkNodes(base)
+			cache.SetBestNodeList("bestNode", marked)
+			database.SaveBestNodes(marked)
 		}(bestNodeList)
 	}
 	cache.SetString("bestNodeLastUpdateTime", time.Now().Format(time.RFC3339))
