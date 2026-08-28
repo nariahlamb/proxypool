@@ -304,6 +304,7 @@ func setupRouter() {
 	router.GET("/clash", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "clash.html", gin.H{
 			"domain": config.Config().Domain,
+			"base_path": config.Config().BasePath,
 			"port":   config.Config().Port,
 		})
 	})
@@ -311,30 +312,35 @@ func setupRouter() {
 	router.GET("/surge", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "surge.html", gin.H{
 			"domain": config.Config().Domain,
+			"base_path": config.Config().BasePath,
 		})
 	})
 
 	router.GET("/shadowrocket", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "shadowrocket.html", gin.H{
 			"domain": config.Config().Domain,
+			"base_path": config.Config().BasePath,
 		})
 	})
 
 	router.GET("/loon", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "loon.html", gin.H{
 			"domain": config.Config().Domain,
+			"base_path": config.Config().BasePath,
 		})
 	})
 
 	router.GET("/quanx", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "quanx.html", gin.H{
 			"domain": config.Config().Domain,
+			"base_path": config.Config().BasePath,
 		})
 	})
 
 	router.GET("/v2rayn", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "v2rayn.html", gin.H{
 			"domain": config.Config().Domain,
+			"base_path": config.Config().BasePath,
 		})
 	})
 
@@ -342,12 +348,14 @@ func setupRouter() {
 	router.GET("/best", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "best.html", gin.H{
 			"domain": config.Config().Domain,
+			"base_path": config.Config().BasePath,
 		})
 	})
 
 	router.GET("/clash/config", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "clash-config.yaml", gin.H{
 			"domain": config.Config().Domain,
+			"base_path": config.Config().BasePath,
 		})
 	})
 	router.GET("/clash/localconfig", func(c *gin.Context) {
@@ -359,6 +367,7 @@ func setupRouter() {
 	router.GET("/surge/config", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "surge.conf", gin.H{
 			"domain": config.Config().Domain,
+			"base_path": config.Config().BasePath,
 		})
 	})
 
@@ -485,12 +494,26 @@ func Run() {
 	if envp := os.Getenv("PORT"); envp != "" && os.Getenv("DYNO") != "" {
 		servePort = envp
 	}
+
+	// 部署子路径支持：配置 base_path（如 /show/）时，在进入 gin 路由前剥离前缀。
+	// 兼容反向代理不剥离前缀（location /show/ { proxy_pass http://backend; }）的部署形态。
+	serveHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		basePath := config.Config().BasePath
+		if basePath != "" && strings.HasPrefix(r.URL.Path, basePath) {
+			r.URL.Path = strings.TrimPrefix(r.URL.Path, basePath)
+			if !strings.HasPrefix(r.URL.Path, "/") {
+				r.URL.Path = "/" + r.URL.Path
+			}
+		}
+		router.ServeHTTP(w, r)
+	})
+
 	// Run on this server
 	var err error
 	if config.Config().TLSEnable {
-		err = router.RunTLS(":"+servePort, config.Config().CertFile, config.Config().KeyFile)
+		err = http.ListenAndServeTLS(":"+servePort, config.Config().CertFile, config.Config().KeyFile, serveHandler)
 	} else {
-		err = router.Run(":" + servePort)
+		err = http.ListenAndServe(":"+servePort, serveHandler)
 	}
 
 	if err != nil {

@@ -8,14 +8,14 @@
     <meta name="HandheldFriendly" content="True">
     <title>v2rayN - Free Proxies</title>
     <meta property="og:description" content="v2rayN 订阅：vmess、vless、trojan、ss、anytls 节点">
-    <link rel="stylesheet" type="text/css" href="/static/css/index.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/metron-icon.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/index.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
 </head>
 
 <body>
     <nav class="navbar is-primary pl-2 pr-2" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a href="https://{{ .domain }}" class="navbar-item">
+            <a href="https://{{ .domain }}{{ .base_path }}" class="navbar-item">
                 <h1 class="title is-4">Free Proxies</h1>
             </a>
             <a role="button" class="navbar-burger burger is-white" aria-label="menu" aria-expanded="false" data-target="clients">
@@ -26,13 +26,13 @@
         </div>
         <div id="clients" class="navbar-menu">
             <div class="navbar-start is-size-6">
-                <a href="/clash" class="navbar-item"><span class="icon"><i class="metron-clash"></i></span>&nbspClash</a>
-                <a href="/shadowrocket" class="navbar-item"><span class="icon"><i class="metron-shadowrocket"></i></span>&nbspShadowRocket</a>
-                <a href="/surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
-                <a href="/loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
-                <a href="/quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
-                <a href="/v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
-                <a href="/best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
+                <a href="clash" class="navbar-item"><span class="icon"><i class="metron-clash"></i></span>&nbspClash</a>
+                <a href="shadowrocket" class="navbar-item"><span class="icon"><i class="metron-shadowrocket"></i></span>&nbspShadowRocket</a>
+                <a href="surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
+                <a href="loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
+                <a href="quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
+                <a href="v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
+                <a href="best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
             </div>
         </div>
     </nav>
@@ -47,18 +47,18 @@
                     <tbody>
                         <tr>
                             <th>全部节点订阅</th>
-                            <td>https://{{ .domain }}/v2rayn/proxies</td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}/v2rayn/proxies" onclick="onCopyThis(this)">复制</button></td>
+                            <td>https://{{ .domain }}{{ .base_path }}/v2rayn/proxies</td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}{{ .base_path }}/v2rayn/proxies" onclick="onCopyThis(this)">复制</button></td>
                         </tr>
                         <tr>
                             <th>按类型订阅</th>
-                            <td>https://{{ .domain }}/v2rayn/proxies?type=vless</td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}/v2rayn/proxies?type=vless" onclick="onCopyThis(this)">复制</button></td>
+                            <td>https://{{ .domain }}{{ .base_path }}/v2rayn/proxies?type=vless</td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}{{ .base_path }}/v2rayn/proxies?type=vless" onclick="onCopyThis(this)">复制</button></td>
                         </tr>
                         <tr>
                             <th>常用国家订阅</th>
-                            <td>https://{{ .domain }}/v2rayn/proxies?c=CN,HK,TW,JP,US</td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}/v2rayn/proxies?c=CN,HK,TW,JP,US" onclick="onCopyThis(this)">复制</button></td>
+                            <td>https://{{ .domain }}{{ .base_path }}/v2rayn/proxies?c=CN,HK,TW,JP,US</td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}{{ .base_path }}/v2rayn/proxies?c=CN,HK,TW,JP,US" onclick="onCopyThis(this)">复制</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -77,7 +77,7 @@
         <br>
         <p><b>Theme</b>&nbspby&nbsp<a href="https://github.com/sansui233/" class="has-text-primary"><b>Sansui233</b></a> Powered&nbspby&nbsp<b>Bulma</b></p>
     </footer>
-    <script src="/static/index.js"></script>
+    <script src="static/index.js"></script>
 </body>
 
 </html>

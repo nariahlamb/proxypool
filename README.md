@@ -92,6 +92,7 @@ docker pull <dockerhub用户名>/proxypool:latest
 | `sub_ip_list_url` | 明文 `ip:port#国家` 订阅源（端口白名单 443/2053/2083/2087/2096/8443，纯 IP 行默认补 443） |
 | `sni_probe` | 优选节点 anytls 透传探测（enable/concurrency/timeout/country/test_url） |
 | `bestip_probe` | 优选 IP 健康检查（vless 协议验证入口可用性，启用后 vless/vmess/trojan 格式仅导出可用节点；全失败时短路跳过 anytls 探测） |
+| `base_path` | 部署子路径（如 `/show/`）：站点挂在反向代理子路径下时填写，页面/静态资源/订阅链接自动带前缀 |
 | `healthcheck_test_urls` | 健康检查测试地址覆盖（默认内置国内可达 204 端点，不含 gstatic） |
 | `freeze-failures` / `unlock-passes` / `freeze-window` | 失效节点冻结：连续失败 N 轮冻结不入库；冻结中连续通过 N 轮解锁；超窗口强制解锁（默认 3/3/30 天） |
 | `proxy_info` | 优选 IP 出站节点凭据（vmess/trojan/vless/anytls，按国家） |

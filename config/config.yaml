@@ -8,6 +8,10 @@ key_file: ""
 # 任务接口鉴权 Token（可选）：配置后 /task/* 需携带 ?token=xxx 才可触发；留空则任务接口公开
 admin_token: ""
 
+# 部署子路径（可选）：站点挂在反向代理子路径下时填写，如 /show/（首尾斜杠），
+# 页面链接、静态资源、复制订阅链接会自动带上该前缀；留空则按根路径
+base_path: ""
+
 # source list file
 source-files:
   # use local file

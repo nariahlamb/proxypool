@@ -9,15 +9,15 @@
     <title>Free Proxies</title>
     <meta property="og:description" content="免费的ss、ssr、vmess、trojan、vless、anytls节点与 Cloudflare 优选 IP">
     <meta name="keywords" content="免费ss、ssr、vmess、trojan、vless、anytls节点、优选IP">
-    <link rel="stylesheet" type="text/css" href="/static/css/index.css" />
-    <link rel="stylesheet" type="text/css" href="/static/css/metron-icon.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/index.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
 </head>
 
 <body>
 <!-- Navigation -->
 <nav class="navbar is-primary pl-2 pr-2" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-        <a href="https://{{ .domain }}" class="navbar-item">
+        <a href="https://{{ .domain }}{{ .base_path }}" class="navbar-item">
             <h1 class="title is-4">Free Proxies</h1>
         </a>
         <a role="button" class="navbar-burger burger is-white" aria-label="menu" aria-expanded="false" data-target="clients">
@@ -28,13 +28,13 @@
     </div>
     <div id="clients" class="navbar-menu">
         <div class="navbar-start is-size-6">
-            <a href="/clash" class="navbar-item"><span class="icon"><i class="metron-clash"></i></span>&nbspClash</a>
-            <a href="/shadowrocket" class="navbar-item"><span class="icon"><i class="metron-shadowrocket"></i></span>&nbspShadowRocket</a>
-            <a href="/surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
-            <a href="/loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
-            <a href="/quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
-            <a href="/v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
-            <a href="/best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
+            <a href="clash" class="navbar-item"><span class="icon"><i class="metron-clash"></i></span>&nbspClash</a>
+            <a href="shadowrocket" class="navbar-item"><span class="icon"><i class="metron-shadowrocket"></i></span>&nbspShadowRocket</a>
+            <a href="surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
+            <a href="loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
+            <a href="quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
+            <a href="v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
+            <a href="best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
         </div>
     </div>
 </nav>
@@ -64,10 +64,10 @@
                         <p class="card-header-title"><span class="icon"><i class="metron-clash"></i></span>Clash</p>
                     </div>
                     <div class="card-content pt-0">
-                        <button data-copy="https://{{ .domain }}/clash/config" onclick="onCopyThis(this)" class="button is-small is-primary">配置文件</button>
-                        <a href="clash://install-config?url=https://{{ .domain }}/clash/config" class="button is-small is-info">一键导入</a>
+                        <button data-copy="https://{{ .domain }}{{ .base_path }}/clash/config" onclick="onCopyThis(this)" class="button is-small is-primary">配置文件</button>
+                        <a href="clash://install-config?url=https://{{ .domain }}{{ .base_path }}/clash/config" class="button is-small is-info">一键导入</a>
                     </div>
-                    <footer class="card-footer"><a href="/clash" class="card-footer-item is-justify-content-flex-end has-text-right is-size-7">如何筛选等更多信息 >></a></footer>
+                    <footer class="card-footer"><a href="clash" class="card-footer-item is-justify-content-flex-end has-text-right is-size-7">如何筛选等更多信息 >></a></footer>
                 </div>
             </div>
             <div class="column">
@@ -76,10 +76,10 @@
                         <p class="card-header-title"><span class="icon"><i class="metron-shadowrocket"></i></span>ShadowRocket</p>
                     </div>
                     <div class="card-content pt-0">
-                        <button data-copy="https://{{ .domain }}/clash/proxies" onclick="onCopyThis(this)" class="button is-small is-primary">复制订阅</button>
-                        <button data-copy="https://{{ .domain }}/clash/proxies?c=HK,TW,US,JP,SG" onclick="onCopyThis(this)" class="button is-small is-warning">常用国家</button>
+                        <button data-copy="https://{{ .domain }}{{ .base_path }}/clash/proxies" onclick="onCopyThis(this)" class="button is-small is-primary">复制订阅</button>
+                        <button data-copy="https://{{ .domain }}{{ .base_path }}/clash/proxies?c=HK,TW,US,JP,SG" onclick="onCopyThis(this)" class="button is-small is-warning">常用国家</button>
                     </div>
-                    <footer class="card-footer"><a href="/shadowrocket" class="card-footer-item is-justify-content-flex-end is-size-7">如何筛选等更多信息 >></a></footer>
+                    <footer class="card-footer"><a href="shadowrocket" class="card-footer-item is-justify-content-flex-end is-size-7">如何筛选等更多信息 >></a></footer>
                 </div>
             </div>
             <div class="column">
@@ -88,10 +88,10 @@
                         <p class="card-header-title"><span class="icon"><i class="metron-surge"></i></span>Surge</p>
                     </div>
                     <div class="card-content pt-0">
-                        <button data-copy="https://{{ .domain }}/surge/config" onclick="onCopyThis(this)" class="button is-small is-primary">配置文件</button>
-                        <a href="surge3:///install-config?url=https://{{ .domain }}/surge/config" class="button is-small is-info">一键导入</a>
+                        <button data-copy="https://{{ .domain }}{{ .base_path }}/surge/config" onclick="onCopyThis(this)" class="button is-small is-primary">配置文件</button>
+                        <a href="surge3:///install-config?url=https://{{ .domain }}{{ .base_path }}/surge/config" class="button is-small is-info">一键导入</a>
                     </div>
-                    <footer class="card-footer"><a href="/surge" class="card-footer-item is-justify-content-flex-end is-size-7">更多信息 >></a></footer>
+                    <footer class="card-footer"><a href="surge" class="card-footer-item is-justify-content-flex-end is-size-7">更多信息 >></a></footer>
                 </div>
             </div>
             <div class="column">
@@ -100,10 +100,10 @@
                         <p class="card-header-title"><span class="icon">★</span>优选IP</p>
                     </div>
                     <div class="card-content pt-0">
-                        <a href="/best" class="button is-small is-primary">订阅说明</a>
-                        <button data-copy="https://{{ .domain }}/bestCfProxyIp/clashVmess" onclick="onCopyThis(this)" class="button is-small is-warning">复制订阅</button>
+                        <a href="best" class="button is-small is-primary">订阅说明</a>
+                        <button data-copy="https://{{ .domain }}{{ .base_path }}/bestCfProxyIp/clashVmess" onclick="onCopyThis(this)" class="button is-small is-warning">复制订阅</button>
                     </div>
-                    <footer class="card-footer"><a href="/best" class="card-footer-item is-justify-content-flex-end is-size-7">更多信息 >></a></footer>
+                    <footer class="card-footer"><a href="best" class="card-footer-item is-justify-content-flex-end is-size-7">更多信息 >></a></footer>
                 </div>
             </div>
         </div>
@@ -116,37 +116,37 @@
                 <tbody>
                 <tr>
                     <th>ss</th>
-                    <td>https://{{ .domain }}/ss/sub</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/ss/sub</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 <tr>
                     <th>ss-sip002</th>
-                    <td>https://{{ .domain }}/sip002/sub</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/sip002/sub</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 <tr>
                     <th>ssr</th>
-                    <td>https://{{ .domain }}/ssr/sub</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/ssr/sub</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 <tr>
                     <th>vmess</th>
-                    <td>https://{{ .domain }}/vmess/sub</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/vmess/sub</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 <tr>
                     <th>trojan</th>
-                    <td>https://{{ .domain }}/trojan/sub</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/trojan/sub</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 <tr>
                     <th>vless</th>
-                    <td>https://{{ .domain }}/vless/sub</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/vless/sub</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 <tr>
                     <th>anytls（优选）</th>
-                    <td>https://{{ .domain }}/bestCfProxySub/clashAnytls</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/bestCfProxySub/clashAnytls</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 </tbody>
@@ -155,28 +155,28 @@
     </section>
     <section class="section">
         <h5 class="title is-4">优选 IP 订阅</h5>
-        <p>Cloudflare 优选 IP，多源采集 + 健康检查（bestip_probe）+ anytls 透传探测（sni_probe）。格式参数见 <a href="/best">优选IP说明</a>。</p>
+        <p>Cloudflare 优选 IP，多源采集 + 健康检查（bestip_probe）+ anytls 透传探测（sni_probe）。格式参数见 <a href="best">优选IP说明</a>。</p>
         <div class="table-container mt-2">
             <table class="table is-fullwidth">
                 <tbody>
                 <tr>
                     <th>Clash / vmess</th>
-                    <td>https://{{ .domain }}/bestCfProxyIp/clashVmess</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/bestCfProxyIp/clashVmess</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 <tr>
                     <th>Surge / trojan</th>
-                    <td>https://{{ .domain }}/bestCfProxyIp/surgeTrojan</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/bestCfProxyIp/surgeTrojan</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 <tr>
                     <th>QuanX / vless</th>
-                    <td>https://{{ .domain }}/bestCfProxyIpTop20/quanxVless</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/bestCfProxyIpTop20/quanxVless</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 <tr>
                     <th>Loon / anytls</th>
-                    <td>https://{{ .domain }}/bestCfProxySub/loonAnytls</td>
+                    <td>https://{{ .domain }}{{ .base_path }}/bestCfProxySub/loonAnytls</td>
                     <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                 </tr>
                 </tbody>
@@ -203,7 +203,7 @@
     <br>
     <p><b>Theme</b>&nbspby&nbsp<a href="https://github.com/sansui233/" class="has-text-primary"><b>Sansui233</b></a> Powered&nbspby&nbsp<b>Bulma</b></p>
 </footer>
-<script src="/static/index.js"></script>
+<script src="static/index.js"></script>
 </body>
 
 </html>

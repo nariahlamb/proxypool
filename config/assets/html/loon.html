@@ -11,9 +11,9 @@
     <meta name="keywords" content="免费的ss、ssr、vmess、torjan、vless节点">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
     <!-- <link rel="stylesheet" type="text/css" href="css/client/metron-icon.css" /> -->
-    <link rel="stylesheet" type="text/css" href="/static/css/metron-icon.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
     <!-- <link rel="stylesheet" type="text/css" href="css/index.css" /> -->
-    <link rel="stylesheet" type="text/css" href="/static/css/index.css">
+    <link rel="stylesheet" type="text/css" href="static/css/index.css">
     
 </head>
 
@@ -21,7 +21,7 @@
     <!-- Navigation -->
     <nav class="navbar is-primary pl-2 pr-2" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a href="https://{{ .domain }}" class="navbar-item">
+            <a href="https://{{ .domain }}{{ .base_path }}" class="navbar-item">
                 <h1 class="title is-4">Free Proxies</h1>
             </a>
             <a role="button" class="navbar-burger burger is-white" aria-label="menu" aria-expanded="false" data-target="clients">
@@ -37,8 +37,8 @@
                 <a href="./surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
                 <a href="./loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
                 <a href="./quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
-                <a href="/v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
-                <a href="/best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
+                <a href="v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
+                <a href="best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
             </div>
         </div>
     </nav>
@@ -54,7 +54,7 @@
                     <tbody>
                         <tr>
                             <th>Loon节点</th>
-                            <td>https://{{ .domain }}/loon/proxies</td>
+                            <td>https://{{ .domain }}{{ .base_path }}/loon/proxies</td>
                             <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                         </tr>
                     </tbody>
@@ -71,7 +71,7 @@
         <br>
         <p><b>Theme</b>&nbspby&nbsp<a href="https://github.com/sansui233/" class="has-text-primary"><b>Sansui233</b></a> Powered&nbspby&nbsp<b>Bulma</b></p>
     </footer>
-    <script src="/static/index.js"></script>
+    <script src="static/index.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <!--    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VK0B43EQ3"></script>-->
 <!--    <script>-->
