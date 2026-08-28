@@ -332,12 +332,17 @@ func CrawlBestNode() {
 
 	cache.SetBestNodeList("bestNode", bestNodeList)
 
-	// anytls 可转发性探测：异步执行，完成后原子替换缓存（不阻塞爬取主流程）。
-	// 探测用任一配置了 anytls 凭据的国家（默认自动选择），标记的是 ip:port 透传能力。
+	// best 节点探测（异步执行，完成后原子替换缓存，不阻塞爬取主流程）：
+	// 1) 优选 IP 健康检查（bestip_probe，vless 协议）——全失败则短路，跳过 anytls；
+	// 2) anytls 透传探测（sni_probe）。
+	// 合并到单个 goroutine 顺序执行，一次写缓存，两个标记互不覆盖。
 	if cfg := config.Config().SniProbe; cfg != nil && cfg.Enabled() {
 		go func(base []cache.BestNode) {
-			marked := ProbeAndMarkAnyTLS(base)
-			cache.SetBestNodeList("bestNode", marked)
+			cache.SetBestNodeList("bestNode", ProbeAndMarkNodes(base))
+		}(bestNodeList)
+	} else if cfg := config.Config().BestIPProbe; cfg != nil && cfg.Enabled() {
+		go func(base []cache.BestNode) {
+			cache.SetBestNodeList("bestNode", ProbeAndMarkNodes(base))
 		}(bestNodeList)
 	}
 	cache.SetString("bestNodeLastUpdateTime", time.Now().Format(time.RFC3339))
@@ -364,6 +369,13 @@ func SubNiceProxyIp(format string, distNodeCountry string, proxyCountryIsoCode s
 	// anytls 格式：仅导出可透传 anytls 的节点；未启用探测时导出空
 	if f.Anytls {
 		bestNodeList = filterAnyTLSNodes(bestNodeList)
+	}
+
+	// vless/vmess/trojan 格式：优选 IP 健康检查启用时，仅导出健康检查通过的节点
+	if f.Vless || f.Vmess || f.Trojan {
+		if cfg := config.Config().BestIPProbe; cfg != nil && cfg.Enabled() {
+			bestNodeList = filterHealthyNodes(bestNodeList)
+		}
 	}
 
 	// 预分配buffer以提高性能

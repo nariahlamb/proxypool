@@ -36,13 +36,14 @@ type ConfigOptions struct {
 	V2WsHeaderUserAgent   string   `json:"v2_ws_header_user_agent" yaml:"v2_ws_header_user_agent"`
 	GeoipDbUrl            string   `json:"geoip_db_url" yaml:"geoip_db_url"`
 
-	SubBestNodeInterval uint64          `json:"sub-best-node-interval" yaml:"sub-best-node-interval"`
-	SubIpUrl            []string        `json:"sub_ip_url" yaml:"sub_ip_url"`
-	SubIpListUrl        []string        `json:"sub_ip_list_url" yaml:"sub_ip_list_url"`
-	SniProbe            *SniProbeConfig `json:"sni_probe" yaml:"sni_probe"`
-	HealthcheckTestURLs []string        `json:"healthcheck_test_urls" yaml:"healthcheck_test_urls"`
-	ProxyInfo           ProxyInfo       `json:"proxy_info" yaml:"proxy_info"`
-	CfBestIp            []string        `json:"cf_best_ip" yaml:"cf_best_ip"`
+	SubBestNodeInterval uint64             `json:"sub-best-node-interval" yaml:"sub-best-node-interval"`
+	SubIpUrl            []string           `json:"sub_ip_url" yaml:"sub_ip_url"`
+	SubIpListUrl        []string           `json:"sub_ip_list_url" yaml:"sub_ip_list_url"`
+	SniProbe            *SniProbeConfig    `json:"sni_probe" yaml:"sni_probe"`
+	BestIPProbe         *BestIPProbeConfig `json:"bestip_probe" yaml:"bestip_probe"`
+	HealthcheckTestURLs []string           `json:"healthcheck_test_urls" yaml:"healthcheck_test_urls"`
+	ProxyInfo           ProxyInfo          `json:"proxy_info" yaml:"proxy_info"`
+	CfBestIp            []string           `json:"cf_best_ip" yaml:"cf_best_ip"`
 }
 
 // SniProbeConfig best 节点 SNI proxy（TCP 透传入口）可用性探测配置。
@@ -60,6 +61,30 @@ type SniProbeConfig struct {
 
 // Enabled 探测开关：段缺失=false；段存在且 enable 未写=默认 true；显式 false=关闭
 func (p *SniProbeConfig) Enabled() bool {
+	if p == nil {
+		return false
+	}
+	if p.Enable == nil {
+		return true
+	}
+	return *p.Enable
+}
+
+// BestIPProbeConfig best 节点优选 IP 健康检查配置（通用入口可用性）。
+// 探测方式为真实 vless 握手 + 数据往返（URLTest），验证候选 ip:port 能否端到端
+// 转发 TLS 数据（可用 SNI proxy 入口）；通过标记 BestNode.Healthy，
+// 启用后 vless/vmess/trojan 格式仅导出可用节点。
+// Enable 语义同 SniProbeConfig：段缺失=false；段存在未写 enable=默认 true；显式 false=关闭。
+type BestIPProbeConfig struct {
+	Enable      *bool  `json:"enable" yaml:"enable"`
+	Concurrency int    `json:"concurrency" yaml:"concurrency"`
+	Timeout     int    `json:"timeout" yaml:"timeout"`
+	Country     string `json:"country" yaml:"country"`
+	TestURL     string `json:"test_url" yaml:"test_url"`
+}
+
+// Enabled 探测开关：段缺失=false；段存在且 enable 未写=默认 true；显式 false=关闭
+func (p *BestIPProbeConfig) Enabled() bool {
 	if p == nil {
 		return false
 	}

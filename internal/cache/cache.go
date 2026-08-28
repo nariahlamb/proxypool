@@ -14,6 +14,7 @@ type BestNode struct {
 	Country string
 	CDN     bool
 	AnyTLS  bool
+	Healthy bool
 }
 
 // cacheStore 一个简单的无过期时间的并发安全缓存，

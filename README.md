@@ -85,7 +85,8 @@ docker pull <dockerhub用户名>/proxypool:latest
 | `sub-best-node-interval` | 优选 IP 任务刷新间隔（默认 60 min） |
 | `sub_ip_url` | Cloudflare 优选 IP 订阅源（域名/IP 列表） |
 | `sub_ip_list_url` | 明文 `ip:port#国家` 订阅源（端口白名单 443/2053/2083/2087/2096/8443，纯 IP 行默认补 443） |
-| `sni_probe` | 优选节点 SNI 透传探测（enable/concurrency/timeout/country/test_url） |
+| `sni_probe` | 优选节点 anytls 透传探测（enable/concurrency/timeout/country/test_url） |
+| `bestip_probe` | 优选 IP 健康检查（vless 协议验证入口可用性，启用后 vless/vmess/trojan 格式仅导出可用节点；全失败时短路跳过 anytls 探测） |
 | `healthcheck_test_urls` | 健康检查测试地址覆盖（默认内置国内可达 204 端点，不含 gstatic） |
 | `proxy_info` | 优选 IP 出站节点凭据（vmess/trojan/vless/anytls，按国家） |
 | `cf_best_ip` | 静态优选 IP 列表 |

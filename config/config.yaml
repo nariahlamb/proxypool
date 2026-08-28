@@ -70,6 +70,17 @@ sni_probe:
 #   - "https://cp.cloudflare.com/generate_204"
 #   - "https://connect.rom.miui.com/generate_204"
 
+# best 节点优选 IP 健康检查（通用入口可用性，vless 协议握手+数据往返验证；
+# 不配置此段时 vless/vmess/trojan 格式不做事先筛选；enable 缺省 true；
+# country 缺省自动取 proxy_info 中第一个配置了 vless 的国家；
+# 全部探测失败时短路跳过 sni_probe(anytls) 探测）
+# bestip_probe:
+#   enable: true
+#   concurrency: 20
+#   timeout: 5
+#   country: "JP"
+#   test_url: "https://cp.cloudflare.com/generate_204"  # 可选，数据往返验证地址
+
 proxy_info:
   JP:
     vless:

@@ -5,6 +5,20 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.1.0] - 2026-08-27
+
+### ⚡ 优选 IP 健康检查（bestip_probe）
+
+- 新增 `bestip_probe` 配置段：用 **vless 协议**（vless+tls+ws）对候选优选 IP 入口做
+  完整握手 + 数据往返（URLTest 204）健康检查，标记 `BestNode.Healthy`
+- 启用后 **vless / vmess / trojan 格式**（`clashVless`/`surgeTrojan` 等）仅导出
+  健康检查通过的节点；未启用时行为不变（向后兼容）
+- 探测与 `sni_probe`(anytls) **合并为单个异步 goroutine** 顺序执行、一次写缓存：
+  - 先健康检查；全部失败 ⇒ 入口整体不可用，**短路跳过 anytls 探测**
+  - 两个标记（Healthy / AnyTLS）独立，互不覆盖
+- 凭据复用 `proxy_info[country]["vless"]`（host/uuid/path），构造参数与
+  `clashVless` 导出完全一致（探测通过即订阅可用）
+
 ## [v2.0.0] - 2026-08-27
 
 ### 🔧 代码现代化（Modern Go 规范，Go 1.27）
