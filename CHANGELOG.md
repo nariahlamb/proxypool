@@ -5,6 +5,13 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.5.1] - 2026-08-28
+
+### 🐛 日志格式人性化
+
+- slog 由 TextHandler（`time=... level=... msg=...`）改为**自定义 pretty handler**：
+  输出 `[2026-08-28 20:18:00] ERROR message`，对齐原 logrus 前缀格式的阅读习惯
+
 ## [v2.5.0] - 2026-08-28
 
 ### ⚙️ 性能与可靠性

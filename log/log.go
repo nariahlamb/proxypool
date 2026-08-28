@@ -16,17 +16,8 @@ import (
 var (
 	level     = INFO
 	levelVar  = &slog.LevelVar{}
-	// logger 是应用自己的 slog 实例（标准库，TextHandler 文本格式）。
-	logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-		Level: levelVar,
-		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
-			// 时间格式对齐原有 logrus 前缀格式
-			if a.Key == slog.TimeKey {
-				return slog.Attr{Key: a.Key, Value: slog.StringValue(a.Value.Time().Format("2006-01-02 15:04:05"))}
-			}
-			return a
-		},
-	}))
+	// logger 是应用自己的 slog 实例（自定义 pretty handler，人类友好格式）。
+	logger = slog.New(newPrettyHandler(os.Stdout, levelVar))
 	fileMux = sync.Mutex{}
 )
 
