@@ -1,0 +1,43 @@
+# ProxyPool Docker Compose 示例
+#
+# 用法：
+#   1. 准备配置文件：把 config/config.yaml、config/source.yaml 复制到本文件同级目录
+#      （或用下方 volumes 里的路径）
+#   2. 启动：docker compose up -d
+#   3. 访问：http://<宿主机IP>:12580
+#
+# 说明：
+#   - GeoIP 数据库已内置在镜像中（v2.5.2+），无需挂载 assets 目录
+#   - 挂载 config.yaml / source.yaml / data 便于宿主机独立管理配置与数据
+#   - 如需站点挂载在子路径（如 /show/），在 config.yaml 配置 base_path（自动适配，无需手动）
+#   - 任务接口鉴权：在 config.yaml 配置 admin_token
+
+services:
+  proxypool:
+    # 镜像名（Docker Hub 构建产物；如使用私有镜像仓库请自行替换）
+    image: bineyond/proxypool:latest
+    container_name: proxypool
+    hostname: proxypool
+    restart: always
+    tty: true
+    ports:
+      - "12580:12580"
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      # 配置文件（宿主路径请按实际调整）
+      - ./config.yaml:/app/config/config.yaml
+      - ./source.yaml:/app/config/source.yaml
+      # 数据目录（SQLite 数据库 / 日志），需持久化
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://localhost:12580/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "3"
