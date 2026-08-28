@@ -39,16 +39,24 @@ func CrawlGo() {
 		cache.SetProxies("proxies", dbProxies)
 		cache.LastCrawlTime = "抓取中，已载入上次数据库数据"
 		log.Infoln("Database loaded count: %d", len(dbProxies))
-		// 同步首页统计（避免启动窗口期全部显示 0）：以库内节点作为启动快照
+		// 同步首页统计：全部 = 库内全部节点；可用 = 上次标记 useable 的节点（真实可用数）
 		cache.AllProxiesCount = dbProxies.Len()
-		cache.UsefullProxiesCount = dbProxies.Len()
 		ss, ssr, vmess, trojan, vless, anytls := dbProxies.TypeCounts()
-		cache.SSProxiesCount, cache.UsefullSSProxiesCount = ss, ss
-		cache.SSRProxiesCount, cache.UsefullSSRProxiesCount = ssr, ssr
-		cache.VmessProxiesCount, cache.UsefullVmessProxiesCount = vmess, vmess
-		cache.TrojanProxiesCount, cache.UsefullTrojanProxiesCount = trojan, trojan
-		cache.VlessProxiesCount, cache.UsefullVlessProxiesCount = vless, vless
-		cache.AnyTLSProxiesCount, cache.UsefullAnyTLSProxiesCount = anytls, anytls
+		cache.SSProxiesCount = ss
+		cache.SSRProxiesCount = ssr
+		cache.VmessProxiesCount = vmess
+		cache.TrojanProxiesCount = trojan
+		cache.VlessProxiesCount = vless
+		cache.AnyTLSProxiesCount = anytls
+		// 可用节点统计 = useable=true 的真实计数（库内含历史失效节点，不能全算可用）
+		usable := database.CountUseableStats()
+		cache.UsefullProxiesCount = usable.Total
+		cache.UsefullSSProxiesCount = usable.ByType["ss"]
+		cache.UsefullSSRProxiesCount = usable.ByType["ssr"]
+		cache.UsefullVmessProxiesCount = usable.ByType["vmess"]
+		cache.UsefullTrojanProxiesCount = usable.ByType["trojan"]
+		cache.UsefullVlessProxiesCount = usable.ByType["vless"]
+		cache.UsefullAnyTLSProxiesCount = usable.ByType["anytls"]
 	}
 	if dbProxies != nil {
 		proxies = dbProxies.UniqAppendProxyList2(proxies)
