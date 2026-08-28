@@ -5,6 +5,13 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.5.3] - 2026-08-28
+
+### 📦 部署示例
+
+- 新增仓库根目录 `docker-compose.yaml` 示例：内置 GeoIP 无需挂 assets、挂载
+  config.yaml/source.yaml/data、healthcheck 探活、日志轮转；附完整用法注释
+
 ## [v2.5.2] - 2026-08-28
 
 ### 🐛 Docker 构建与运行修复
