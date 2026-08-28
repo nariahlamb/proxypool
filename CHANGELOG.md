@@ -1,3 +1,12 @@
+## [v2.5.16] - 2026-08-29
+
+### 🌐 best 订阅各客户端 IPv6 格式修正
+
+- 规则：host:port 连写的格式需方括号（URL/v2rayN、节点名、QuanX 的 addr:port）；
+  端口为独立字段的 server 用裸 IPv6（Surge/Loon/Clash）
+- 修复 Surge server 字段误加方括号；补 Loon 6 个生成器 + Clash anytls 的 server 裸地址
+- 新增 stripBrackets helper + 多客户端格式断言单测（Surge/Loon/Clash 裸、QuanX/v2rayN 方括号）
+
 ## [v2.5.15] - 2026-08-29
 
 ### 🌐 docker-compose 示例改用 host 网络（IPv6 出口可用）

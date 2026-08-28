@@ -897,6 +897,12 @@ func formatNodeHost(addr string) string {
 	return addr
 }
 
+// stripBrackets 去掉 IPv6 方括号：Surge/Loon/Clash 的 server 字段为逗号分隔独立字段，
+// 端口无歧义，需裸 IPv6 地址（节点名/URL host 才需要 [addr] 形式）。
+func stripBrackets(addr string) string {
+	return strings.TrimSuffix(strings.TrimPrefix(addr, "["), "]")
+}
+
 // CountBestV6Healthy 统计 best 节点中健康检查通过的 IPv6 节点数（可用 IPv6 优选 IP）。
 func CountBestV6Healthy() int {
 	nodes := cache.GetBestNodeList("bestNode")
@@ -1047,7 +1053,7 @@ func ipToUint32(ip string) uint32 {
 func genSurgeVmessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`%s %s:%d = vmess, %-15s, %d, username=%v, sni=%v, ws=true, ws-path=%v, ws-headers=Host:"%v", vmess-aead=true, tls=true
 `,
-		country, ip, port, ip, port,
+		country, ip, port, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vmess"]["uuid"],
 		proxyInfo[nodeCountry]["vmess"]["host"],
 		proxyInfo[nodeCountry]["vmess"]["path"],
@@ -1057,7 +1063,7 @@ func genSurgeVmessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCoun
 func genSurgeTrojanUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`%s %s:%d = trojan, %-15s, %d, password=%v, sni=%v, ws=true, ws-path=%v, ws-headers=Host:"%v"
 `,
-		country, ip, port, ip, port,
+		country, ip, port, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["trojan"]["password"],
 		proxyInfo[nodeCountry]["trojan"]["host"],
 		proxyInfo[nodeCountry]["trojan"]["path"],
@@ -1067,7 +1073,7 @@ func genSurgeTrojanUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 func genClashVlessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`  - {"name":"%s %s:%d", "type":"vless", "server":"%s", "port":%d, "uuid":"%v", "network":"ws", "tls":true, "udp":true, "servername":"%v", "client-fingerprint":"chrome", "ws-opts":{"path":"%v", "headers":{"Host":"%v"}}}
 `,
-		country, ip, port, ip, port,
+		country, ip, port, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vless"]["uuid"],
 		proxyInfo[nodeCountry]["vless"]["host"],
 		proxyInfo[nodeCountry]["vless"]["path"],
@@ -1077,7 +1083,7 @@ func genClashVlessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCoun
 func genClashVmessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`  - {"name":"%s %s:%d", "type":"vmess", "server":"%s", "port":%d, "uuid":"%v", "tls":true, "cipher":"none", "alterId":0, "network":"ws", "ws-opts":{"path":"%v", "headers":{"Host":"%v"}}, "servername":"%v"}
 `,
-		country, ip, port, ip, port,
+		country, ip, port, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vmess"]["uuid"],
 		proxyInfo[nodeCountry]["vmess"]["path"],
 		proxyInfo[nodeCountry]["vmess"]["host"],
@@ -1087,7 +1093,7 @@ func genClashVmessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCoun
 func genClashTrojanUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, node_country, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`  - {"name":"%s %s:%d", "type":"trojan", "server":"%s", "port":%d, "password":"%v", "sni":"%v", "network":"ws", "ws-opts":{"path":"%v", "headers":{"Host":"%v"}}}
 `,
-		country, ip, port, ip, port,
+		country, ip, port, stripBrackets(ip), port,
 		proxyInfo[node_country]["trojan"]["password"],
 		proxyInfo[node_country]["trojan"]["host"],
 		proxyInfo[node_country]["trojan"]["path"],
@@ -1131,7 +1137,7 @@ func genLoonVlessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCount
 	buf.WriteString(fmt.Sprintf(`%s %s:%d = vless, %s, %d, "%s", transport=ws, path=%s, host=%s, udp=true, over-tls=true, sni=%s
 `,
 		country, ip, port,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vless"]["uuid"],
 		proxyInfo[nodeCountry]["vless"]["path"],
 		proxyInfo[nodeCountry]["vless"]["host"],
@@ -1143,7 +1149,7 @@ func genLoonVmessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCount
 	buf.WriteString(fmt.Sprintf(`%s %s:%d = vmess, %s, %d, none, "%s", transport=ws, alterId=0, path=%s, host=%s, udp=true, over-tls=true, sni=%s
 `,
 		country, ip, port,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vmess"]["uuid"],
 		proxyInfo[nodeCountry]["vmess"]["path"],
 		proxyInfo[nodeCountry]["vmess"]["host"],
@@ -1155,7 +1161,7 @@ func genLoonTrojanUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCoun
 	buf.WriteString(fmt.Sprintf(`%s %s:%d = trojan, %s, %d, "%s", transport=ws, sni=%s, path=%s, host=%s, udp=true
 `,
 		country, ip, port,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["trojan"]["password"],
 		proxyInfo[nodeCountry]["trojan"]["host"],
 		proxyInfo[nodeCountry]["trojan"]["path"],
@@ -1166,7 +1172,7 @@ func genLoonTrojanUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCoun
 func genSurgeVmessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`%s %s = vmess, %-15s, %d, username=%v, sni=%v, ws=true, ws-path=%v, ws-headers=Host:"%v", vmess-aead=true, tls=true
 `,
-		country, nodeName, ip, port,
+		country, nodeName, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vmess"]["uuid"],
 		proxyInfo[nodeCountry]["vmess"]["host"],
 		proxyInfo[nodeCountry]["vmess"]["path"],
@@ -1176,7 +1182,7 @@ func genSurgeVmessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 func genSurgeTrojanUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`%s %s = trojan, %-15s, %d, password=%v, sni=%v, ws=true, ws-path=%v, ws-headers=Host:"%v"
 `,
-		country, nodeName, ip, port,
+		country, nodeName, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["trojan"]["password"],
 		proxyInfo[nodeCountry]["trojan"]["host"],
 		proxyInfo[nodeCountry]["trojan"]["path"],
@@ -1186,7 +1192,7 @@ func genSurgeTrojanUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCo
 func genClashVlessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`  - {"name":"%s %s", "type":"vless", "server":"%s", "port":%d, "uuid":"%v", "network":"ws", "tls":true, "udp":true, "servername":"%v", "client-fingerprint":"chrome", "ws-opts":{"path":"%v", "headers":{"Host":"%v"}}}
 `,
-		country, nodeName, ip, port,
+		country, nodeName, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vless"]["uuid"],
 		proxyInfo[nodeCountry]["vless"]["host"],
 		proxyInfo[nodeCountry]["vless"]["path"],
@@ -1196,7 +1202,7 @@ func genClashVlessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 func genClashVmessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`  - {"name":"%s %s", "type":"vmess", "server":"%s", "port":%d, "uuid":"%v", "tls":true, "cipher":"none", "alterId":0, "network":"ws", "ws-opts":{"path":"%v", "headers":{"Host":"%v"}}, "servername":"%v"}
 `,
-		country, nodeName, ip, port,
+		country, nodeName, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vmess"]["uuid"],
 		proxyInfo[nodeCountry]["vmess"]["path"],
 		proxyInfo[nodeCountry]["vmess"]["host"],
@@ -1206,7 +1212,7 @@ func genClashVmessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 func genClashTrojanUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, node_country, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`  - {"name":"%s %s", "type":"trojan", "server":"%s", "port":%d, "password":"%v", "sni":"%v", "network":"ws", "ws-opts":{"path":"%v", "headers":{"Host":"%v"}}}
 `,
-		country, nodeName, ip, port,
+		country, nodeName, stripBrackets(ip), port,
 		proxyInfo[node_country]["trojan"]["password"],
 		proxyInfo[node_country]["trojan"]["host"],
 		proxyInfo[node_country]["trojan"]["path"],
@@ -1250,7 +1256,7 @@ func genLoonVlessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCoun
 	buf.WriteString(fmt.Sprintf(`%s %s = vless, %s, %d, "%s", transport=ws, path=%s, host=%s, udp=true, over-tls=true, sni=%s
 `,
 		country, nodeName,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vless"]["uuid"],
 		proxyInfo[nodeCountry]["vless"]["path"],
 		proxyInfo[nodeCountry]["vless"]["host"],
@@ -1262,7 +1268,7 @@ func genLoonVmessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCoun
 	buf.WriteString(fmt.Sprintf(`%s %s = vmess, %s, %d, none, "%s", transport=ws, alterId=0, path=%s, host=%s, udp=true, over-tls=true, sni=%s
 `,
 		country, nodeName,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vmess"]["uuid"],
 		proxyInfo[nodeCountry]["vmess"]["path"],
 		proxyInfo[nodeCountry]["vmess"]["host"],
@@ -1274,7 +1280,7 @@ func genLoonTrojanUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 	buf.WriteString(fmt.Sprintf(`%s %s = trojan, %s, %d, "%s", transport=ws, sni=%s, path=%s, host=%s, udp=true
 `,
 		country, nodeName,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["trojan"]["password"],
 		proxyInfo[nodeCountry]["trojan"]["host"],
 		proxyInfo[nodeCountry]["trojan"]["path"],
@@ -1443,7 +1449,7 @@ func genV2raynVlessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCo
 func genSurgeAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`%s %s:%d = anytls, %-15s, %d, password=%v, sni=%v
 `,
-		country, ip, port, ip, port,
+		country, ip, port, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["anytls"]["password"],
 		proxyInfo[nodeCountry]["anytls"]["host"]))
 }
@@ -1453,7 +1459,7 @@ func genClashAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 	m := map[string]any{
 		"name":     fmt.Sprintf("%s %s:%d", country, ip, port),
 		"type":     "anytls",
-		"server":   ip,
+		"server":   stripBrackets(ip),
 		"port":     port,
 		"password": proxyInfo[nodeCountry]["anytls"]["password"],
 		"udp":      true,
@@ -1485,7 +1491,7 @@ func genQuanXAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 func genLoonAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`%s %s:%d = anytls, %s, %d, "%v", over-tls=true, tls-name=%v
 `,
-		country, ip, port, ip, port,
+		country, ip, port, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["anytls"]["password"],
 		proxyInfo[nodeCountry]["anytls"]["host"]))
 }
@@ -1521,7 +1527,7 @@ func genV2raynAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCo
 func genSurgeAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`%s %s = anytls, %-15s, %d, password=%v, sni=%v
 `,
-		country, nodeName, ip, port,
+		country, nodeName, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["anytls"]["password"],
 		proxyInfo[nodeCountry]["anytls"]["host"]))
 }
@@ -1530,7 +1536,7 @@ func genClashAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCo
 	m := map[string]any{
 		"name":     fmt.Sprintf("%s %s", country, nodeName),
 		"type":     "anytls",
-		"server":   ip,
+		"server":   stripBrackets(ip),
 		"port":     port,
 		"password": proxyInfo[nodeCountry]["anytls"]["password"],
 		"udp":      true,
@@ -1560,7 +1566,7 @@ func genQuanXAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCo
 func genLoonAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`%s %s = anytls, %s, %d, "%v", over-tls=true, tls-name=%v
 `,
-		country, nodeName, ip, port,
+		country, nodeName, stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["anytls"]["password"],
 		proxyInfo[nodeCountry]["anytls"]["host"]))
 }

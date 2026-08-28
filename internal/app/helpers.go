@@ -192,7 +192,8 @@ func buildNodeOutput(nodes []string, f Format, proxyInfo config.ProxyInfo, distN
 		if !matchIPV6Mode(ipv6Mode, node) {
 			continue
 		}
-		generator(&buf, proxyInfo, distNodeCountry, country, node, port)
+		// formatNodeHost：IPv6 补方括号（Surge/v2rayN 等所有格式的 host 都需要 [addr]）
+		generator(&buf, proxyInfo, distNodeCountry, country, formatNodeHost(node), port)
 	}
 	return finishOutput(&buf, f)
 }
