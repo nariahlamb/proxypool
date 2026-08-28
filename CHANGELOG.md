@@ -5,6 +5,14 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.4.0] - 2026-08-28
+
+### ⚡ 部署子路径自动适配（base_path 不再必填）
+
+- 子路径识别优先级：显式配置 `base_path` > 反代 `X-Forwarded-Prefix` 头 > **自动推断**
+- 自动推断：从首个请求路径识别已知路由前缀（如 `/show/clash` → 前缀 `/show/`），
+  进程内缓存后持续生效；根路径部署不受影响
+
 ## [v2.3.1] - 2026-08-28
 
 ### 🐛 部署子路径支持

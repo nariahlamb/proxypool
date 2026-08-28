@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"strings"
 	"time"
 
@@ -487,18 +488,94 @@ func setupRouter() {
 	}))
 }
 
+// knownRoutePrefixes 注册路由的静态前缀（供子路径自动推断使用，setupRouter 后构建）。
+// 例如 "/bestProxyIp/:format" → "/bestProxyIp/"，"/static/*filepath" → "/static/"，"/task/crawl" → "/task/crawl"。
+var knownRoutePrefixes []string
+
+// buildKnownRoutePrefixes 从已注册路由收集静态前缀。
+func buildKnownRoutePrefixes() {
+	seen := make(map[string]struct{})
+	for _, r := range router.Routes() {
+		p := r.Path
+		if p == "/" {
+			continue // 首页兜底，不作为前缀识别依据
+		}
+		// 截断动态参数（:param / *filepath）之前的静态部分
+		static := p
+		for i := 0; i < len(p); i++ {
+			if p[i] == ':' || p[i] == '*' {
+				// 取最后一个 / 之前（含 /），保证前缀语义
+				if j := strings.LastIndex(p[:i], "/"); j >= 0 {
+					static = p[:j+1]
+				} else {
+					static = "/"
+				}
+				break
+			}
+		}
+		if _, ok := seen[static]; !ok {
+			seen[static] = struct{}{}
+			knownRoutePrefixes = append(knownRoutePrefixes, static)
+		}
+	}
+}
+
+// matchKnownRoute 判断 path 是否命中某个已知路由前缀（等于或以 "xxx/" 前缀开始）。
+func matchKnownRoute(path string) bool {
+	for _, p := range knownRoutePrefixes {
+		if strings.HasSuffix(p, "/") {
+			if strings.HasPrefix(path, p) {
+				return true
+			}
+		} else if path == p {
+			return true
+		}
+	}
+	return false
+}
+
 func Run() {
 	setupRouter()
+	buildKnownRoutePrefixes()
 	servePort := config.Config().Port
 	// heroku 平台通过 PORT 环境变量指定端口（仅 heroku 生效，避免普通部署被环境变量覆盖）
 	if envp := os.Getenv("PORT"); envp != "" && os.Getenv("DYNO") != "" {
 		servePort = envp
 	}
 
-	// 部署子路径支持：配置 base_path（如 /show/）时，在进入 gin 路由前剥离前缀。
-	// 兼容反向代理不剥离前缀（location /show/ { proxy_pass http://backend; }）的部署形态。
+	// 部署子路径支持（自动适配，base_path 非必填）：
+	//  1) 显式配置 base_path → 直接使用
+	//  2) 反向代理设置 X-Forwarded-Prefix 头 → 使用（nginx 可配 proxy_set_header X-Forwarded-Prefix /show/）
+	//  3) 自动推断：请求路径中识别出已知路由的静态前缀，其前方即部署前缀（识别后进程内缓存，
+	//     前缀部署固定不变）；推断失败则按根路径处理
+	var detectedOnce sync.Once
+	var detectedBasePath string
+	resolveBasePath := func(r *http.Request) string {
+		if bp := config.Config().BasePath; bp != "" {
+			return bp
+		}
+		if bp := r.Header.Get("X-Forwarded-Prefix"); bp != "" {
+			return bp
+		}
+		detectedOnce.Do(func() {
+			p := r.URL.Path
+			if matchKnownRoute(p) {
+				return // 已是根路径路由，无前缀
+			}
+			// 第一段作为候选前缀："/show/clash" → 候选 "/show/"，剩余 "/clash"
+			if i := strings.Index(p[1:], "/"); i >= 0 {
+				prefix := p[:i+1] + "/"
+				rest := p[i+1:]
+				if matchKnownRoute(rest) {
+					detectedBasePath = prefix
+				}
+			}
+		})
+		return detectedBasePath
+	}
+
 	serveHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		basePath := config.Config().BasePath
+		basePath := resolveBasePath(r)
 		if basePath != "" && strings.HasPrefix(r.URL.Path, basePath) {
 			r.URL.Path = strings.TrimPrefix(r.URL.Path, basePath)
 			if !strings.HasPrefix(r.URL.Path, "/") {
