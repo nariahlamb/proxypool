@@ -5,6 +5,15 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.5.6] - 2026-08-28
+
+### 🔧 GeoIP 数据库改为运行时下载（镜像不内置）
+
+- 采纳运行时下载设计：Dockerfile 不再 COPY mmdb（构建上下文无需 GeoIP 文件，
+  CI 构建不再依赖这些文件存在）；首次启动自动下载 Country.mmdb / ASN / version
+- `InitGeoIpDB` 失败降级运行（Warn 继续，不再 os.Exit(1) 崩溃重启），
+  可通过 /task/updateGeoIP 重试下载
+
 ## [v2.5.5] - 2026-08-28
 
 ### 🐛 修复 CI 镜像构建失败（构建上下文缺 GeoIP 数据库）
