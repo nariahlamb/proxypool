@@ -6,12 +6,44 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"os"
 	"strings"
 	"sync"
+
+	"golang.org/x/term"
 )
 
+// ANSI 颜色码：仅终端输出时使用（TTY 检测），重定向/日志文件自动无色
+const (
+	colorReset  = "\033[0m"
+	colorRed    = "\033[31m"
+	colorGreen  = "\033[32m"
+	colorYellow = "\033[33m"
+	colorBlue   = "\033[34m"
+)
+
+// useColor 是否启用彩色：标准输出为终端且未设置 NO_COLOR
+var useColor = term.IsTerminal(int(os.Stdout.Fd())) && os.Getenv("NO_COLOR") == ""
+
+// levelColor 返回级别对应前景色（无色模式返回空串）
+func levelColor(l slog.Level) string {
+	if !useColor {
+		return ""
+	}
+	switch {
+	case l >= slog.LevelError:
+		return colorRed
+	case l >= slog.LevelWarn:
+		return colorYellow
+	case l >= slog.LevelInfo:
+		return colorGreen
+	default:
+		return colorBlue // debug/trace
+	}
+}
+
 // prettyHandler 人类友好的 slog Handler：输出 `[2026-08-28 20:18:00] INFO message [key=value]`，
-// 对齐原 logrus-prefixed-formatter 的阅读习惯（替代 TextHandler 的 time=/level=/msg= 键值形式）。
+// LEVEL 按级别着色（ERROR 红 / WARN 黄 / INFO 绿 / DEBUG 蓝），对齐原 logrus 前缀格式的阅读习惯。
 type prettyHandler struct {
 	level *slog.LevelVar
 	out   io.Writer
@@ -30,8 +62,16 @@ func (h *prettyHandler) Enabled(_ context.Context, level slog.Level) bool {
 
 func (h *prettyHandler) Handle(_ context.Context, r slog.Record) error {
 	var buf bytes.Buffer
-	fmt.Fprintf(&buf, "[%s] %-5s %s", r.Time.Format("2006-01-02 15:04:05"),
-		strings.ToUpper(r.Level.String()), r.Message)
+	lvlStr := strings.ToUpper(r.Level.String())
+	// 固定宽度 5 对齐（% -5s），着色码不计入宽度
+	if len(lvlStr) < 5 {
+		lvlStr += strings.Repeat(" ", 5-len(lvlStr))
+	}
+	colored := lvlStr
+	if c := levelColor(r.Level); c != "" {
+		colored = c + lvlStr + colorReset
+	}
+	fmt.Fprintf(&buf, "[%s] %s %s", r.Time.Format("2006-01-02 15:04:05"), colored, r.Message)
 	if len(h.attrs) > 0 {
 		for _, a := range h.attrs {
 			fmt.Fprintf(&buf, " %s=%v", a.Key, a.Value.Any())

@@ -5,6 +5,13 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [v2.5.7] - 2026-08-28
+
+### 🎨 日志分级着色
+
+- 日志 LEVEL 按级别着色（终端输出时）：ERROR 红 / WARN 黄 / INFO 绿 / DEBUG 蓝；
+  管道/文件/NO_COLOR 环境变量时自动无色（不影响日志收集）
+
 ## [v2.5.6] - 2026-08-28
 
 ### 🔧 GeoIP 数据库改为运行时下载（镜像不内置）
