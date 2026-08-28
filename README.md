@@ -88,6 +88,7 @@ docker pull <dockerhub用户名>/proxypool:latest
 | `sni_probe` | 优选节点 anytls 透传探测（enable/concurrency/timeout/country/test_url） |
 | `bestip_probe` | 优选 IP 健康检查（vless 协议验证入口可用性，启用后 vless/vmess/trojan 格式仅导出可用节点；全失败时短路跳过 anytls 探测） |
 | `healthcheck_test_urls` | 健康检查测试地址覆盖（默认内置国内可达 204 端点，不含 gstatic） |
+| `freeze-failures` / `unlock-passes` / `freeze-window` | 失效节点冻结：连续失败 N 轮冻结不入库；冻结中连续通过 N 轮解锁；超窗口强制解锁（默认 3/3/30 天） |
 | `proxy_info` | 优选 IP 出站节点凭据（vmess/trojan/vless/anytls，按国家） |
 | `cf_best_ip` | 静态优选 IP 列表 |
 

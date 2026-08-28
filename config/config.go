@@ -41,6 +41,9 @@ type ConfigOptions struct {
 	SubIpListUrl        []string           `json:"sub_ip_list_url" yaml:"sub_ip_list_url"`
 	SniProbe            *SniProbeConfig    `json:"sni_probe" yaml:"sni_probe"`
 	BestIPProbe         *BestIPProbeConfig `json:"bestip_probe" yaml:"bestip_probe"`
+	FreezeFailures      int                `json:"freeze-failures" yaml:"freeze-failures"`
+	UnlockPasses        int                `json:"unlock-passes" yaml:"unlock-passes"`
+	FreezeWindow        int                `json:"freeze-window" yaml:"freeze-window"`
 	HealthcheckTestURLs []string           `json:"healthcheck_test_urls" yaml:"healthcheck_test_urls"`
 	ProxyInfo           ProxyInfo          `json:"proxy_info" yaml:"proxy_info"`
 	CfBestIp            []string           `json:"cf_best_ip" yaml:"cf_best_ip"`
@@ -206,6 +209,18 @@ func Parse(path string) error {
 
 	if cfg.SubBestNodeInterval == 0 {
 		cfg.SubBestNodeInterval = 60
+	}
+
+	// 失效节点冻结：连续失败 freeze-failures 轮 → 冻结（不入库）；
+	// 冻结中连续通过 unlock-passes 轮 → 解锁；freeze-window 天后强制解锁
+	if cfg.FreezeFailures == 0 {
+		cfg.FreezeFailures = 3
+	}
+	if cfg.UnlockPasses == 0 {
+		cfg.UnlockPasses = 3
+	}
+	if cfg.FreezeWindow == 0 {
+		cfg.FreezeWindow = 30
 	}
 
 	if cfg.SniProbe != nil {

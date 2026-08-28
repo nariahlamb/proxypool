@@ -70,6 +70,13 @@ sni_probe:
 #   - "https://cp.cloudflare.com/generate_204"
 #   - "https://connect.rom.miui.com/generate_204"
 
+# 失效节点冻结（可选，默认值如下）：连续健康检查失败 freeze-failures 轮 → 冻结（不入库，
+# 即使源站继续返回也不留库）；冻结中连续通过 unlock-passes 轮 → 解锁恢复；
+# 冻结超过 freeze-window 天 → 强制解锁（防止节点恢复后永久封禁）
+freeze-failures: 3
+unlock-passes: 3
+freeze-window: 30
+
 # best 节点优选 IP 健康检查（通用入口可用性，vless 协议握手+数据往返验证；
 # 不配置此段时 vless/vmess/trojan 格式不做事先筛选；enable 缺省 true；
 # country 缺省自动取 proxy_info 中第一个配置了 vless 的国家；

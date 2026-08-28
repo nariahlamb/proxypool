@@ -105,7 +105,19 @@ func CrawlGo() {
 		okproxies = append(okproxies, healthcheck.CleanBadProxiesWithWorkpool(proxies[round*b:])...)
 		proxies = okproxies
 	*/
+	// 本轮全部节点 id（健康检查前快照，供冻结状态机使用）
+	roundIDs := make([]string, 0, len(proxies))
+	for _, p := range proxies {
+		roundIDs = append(roundIDs, p.Identifier())
+	}
+
 	proxies = healthcheck.CleanBadProxiesWithWorkpool(proxies)
+
+	// 失效节点冻结状态机：连续失败达阈值 → 冻结；冻结中连续通过/超窗口 → 解冻
+	updateFreezeState(roundIDs)
+
+	// 冻结节点即使本轮通过健康检查也不参与后续流程与入库（streak 仍会积累，用于解锁判定）
+	proxies = filterFrozenProxies(proxies)
 
 	log.Infoln("CrawlGo clash usable proxy count: %d", len(proxies))
 

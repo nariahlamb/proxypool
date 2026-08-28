@@ -86,7 +86,11 @@ func CleanBadProxiesWithWorkpool(proxies []proxy.Proxy) (cproxies []proxy.Proxy)
 			defer progress.inc()
 			delay, err := testDelay(pp)
 			if err == nil && delay != 0 {
+				RecordHealthResult(pp.Identifier(), true)
 				c <- findOrCreateDelayStat(pp, delay)
+			} else {
+				// 失败同样记录 streak，供失效节点冻结机制使用
+				RecordHealthResult(pp.Identifier(), false)
 			}
 		})
 	}
