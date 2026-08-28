@@ -19,6 +19,11 @@
 - 凭据复用 `proxy_info[country]["vless"]`（host/uuid/path），构造参数与
   `clashVless` 导出完全一致（探测通过即订阅可用）
 
+### 🧹 清理
+
+- 移除未使用的 Cloudflare API 死配置（`cf_email` / `cf_key` 字段与环境变量覆盖逻辑，
+  go.mod 无 cloudflare-go 依赖）
+
 ## [v2.0.0] - 2026-08-27
 
 ### 🔧 代码现代化（Modern Go 规范，Go 1.27）
