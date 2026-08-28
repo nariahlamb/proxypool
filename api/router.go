@@ -309,6 +309,7 @@ func setupRouter() {
 			"best_total":                  bestTotal,
 			"best_healthy":                bestHealthy,
 			"best_anytls":                 bestAnyTLS,
+			"best_v6_healthy":             app.CountBestV6Healthy(),
 			"best_last_update":            appcache.GetString("bestNodeLastUpdateTime"),
 			"last_crawl_time":             appcache.LastCrawlTime,
 			"is_speed_test":               appcache.IsSpeedTest,

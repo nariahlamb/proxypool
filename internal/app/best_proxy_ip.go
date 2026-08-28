@@ -854,6 +854,18 @@ func formatNodeHost(addr string) string {
 	return addr
 }
 
+// CountBestV6Healthy 统计 best 节点中健康检查通过的 IPv6 节点数（可用 IPv6 优选 IP）。
+func CountBestV6Healthy() int {
+	nodes := cache.GetBestNodeList("bestNode")
+	n := 0
+	for _, node := range nodes {
+		if node.Healthy && IsIPv6(node.Ip) {
+			n++
+		}
+	}
+	return n
+}
+
 // maskURLHost 日志脱敏：仅保留 URL 的 host 部分，隐藏 uuid/password/path 等凭据。
 func maskURLHost(rawURL string) string {
 	if u, err := url.Parse(rawURL); err == nil && u.Host != "" {

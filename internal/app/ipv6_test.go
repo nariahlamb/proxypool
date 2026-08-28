@@ -1,6 +1,10 @@
 package app
 
-import "testing"
+import (
+	"testing"
+
+	appcache "github.com/One-Piecs/proxypool/internal/cache"
+)
 
 func TestFormatNodeHost(t *testing.T) {
 	cases := []struct {
@@ -44,5 +48,22 @@ func TestIsIPv6(t *testing.T) {
 	}
 	if !IsIPv6("2001:db8::1") {
 		t.Error("IsIPv6(2001:db8::1) = false, want true")
+	}
+}
+
+// TestCountBestV6Healthy 统计健康检查通过的 IPv6 节点数
+func TestCountBestV6Healthy(t *testing.T) {
+	appcache.SetBestNodeList("bestNode", []appcache.BestNode{
+		{Ip: "1.2.3.4", Port: 443, Country: "JP", Healthy: true},       // IPv4 健康
+		{Ip: "2001:db8::1", Port: 443, Country: "JP", Healthy: true},   // IPv6 健康
+		{Ip: "2001:db8::2", Port: 443, Country: "JP", Healthy: false},  // IPv6 不健康
+		{Ip: "2001:db8::3", Port: 443, Country: "JP"},                  // IPv6 无标记（未探测）
+	})
+	if got := CountBestV6Healthy(); got != 1 {
+		t.Errorf("CountBestV6Healthy = %d, want 1", got)
+	}
+	appcache.SetBestNodeList("bestNode", nil)
+	if got := CountBestV6Healthy(); got != 0 {
+		t.Errorf("empty list = %d, want 0", got)
 	}
 }
