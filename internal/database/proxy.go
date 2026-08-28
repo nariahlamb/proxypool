@@ -6,6 +6,7 @@ import (
 
 	"github.com/gammazero/workerpool"
 
+	"github.com/One-Piecs/proxypool/config"
 	"github.com/One-Piecs/proxypool/log"
 	"github.com/One-Piecs/proxypool/pkg/healthcheck"
 	"github.com/One-Piecs/proxypool/pkg/proxy"
@@ -171,5 +172,16 @@ func ClearOldItems() {
 		log.Infoln("database: Swept %d old and unusable proxies", res.RowsAffected)
 	} else {
 		log.Infoln("database: Nothing old to sweep")
+	}
+
+	// 冻结记录：冻结超过 freeze-window 天强制解封（节点不再出现也能被清理，防止 blocklist 无限累积）
+	window := time.Duration(config.Config().FreezeWindow) * 24 * time.Hour
+	if window <= 0 {
+		window = 30 * 24 * time.Hour
+	}
+	if res := DB.Where("freeze_at < ?", time.Now().Add(-window)).Delete(&ProxyBlockList{}); res.Error != nil {
+		log.Warnln("database: Delete expired freeze failed: %s", res.Error.Error())
+	} else if res.RowsAffected > 0 {
+		log.Infoln("database: Swept %d expired freeze records", res.RowsAffected)
 	}
 }
