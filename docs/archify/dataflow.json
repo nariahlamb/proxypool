@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "ProxyPool 处理逻辑",
+    "locale": "zh-CN",
+    "viewBox": [1072, 620],
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "main", "label": "主链路", "focus": ["fetch", "health", "save", "cleanup", "serve"], "note": "抓取 → 检测 → 入库 → 清理 → 输出" },
+      { "id": "freeze", "label": "冻结生命周期", "focus": ["freeze-dec", "frozen", "unfreeze", "health"], "note": "连续失败冻结，连续通过或超期解冻" },
+      { "id": "best", "label": "优选 IP 链路", "focus": ["best-fetch", "probe", "best-save", "best-serve"], "note": "采集 → 探测 → 落库 → 过滤输出" }
+    ]
+  },
+  "stages": [
+    { "label": "采集" },
+    { "label": "检测" },
+    { "label": "存储" },
+    { "label": "清理 / 解冻" },
+    { "label": "输出" }
+  ],
+  "nodes": [
+    { "id": "fetch", "type": "external", "label": "抓取聚合", "sublabel": "7类源+去重", "stage": 0, "row": 1 },
+    { "id": "health", "type": "backend", "label": "健康检查", "sublabel": "URLTest 204", "stage": 1, "row": 1 },
+    { "id": "save", "type": "database", "label": "入库", "sublabel": "upsert useable", "stage": 2, "row": 1 },
+    { "id": "cleanup", "type": "database", "label": "7天清理", "sublabel": "停更且不可用", "stage": 3, "row": 1 },
+    { "id": "serve", "type": "frontend", "label": "订阅输出", "sublabel": "clash/surge/quanx", "stage": 4, "row": 1 },
+    { "id": "best-fetch", "type": "backend", "label": "优选IP采集", "sublabel": "5源+白名单", "stage": 0, "row": 0 },
+    { "id": "probe", "type": "backend", "label": "优选IP探测", "sublabel": "vless全败则短路", "stage": 1, "row": 0 },
+    { "id": "best-save", "type": "database", "label": "覆盖保存", "sublabel": "best_node 含标记", "stage": 2, "row": 0 },
+    { "id": "best-serve", "type": "frontend", "label": "/best* 输出", "sublabel": "Healthy/AnyTLS 过滤", "stage": 4, "row": 0 },
+    { "id": "freeze-dec", "type": "security", "label": "失败≥3轮?", "tag": "streak 判定", "stage": 1, "row": 2 },
+    { "id": "frozen", "type": "security", "label": "冻结", "sublabel": "不入库", "tag": "proxy_blocklist", "stage": 2, "row": 2 },
+    { "id": "unfreeze", "type": "security", "label": "解冻", "sublabel": "通过≥3/超30天", "stage": 3, "row": 2 }
+  ],
+  "flows": [
+    { "from": "fetch", "to": "health", "label": "节点列表", "variant": "emphasis", "route": "straight" },
+    { "from": "health", "to": "save", "label": "通过", "variant": "emphasis", "route": "straight" },
+    { "from": "save", "to": "cleanup", "label": "每轮", "route": "straight" },
+    { "from": "cleanup", "to": "serve", "label": "读取", "variant": "emphasis", "route": "straight" },
+    { "from": "health", "to": "freeze-dec", "label": "失败", "variant": "security", "route": "vertical-channel" },
+    { "from": "freeze-dec", "to": "frozen", "label": "连续失败", "variant": "security", "route": "straight" },
+    { "from": "frozen", "to": "unfreeze", "label": "恢复", "route": "straight" },
+    { "from": "best-fetch", "to": "probe", "label": "异步", "variant": "dashed", "route": "straight" },
+    { "from": "probe", "to": "best-save", "label": "标记", "variant": "emphasis", "route": "straight" },
+    { "from": "best-save", "to": "best-serve", "label": "读取", "route": "straight" }
+  ],
+  "cards": [
+    { "dot": "rose", "title": "主链路", "items": ["全量健康检查（URLTest 204），通过才入库", "入库 upsert useable + 刷新 updated_at", "7 天未更新且不可用的节点被清理"] },
+    { "dot": "emerald", "title": "冻结生命周期", "items": ["连续失败 3 轮 → 冻结（采集回来也不入库）", "冻结中连续通过 3 轮 → 解冻恢复", "冻结超 30 天强制解封，避免永久封禁"] },
+    { "dot": "cyan", "title": "优选 IP", "items": ["采集即落库 best_node，重启秒级恢复", "vless 健康检查全失败 → 短路跳过 anytls 探测", "vless/vmess/trojan 格式仅导出健康节点"] }
+  ]
+}

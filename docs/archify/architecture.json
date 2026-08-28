@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "ProxyPool 系统架构",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "ingest", "label": "采集链路", "focus": ["sources", "getter", "best", "healthcheck"], "note": "外部源如何进入抓取器与优选 IP 采集" },
+      { "id": "store", "label": "存储与恢复", "focus": ["cache", "db", "api"], "note": "内存缓存与 SQLite 三张表的读写关系" },
+      { "id": "serve", "label": "对外服务", "focus": ["api", "cron"], "note": "页面/订阅/优选/任务端点与定时调度" }
+    ]
+  },
+  "components": [
+    { "id": "sources", "type": "external", "label": "外部数据源", "sublabel": "订阅/TG/网页/vps789", "pos": [40, 250], "size": [130, 66] },
+    { "id": "getter", "type": "backend", "label": "抓取器 Getter", "sublabel": "subscribe/clash/tgchannel", "pos": [240, 120], "size": [140, 66] },
+    { "id": "healthcheck", "type": "backend", "label": "健康检查", "sublabel": "延迟/测速/中转", "pos": [430, 120], "size": [140, 66] },
+    { "id": "freeze", "type": "security", "label": "冻结状态机", "sublabel": "连续失败≥3冻结", "pos": [620, 120], "size": [130, 66] },
+    { "id": "best", "type": "backend", "label": "优选IP采集", "sublabel": "CrawlBestNode 5源+排序", "pos": [240, 330], "size": [140, 66] },
+    { "id": "probe", "type": "backend", "label": "优选IP探测", "sublabel": "bestip(vless)→anytls", "pos": [460, 330], "size": [150, 66] },
+    { "id": "cron", "type": "backend", "label": "定时调度", "sublabel": "crawl/bestnode/geoip", "pos": [40, 450], "size": [130, 66] },
+    { "id": "api", "type": "frontend", "label": "Gin Web API", "sublabel": "页面/订阅/best/task", "pos": [880, 120], "size": [140, 66] },
+    { "id": "cache", "type": "database", "label": "内存缓存", "sublabel": "cacheStore 缓存", "pos": [880, 330], "size": [140, 66] },
+    { "id": "db", "type": "database", "label": "SQLite", "sublabel": "proxies/blocklist/best_node", "pos": [620, 450], "size": [180, 66] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "应用服务", "wraps": ["getter", "healthcheck", "freeze", "best", "probe", "cron", "api", "cache"] },
+    { "kind": "region", "label": "存储", "wraps": ["db"] }
+  ],
+  "connections": [
+    { "id": "src-getter", "from": "sources", "to": "getter", "label": "HTTPS / TG" },
+    { "id": "src-best", "from": "sources", "to": "best", "label": "订阅 / API", "variant": "dashed" },
+    { "id": "getter-health", "from": "getter", "to": "healthcheck", "label": "节点列表" },
+    { "id": "health-freeze", "from": "healthcheck", "to": "freeze", "label": "失败", "variant": "security", "labelAt": [595, 205] },
+    { "id": "best-probe", "from": "best", "to": "probe", "label": "异步探测", "variant": "dashed" },
+    { "id": "probe-db", "from": "probe", "to": "db", "label": "best_node 覆盖", "variant": "dashed", "fromSide": "bottom", "toSide": "bottom", "via": [[535, 530], [710, 530]], "labelAt": [620, 548] },
+    { "id": "freeze-db", "from": "freeze", "to": "db", "label": "blocklist", "variant": "security", "fromSide": "bottom", "toSide": "top" },
+    { "id": "db-cache", "from": "db", "to": "cache", "label": "启动恢复/查询", "variant": "dashed", "fromSide": "right", "toSide": "left" },
+    { "id": "api-cache", "from": "api", "to": "cache", "label": "读取", "fromSide": "bottom", "toSide": "top", "labelAt": [950, 260] }
+  ],
+  "cards": [
+    { "dot": "rose", "title": "采集与检测", "items": ["抓取器聚合 7 类源，去重后全量健康检查（URLTest 204）", "失效节点连续失败 3 轮冻结，冻结期内不入库"] },
+    { "dot": "emerald", "title": "优选 IP", "items": ["5 源采集 + 端口白名单 + 多级排序", "vless 健康检查全失败则短路跳过 anytls 探测"] },
+    { "dot": "cyan", "title": "存储与恢复", "items": ["SQLite 三表：proxies / blocklist / best_node", "普通节点 7 天清理，best 全量覆盖，重启秒级恢复", "cron 定时触发抓取/测速/优选IP/GeoIP 更新"] }
+  ]
+}
