@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/One-Piecs/proxypool/pkg/proxy"
+	"github.com/metacubex/mihomo/component/resolver"
 )
 
 // statsLock 保护全局 ProxyStats 的并发访问：
@@ -79,6 +80,9 @@ var ProxyStats StatList
 
 func init() {
 	ProxyStats = make(StatList, 0)
+	// mihomo 默认 DisableIPv6=true（resolver 拒绝 IPv6 字面地址解析 → "ip version error"），
+	// 显式启用，使 IPv6 节点的健康检查（URLTest/TCPCheck 走 mihomo dialer）正常工作。
+	resolver.DisableIPv6 = false
 }
 
 // Update speed for a Stat

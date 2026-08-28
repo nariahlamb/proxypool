@@ -1,3 +1,16 @@
+## [v2.5.14] - 2026-08-29
+
+### 🐛 修复 best 健康检查 IPv6 节点全部失败（mihomo DisableIPv6 默认值）
+
+- 详细日志排查发现失败原因为 mihomo `dns resolve failed: ip version error`：
+  mihomo 默认 DisableIPv6=true（resolver 只解析 IPv4，IPv6 字面地址被拒）——
+  即使服务器有 IPv6 出口，IPv6 节点探测也必然失败
+- 修复：healthcheck init 显式 `resolver.DisableIPv6 = false`
+- 实测验证（o.laibas.top 凭据 + http://cp.cloudflare.com/generate_204）：
+  IPv6 健康 0/26 → 14/14（100%）；IPv4 70/72（97%）
+- IPv6 节点失败时打印详细诊断（完整 vless 链接 + 错误，便于排查）
+- 默认探测 URL 恢复 http://cp.cloudflare.com/generate_204（实测 204）
+
 ## [v2.5.13] - 2026-08-28
 
 ### 🔧 sub_ip_url 解析健壮性增强

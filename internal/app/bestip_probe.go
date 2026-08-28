@@ -16,7 +16,8 @@ import (
 // bestipProbeTestURL 优选 IP 健康检查的数据往返测试地址：
 // 隧道建立后经代理发起真实 HTTP 请求，校验 204 状态码，
 // 确认数据能端到端转发（而非仅协议握手成功）。
-const bestipProbeTestURL = "https://cp.cloudflare.com/generate_204"
+// 默认 cp.cloudflare.com/generate_204（http/https 均返回 204），可经 bestip_probe.test_url 覆盖。
+const bestipProbeTestURL = "http://cp.cloudflare.com/generate_204"
 
 // 背景：候选 best ip:port 本质上是一个 SNI proxy（SNI 转发入口）——它只读 TLS
 // ClientHello 中的 SNI 字段，把原始 TCP 流路由到对应域名源站，不解析应用层协议。
@@ -77,7 +78,15 @@ func probeBestIPNode(ip string, port int, uuid, sni, wsPath, testURL string, tim
 		return false
 	}
 	_, err = clashProxy.URLTest(ctx, testURL, expected)
-	return err == nil
+	if err != nil {
+		// IPv6 节点失败时打印详细诊断：完整 vless 链接 + 具体错误，便于排查
+		// （如无 IPv6 出口会报 network is unreachable / i/o timeout）
+		if IsIPv6(ip) {
+			log.Warnln("bestip probe FAILED [%s:%d] link=%s url=%s err=%v", ip, port, v.Link(), testURL, err)
+		}
+		return false
+	}
+	return true
 }
 
 // ProbeAndMarkHealthy 并发探测 best 节点列表（优选 IP 入口健康检查），
