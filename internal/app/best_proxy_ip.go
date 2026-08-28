@@ -135,8 +135,15 @@ func CrawlBestNode() {
 							}
 							var addr string
 							if strings.Contains(line, "://") {
+								// 只接受已知代理协议前缀（拒绝 HTML/JS 错误页噪音行）
+								lower := strings.ToLower(line)
+								if !strings.HasPrefix(lower, "vless://") && !strings.HasPrefix(lower, "vmess://") &&
+									!strings.HasPrefix(lower, "trojan://") && !strings.HasPrefix(lower, "ss://") &&
+									!strings.HasPrefix(lower, "ssr://") && !strings.HasPrefix(lower, "anytls://") {
+									continue
+								}
 								// vless:// 等 URL 行：取 host:port，缺端口补 443（白名单内）
-								if u, err := url.Parse(line); err == nil && u.Hostname() != "" {
+								if u, err := url.Parse(line); err == nil && u.Hostname() != "" && isValidHostname(u.Hostname()) {
 									port := u.Port()
 									if port == "" {
 										port = "443"
@@ -267,7 +274,7 @@ func CrawlBestNode() {
 	for _, addr := range addrAll {
 		host, port, err := net.SplitHostPort(addr)
 		if err != nil {
-			log.Errorln("Failed to split host port for %s: %v", addr, err)
+			log.Debugln("skip invalid addr %s: %v", addr, err)
 			continue
 		}
 
@@ -279,7 +286,8 @@ func CrawlBestNode() {
 		// It's a domain, resolve it
 		ips, err := net.LookupIP(host)
 		if err != nil {
-			log.Errorln("Failed to resolve domain %s: %v", host, err)
+			// 免费源含大量已失效域名，DNS 失败属常态噪音，降级为 Debug
+			log.Debugln("skip unresolvable domain %s: %v", host, err)
 			continue
 		}
 
@@ -991,10 +999,33 @@ func parsePlainSubLine(line string) (host, port, name string, ok bool) {
 	if strings.Count(host, ":") > 1 && net.ParseIP(host) == nil {
 		return "", "", "", false
 	}
-	if host == "" {
+	// host 必须是合法 IP 或域名：拒绝 HTML/JS 脚本噪音（含 [ ] ( ) ; = & 等字符的行）
+	if !isValidHostname(host) {
 		return "", "", "", false
 	}
 	return host, port, name, true
+}
+
+// isValidHostname 校验 host 是否为合法 IP 或域名（拒绝订阅源返回的 HTML/JS 错误页噪音行）。
+func isValidHostname(host string) bool {
+	if host == "" || len(host) > 253 {
+		return false
+	}
+	if ip := net.ParseIP(host); ip != nil {
+		return true
+	}
+	// 域名要求至少一个点（避免 localhost 等裸主机名）
+	if !strings.Contains(host, ".") {
+		return false
+	}
+	// 仅允许字母、数字、点、连字符、下划线
+	for _, c := range host {
+		if !(c >= 'a' && c <= 'z') && !(c >= 'A' && c <= 'Z') &&
+			!(c >= '0' && c <= '9') && c != '.' && c != '-' && c != '_' {
+			return false
+		}
+	}
+	return true
 }
 
 func ipToUint32(ip string) uint32 {

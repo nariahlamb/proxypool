@@ -67,3 +67,25 @@ func TestCountBestV6Healthy(t *testing.T) {
 		t.Errorf("empty list = %d, want 0", got)
 	}
 }
+
+// TestIsValidHostname 校验 host 合法性：拒绝 HTML/JS 脚本噪音，接受域名/IP
+func TestIsValidHostname(t *testing.T) {
+	valid := []string{"1.2.3.4", "2606:4700::1", "cf.900501.xyz", "8.889288.xyz", "steep.laibas.top", "a-b.c-d.com", "115155.xyz"}
+	invalid := []string{
+		"values[key];if(value)parts.push(key+=\"=\"+encodeURIComponent(value))}img.src=parts.join(\"&\")",
+		"window.onerror=function(msg){var img=new Image",
+		"(function(w,d){if(!w.navigator)return false",
+		"Object.keys(p));}this._nativePrototypes[tag]=p",
+		"", "localhost", "no-dot", "sp ace.com", "a[b].com",
+	}
+	for _, h := range valid {
+		if !isValidHostname(h) {
+			t.Errorf("isValidHostname(%q) = false, want true", h)
+		}
+	}
+	for _, h := range invalid {
+		if isValidHostname(h) {
+			t.Errorf("isValidHostname(%q) = true, want false", h)
+		}
+	}
+}

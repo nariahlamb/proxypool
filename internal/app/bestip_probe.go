@@ -2,6 +2,8 @@ package app
 
 import (
 	"context"
+	"net"
+	"sync"
 	"time"
 
 	"github.com/One-Piecs/proxypool/config"
@@ -28,6 +30,37 @@ const bestipProbeTestURL = "http://cp.cloudflare.com/generate_204"
 //   - 探测的 sni 参数（= proxy_info[country]["vless"]["host"]）就是喂给 SNI proxy
 //     的路由键，必须指向真实可用的 vless 源站域名
 //   - 构造参数与 genClashVlessUrl 输出完全一致，保证"探测通过 = 该格式订阅可用"
+
+// ipv6ProbeOK 缓存本机 IPv6 出口检测结果（一次探测周期内只测一次）。
+var (
+	ipv6CheckOnce sync.Once
+	ipv6ProbeOK   bool
+)
+
+// ipv6TestAddrs IPv6 出口检测目标（知名公共 DNS 的 443 端口，任一可达即认为有 IPv6 出口）
+var ipv6TestAddrs = []string{
+	"[2606:4700:4700::1111]:443", // Cloudflare DNS
+	"[2400:3200::1]:443",         // AliDNS
+	"[2001:4860:4860::8888]:443", // Google DNS
+}
+
+// checkIPv6Reachable 检测本机是否具备 IPv6 出口（TCP 连公共 IPv6 地址）。
+// 无出口时 IPv6 节点探测必然 network unreachable，探测前据此跳过。
+func checkIPv6Reachable() bool {
+	ipv6CheckOnce.Do(func() {
+		for _, addr := range ipv6TestAddrs {
+			conn, err := net.DialTimeout("tcp6", addr, 2*time.Second)
+			if err == nil {
+				_ = conn.Close()
+				ipv6ProbeOK = true
+				log.Infoln("bestip probe: IPv6 egress detected (%s)", addr)
+				return
+			}
+		}
+		log.Infoln("bestip probe: no IPv6 egress on this host")
+	})
+	return ipv6ProbeOK
+}
 
 // probeBestIPCountry 选择健康检查用国家凭据：配置指定优先，缺省取 proxy_info 中
 // 第一个配置了 vless 段的国家（map 遍历顺序不定，但任意一个含 vless 凭据的国家即可，
@@ -79,10 +112,9 @@ func probeBestIPNode(ip string, port int, uuid, sni, wsPath, testURL string, tim
 	}
 	_, err = clashProxy.URLTest(ctx, testURL, expected)
 	if err != nil {
-		// IPv6 节点失败时打印详细诊断：完整 vless 链接 + 具体错误，便于排查
-		// （如无 IPv6 出口会报 network is unreachable / i/o timeout）
+		// IPv6 节点失败时 Debug 级记录错误（不打印 vless:// 链接，避免 proxy_info 凭据泄入日志）
 		if IsIPv6(ip) {
-			log.Warnln("bestip probe FAILED [%s:%d] link=%s url=%s err=%v", ip, port, v.Link(), testURL, err)
+			log.Debugln("bestip probe FAILED [%s:%d] url=%s err=%v", ip, port, testURL, err)
 		}
 		return false
 	}
@@ -130,12 +162,31 @@ func ProbeAndMarkHealthy(nodes []cache.BestNode) []cache.BestNode {
 		return nodes
 	}
 
+	// 探测前检测本机 IPv6 出口：无出口时 IPv6 节点必然 network unreachable，
+	// 直接跳过（避免数百条失败日志刷屏），仅保留一条汇总提示。
+	v6OK := checkIPv6Reachable()
+	if !v6OK {
+		v6Count := 0
+		for _, n := range nodes {
+			if IsIPv6(n.Ip) {
+				v6Count++
+			}
+		}
+		if v6Count > 0 {
+			log.Warnln("bestip probe: host has no IPv6 egress, skip %d IPv6 nodes (IPv6 节点健康将显示为 0)", v6Count)
+		}
+	}
+
 	log.Infoln("bestip probe: testing %d nodes (country=%s, concurrency=%d, timeout=%ds, url=%s)", len(nodes), country, concurrency, int(timeout/time.Second), testURL)
 
 	results := make([]bool, len(nodes))
 	wp := workerpool.New(concurrency)
 	for i, node := range nodes {
 		wp.Submit(func() {
+			if IsIPv6(node.Ip) && !v6OK {
+				results[i] = false // 无 IPv6 出口，跳过
+				return
+			}
 			results[i] = probeBestIPNode(node.Ip, node.Port, uuid, sni, wsPath, testURL, timeout)
 		})
 	}

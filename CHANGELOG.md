@@ -1,3 +1,24 @@
+## [v2.5.15] - 2026-08-29
+
+### 🌐 docker-compose 示例改用 host 网络（IPv6 出口可用）
+
+- 容器默认 bridge 网络无 IPv6（Docker 不做 IPv6 NAT），宿主机有 IPv6 容器也出不了公网
+- host 网络直接共享宿主机网络栈：IPv4+IPv6 出口均可用，IPv6 优选节点健康检查正常
+- 保留 bridge（仅 IPv4）注释选项
+
+### 🔧 best 探测 IPv6 出口检测 + 日志收敛
+
+- 探测前检测本机 IPv6 出口：无出口时跳过 IPv6 节点（一条汇总日志），
+  修复数百条 network is unreachable 失败日志刷屏
+- 移除失败日志中的 vless:// 链接（含 proxy_info 凭据，避免泄入日志），
+  保留无凭据的 Debug 级错误记录
+
+### 🐛 best 明文订阅解析噪音过滤
+
+- 订阅源返回 HTML/JS 错误页时，JS 代码行被误当节点解析（xxx:443 子串）
+- isValidHostname 校验 host（拒绝脚本特征字符）+ URL 行仅接受已知协议前缀
+- DNS 解析失败日志降级为 Debug（免费源废弃域名属常态噪音）
+
 ## [v2.5.14] - 2026-08-29
 
 ### 🐛 修复 best 健康检查 IPv6 节点全部失败（mihomo DisableIPv6 默认值）

@@ -10,7 +10,15 @@
 #   - GeoIP 数据库已内置在镜像中（v2.5.2+），无需挂载 assets 目录
 #   - 挂载 config.yaml / source.yaml / data 便于宿主机独立管理配置与数据
 #   - 如需站点挂载在子路径（如 /show/），在 config.yaml 配置 base_path（自动适配，无需手动）
-#   - 任务接口鉴权：在 config.yaml 配置 admin_token
+#   - 任务接口鉴权：在 config.yaml 配置 admin_token；优选订阅鉴权：配置 best_token
+#
+# 网络模式（重要）：
+#   默认使用 host 网络——容器直接共享宿主机网络栈：
+#     - IPv4 + IPv6 出口均可用（IPv6 优选节点健康检查可正常工作）
+#     - 无需 ports 映射，服务直接监听宿主机 12580 端口
+#     - 若宿主机无 IPv6 出口，程序会自动跳过 IPv6 节点探测（日志提示，不影响使用）
+#   如希望保持端口隔离（仅 IPv4 即可），可改用默认 bridge：
+#     删除下方 network_mode 行，并取消 ports 映射注释
 
 services:
   proxypool:
@@ -20,8 +28,10 @@ services:
     hostname: proxypool
     restart: always
     tty: true
-    ports:
-      - "12580:12580"
+    network_mode: host
+    # 使用 bridge 网络（仅 IPv4）时取消注释：
+    # ports:
+    #   - "12580:12580"
     environment:
       - TZ=Asia/Shanghai
     volumes:
