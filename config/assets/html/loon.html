@@ -21,7 +21,7 @@
     <!-- Navigation -->
     <nav class="navbar is-primary pl-2 pr-2" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a href="https://{{ .domain }}{{ .base_path }}" class="navbar-item">
+            <a href="#" id="brand-home" class="navbar-item">
                 <h1 class="title is-4">Free Proxies</h1>
             </a>
             <a role="button" class="navbar-burger burger is-white" aria-label="menu" aria-expanded="false" data-target="clients">
@@ -54,7 +54,7 @@
                     <tbody>
                         <tr>
                             <th>Loon节点</th>
-                            <td>https://{{ .domain }}{{ .base_path }}/loon/proxies</td>
+                            <td data-sub-path="/loon/proxies"></td>
                             <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
                         </tr>
                     </tbody>
@@ -71,6 +71,7 @@
         <br>
         <p><b>Theme</b>&nbspby&nbsp<a href="https://github.com/sansui233/" class="has-text-primary"><b>Sansui233</b></a> Powered&nbspby&nbsp<b>Bulma</b></p>
     </footer>
+    <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
     <script src="static/index.js"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
 <!--    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9VK0B43EQ3"></script>-->

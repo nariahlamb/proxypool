@@ -15,7 +15,7 @@
 <body>
     <nav class="navbar is-primary pl-2 pr-2" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <a href="https://{{ .domain }}{{ .base_path }}" class="navbar-item">
+            <a href="#" id="brand-home" class="navbar-item">
                 <h1 class="title is-4">Free Proxies</h1>
             </a>
             <a role="button" class="navbar-burger burger is-white" aria-label="menu" aria-expanded="false" data-target="clients">
@@ -50,38 +50,38 @@
                     <tbody>
                         <tr>
                             <th>全部优选节点</th>
-                            <td>https://{{ .domain }}{{ .base_path }}/bestProxyIp/clashVmess</td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}{{ .base_path }}/bestProxyIp/clashVmess" onclick="onCopyThis(this)">复制</button></td>
+                            <td data-sub-path="/bestProxyIp/clashVmess"></td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestProxyIp/clashVmess" onclick="onCopyThis(this)">复制</button></td>
                         </tr>
                         <tr>
                             <th>CF 优选 IP</th>
-                            <td>https://{{ .domain }}{{ .base_path }}/bestCfProxyIp/surgeTrojan</td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}{{ .base_path }}/bestCfProxyIp/surgeTrojan" onclick="onCopyThis(this)">复制</button></td>
+                            <td data-sub-path="/bestCfProxyIp/surgeTrojan"></td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestCfProxyIp/surgeTrojan" onclick="onCopyThis(this)">复制</button></td>
                         </tr>
                         <tr>
                             <th>CF Top20</th>
-                            <td>https://{{ .domain }}{{ .base_path }}/bestCfProxyIpTop20/quanxVless</td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}{{ .base_path }}/bestCfProxyIpTop20/quanxVless" onclick="onCopyThis(this)">复制</button></td>
+                            <td data-sub-path="/bestCfProxyIpTop20/quanxVless"></td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestCfProxyIpTop20/quanxVless" onclick="onCopyThis(this)">复制</button></td>
                         </tr>
                         <tr>
                             <th>CF 运营商优选</th>
-                            <td>https://{{ .domain }}{{ .base_path }}/bestCfProxyIpIsp/loonVmess</td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}{{ .base_path }}/bestCfProxyIpIsp/loonVmess" onclick="onCopyThis(this)">复制</button></td>
+                            <td data-sub-path="/bestCfProxyIpIsp/loonVmess"></td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestCfProxyIpIsp/loonVmess" onclick="onCopyThis(this)">复制</button></td>
                         </tr>
                         <tr>
                             <th>CF 域名 Top20</th>
-                            <td>https://{{ .domain }}{{ .base_path }}/bestCfProxyDomainTop20/v2raynVmess</td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}{{ .base_path }}/bestCfProxyDomainTop20/v2raynVmess" onclick="onCopyThis(this)">复制</button></td>
+                            <td data-sub-path="/bestCfProxyDomainTop20/v2raynVmess"></td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestCfProxyDomainTop20/v2raynVmess" onclick="onCopyThis(this)">复制</button></td>
                         </tr>
                         <tr>
                             <th>CF 明文订阅源</th>
-                            <td>https://{{ .domain }}{{ .base_path }}/bestCfProxySub/clashAnytls</td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}{{ .base_path }}/bestCfProxySub/clashAnytls" onclick="onCopyThis(this)">复制</button></td>
+                            <td data-sub-path="/bestCfProxySub/clashAnytls"></td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestCfProxySub/clashAnytls" onclick="onCopyThis(this)">复制</button></td>
                         </tr>
                         <tr>
                             <th>韩国优选</th>
-                            <td>https://{{ .domain }}{{ .base_path }}/bestIpKr/clashTrojan</td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-copy="https://{{ .domain }}{{ .base_path }}/bestIpKr/clashTrojan" onclick="onCopyThis(this)">复制</button></td>
+                            <td data-sub-path="/bestIpKr/clashTrojan"></td>
+                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestIpKr/clashTrojan" onclick="onCopyThis(this)">复制</button></td>
                         </tr>
                     </tbody>
                 </table>
@@ -115,6 +115,7 @@
         <br>
         <p><b>Theme</b>&nbspby&nbsp<a href="https://github.com/sansui233/" class="has-text-primary"><b>Sansui233</b></a> Powered&nbspby&nbsp<b>Bulma</b></p>
     </footer>
+    <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
     <script src="static/index.js"></script>
 </body>
 

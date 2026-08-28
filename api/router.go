@@ -305,7 +305,7 @@ func setupRouter() {
 	router.GET("/clash", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "clash.html", gin.H{
 			"domain": config.Config().Domain,
-			"base_path": config.Config().BasePath,
+			"base_path": templateBasePath(c),
 			"port":   config.Config().Port,
 		})
 	})
@@ -313,35 +313,35 @@ func setupRouter() {
 	router.GET("/surge", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "surge.html", gin.H{
 			"domain": config.Config().Domain,
-			"base_path": config.Config().BasePath,
+			"base_path": templateBasePath(c),
 		})
 	})
 
 	router.GET("/shadowrocket", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "shadowrocket.html", gin.H{
 			"domain": config.Config().Domain,
-			"base_path": config.Config().BasePath,
+			"base_path": templateBasePath(c),
 		})
 	})
 
 	router.GET("/loon", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "loon.html", gin.H{
 			"domain": config.Config().Domain,
-			"base_path": config.Config().BasePath,
+			"base_path": templateBasePath(c),
 		})
 	})
 
 	router.GET("/quanx", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "quanx.html", gin.H{
 			"domain": config.Config().Domain,
-			"base_path": config.Config().BasePath,
+			"base_path": templateBasePath(c),
 		})
 	})
 
 	router.GET("/v2rayn", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "v2rayn.html", gin.H{
 			"domain": config.Config().Domain,
-			"base_path": config.Config().BasePath,
+			"base_path": templateBasePath(c),
 		})
 	})
 
@@ -349,14 +349,14 @@ func setupRouter() {
 	router.GET("/best", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "best.html", gin.H{
 			"domain": config.Config().Domain,
-			"base_path": config.Config().BasePath,
+			"base_path": templateBasePath(c),
 		})
 	})
 
 	router.GET("/clash/config", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "clash-config.yaml", gin.H{
 			"domain": config.Config().Domain,
-			"base_path": config.Config().BasePath,
+			"base_path": templateBasePath(c),
 		})
 	})
 	router.GET("/clash/localconfig", func(c *gin.Context) {
@@ -368,7 +368,7 @@ func setupRouter() {
 	router.GET("/surge/config", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "surge.conf", gin.H{
 			"domain": config.Config().Domain,
-			"base_path": config.Config().BasePath,
+			"base_path": templateBasePath(c),
 		})
 	})
 
@@ -486,6 +486,29 @@ func setupRouter() {
 		format, _ := parseBestIPParams(c)
 		return app.SubNiceProxyIp(format, "KR", c.Query("c"), 0, isTrue(c.Query("random")), isTrue(c.Query("ipv6")), c.Query("cdn"))
 	}))
+}
+
+
+// templateBasePath 模板渲染用的部署前缀（注入前端 window.PROXYPOOL_BASE_PATH 用）：
+// 配置 base_path > X-Forwarded-Prefix 头 > X-Forwarded-URI/X-Original-URL 首段。
+// 返回不带尾斜杠的前缀（如 "/show"），空串表示根路径部署。
+// 订阅链接的前缀最终由前端从 location 自算兜底，此处仅尽力而为。
+func templateBasePath(c *gin.Context) string {
+	if bp := config.Config().BasePath; bp != "" {
+		return strings.TrimSuffix(bp, "/")
+	}
+	if bp := c.GetHeader("X-Forwarded-Prefix"); bp != "" {
+		return strings.TrimSuffix(bp, "/")
+	}
+	for _, h := range []string{"X-Forwarded-URI", "X-Original-URL"} {
+		if u := c.GetHeader(h); u != "" && strings.HasPrefix(u, "/") {
+			if i := strings.Index(u[1:], "/"); i > 0 {
+				return u[:i+1]
+			}
+			return ""
+		}
+	}
+	return ""
 }
 
 // knownRoutePrefixes 注册路由的静态前缀（供子路径自动推断使用，setupRouter 后构建）。

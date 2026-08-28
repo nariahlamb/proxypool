@@ -1,5 +1,27 @@
 // ProxyPool 前端脚本（原生 JS，无外部依赖）
-// 功能：移动端导航切换、复制、任务触发（admin_token 鉴权）
+// 功能：导航切换、复制、订阅链接渲染（部署前缀自动适配）、任务触发（admin_token 鉴权）
+
+// 已知根路由第一段（用于从前端 URL 推断部署前缀）
+var ROOT_ROUTES = ["clash", "surge", "shadowrocket", "loon", "quanx", "v2rayn", "best",
+    "static", "health", "task", "ss", "ssr", "vmess", "trojan", "vless", "sip002",
+    "link", "debug", "bestProxyIp", "bestCfProxyIp", "bestCfProxyIpTop20",
+    "bestCfProxyIpIsp", "bestCfProxyDomainTop20", "bestCfProxySub", "bestIpKr"];
+
+// 获取部署前缀：服务端注入 > 前端从 location 自算（nginx 剥离前缀等场景兜底）
+function getBasePath() {
+    if (window.PROXYPOOL_BASE_PATH) return window.PROXYPOOL_BASE_PATH;
+    var segs = location.pathname.split("/"); // ["", "show", "clash", ...]
+    if (segs.length >= 3 && segs[1] && ROOT_ROUTES.indexOf(segs[1]) === -1) {
+        return "/" + segs[1];
+    }
+    return "";
+}
+
+// 拼接完整订阅 URL：origin + 部署前缀 + 相对路径
+function getSubURL(rel) {
+    if (!rel) return "";
+    return location.origin + getBasePath() + (rel.charAt(0) === "/" ? rel : "/" + rel);
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     // 移动端导航菜单切换
@@ -10,6 +32,26 @@ document.addEventListener("DOMContentLoaded", function () {
             var menu = document.getElementById(burger.getAttribute("data-target"));
             if (menu) menu.classList.toggle("is-active");
         });
+    }
+    // 首页品牌链接跳转部署前缀首页
+    var brand = document.getElementById("brand-home");
+    if (brand) {
+        brand.setAttribute("href", getBasePath() + "/");
+    }
+    // 渲染订阅链接：td 文本 / 复制按钮 / 一键导入
+    var subs = document.querySelectorAll("[data-sub-path]");
+    for (var i = 0; i < subs.length; i++) {
+        var el = subs[i];
+        var rel = el.getAttribute("data-sub-path");
+        var url = getSubURL(rel);
+        if (el.tagName === "TD" || el.hasAttribute("data-text")) {
+            el.textContent = url;
+        } else if (el.tagName === "A" && el.hasAttribute("data-install-scheme")) {
+            var scheme = el.getAttribute("data-install-scheme");
+            el.setAttribute("href", scheme + ":///install-config?url=" + encodeURIComponent(url));
+        } else {
+            el.setAttribute("data-copy", url);
+        }
     }
 });
 
@@ -42,17 +84,18 @@ function showTip(msg) {
     }, 1800);
 }
 
-// 复制按钮：从上一单元格取文本
+// 复制按钮：从上一单元格（td[data-sub-path]）取相对路径拼接完整 URL
 function onCopy(e) {
     var cell = e.parentNode.previousElementSibling;
-    copyText(cell ? cell.textContent.trim() : "").then(function (ok) {
+    var rel = cell ? cell.getAttribute("data-sub-path") : "";
+    copyText(getSubURL(rel)).then(function (ok) {
         showTip(ok ? "复制成功" : "复制失败");
     });
 }
 
-// 复制按钮：从 data-copy 取链接
+// 复制按钮：从 data-sub-path 拼接完整 URL
 function onCopyThis(e) {
-    copyText(e.getAttribute("data-copy") || "").then(function (ok) {
+    copyText(getSubURL(e.getAttribute("data-sub-path"))).then(function (ok) {
         showTip(ok ? "复制成功" : "复制失败");
     });
 }
@@ -65,7 +108,7 @@ function runTask(name) {
         if (!token) return;
         localStorage.setItem("proxypool_admin_token", token);
     }
-    var url = "/task/" + name + "?token=" + encodeURIComponent(token);
+    var url = getBasePath() + "/task/" + name + "?token=" + encodeURIComponent(token);
     fetch(url)
         .then(function (r) { return r.text().then(function (t) { return { status: r.status, text: t }; }); })
         .then(function (res) {
