@@ -5,7 +5,7 @@
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
-## [v2.5.7] - 2026-08-28
+## [v2.5.8] - 2026-08-28
 
 ### 🌐 Surge / Loon / QuanX 页面对齐 v2rayN
 
@@ -20,6 +20,8 @@
 - 网页类 200+HTML 特征 = 可访问；403（text/plain 或 Cloudflare 拦截页）= 封禁
 - loc 国家白名单降级为兜底（主判据无法定论时才启用）
 - judgeOpenAIResponse 纯函数 + 15 用例单测
+
+## [v2.5.7] - 2026-08-28
 
 ### 🐛 启动可用节点统计修正
 
