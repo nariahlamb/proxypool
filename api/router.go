@@ -148,8 +148,12 @@ func renderClientPage(c *gin.Context, name string) {
 	base := templateBasePath(c)
 	origin := requestOrigin(c)
 	host := requestHost(c)
-	for i := range pg.ConfigRows {
-		r := &pg.ConfigRows[i]
+	// 用副本渲染，避免改写全局 clientPages 中的行（否则占位符 "LOCAL" 会被覆盖为
+	// 某次请求拼出的域名/前缀，导致后续所有请求复用第一次的结果）。
+	rows := make([]clientPageRow, len(pg.ConfigRows))
+	copy(rows, pg.ConfigRows)
+	for i := range rows {
+		r := &rows[i]
 		switch {
 		case r.Text == "LOCAL":
 			r.Text = origin + base + "/clash/localconfig"
@@ -170,7 +174,7 @@ func renderClientPage(c *gin.Context, name string) {
 		"client_icon":  pg.Icon,
 		"client_desc":  pg.Desc,
 		"client_note":  template.HTML(pg.Note),
-		"config_rows":  pg.ConfigRows,
+		"config_rows":  rows,
 		"node_rows":    pg.NodeRows,
 	})
 }
@@ -239,7 +243,8 @@ func siteCache(store persistence.CacheStore, expire time.Duration, skipPrefixes 
 		// 用 URL.RequestURI() 重建请求 URI（含 query）作为缓存 key：
 		// 不依赖服务端填充的 RequestURI 字段，httptest 等场景也正确区分
 		// 拼上实际请求来源（scheme+host），避免不同主机/端口/协议命中同一缓存而串内容。
-		key := cache.CreateKey(requestOrigin(c) + c.Request.URL.RequestURI())
+		// 再拼上部署前缀，避免同来源下不同前缀（根路径 vs /show）也串缓存。
+		key := cache.CreateKey(requestOrigin(c) + templateBasePath(c) + c.Request.URL.RequestURI())
 		var resp cachedResponse
 		if err := store.Get(key, &resp); err == nil {
 			// 命中缓存：回放状态码、响应头与响应体
@@ -642,12 +647,23 @@ func setupRouter() {
 
 
 // templateBasePath 模板渲染用的部署前缀（注入前端 window.PROXYPOOL_BASE_PATH 用）。
-// 部署前缀只以显式配置的 config.base_path 为准，不在请求中主动推断 /show 等前缀
-//（外部由反向代理负责路径映射，如 nginx "/show/ --> /"），避免把代理前缀写进业务链接；
-// 返回不带尾斜杠的前缀（如 "/show"），空串表示根路径部署。
+// 优先级：配置 base_path > 反代 X-Forwarded-Prefix 头 > X-Forwarded-URI/X-Original-URL 首段。
+// 不从请求路径主动推断前缀——外部前缀由反向代理负责（如 nginx "/show/ --> /"），
+// 代理会通过上述头部把真实前缀告知应用；返回不带尾斜杠的前缀（如 "/show"），空串表示根路径。
 func templateBasePath(c *gin.Context) string {
 	if bp := config.Config().BasePath; bp != "" {
 		return strings.TrimSuffix(bp, "/")
+	}
+	if bp := c.GetHeader("X-Forwarded-Prefix"); bp != "" {
+		return strings.TrimSuffix(bp, "/")
+	}
+	for _, h := range []string{"X-Forwarded-URI", "X-Original-URL"} {
+		if u := c.GetHeader(h); u != "" && strings.HasPrefix(u, "/") {
+			if i := strings.Index(u[1:], "/"); i > 0 {
+				return u[:i+1]
+			}
+			return ""
+		}
 	}
 	return ""
 }
