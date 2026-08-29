@@ -1,3 +1,14 @@
+## [v2.5.18] - 2026-08-29
+
+### 🌐 QuanX 导出格式对齐官方文档
+
+- 对照 Quantumult X 官方格式文档修正：
+  - 等号去空格：vless=host:port（原 vless = 有空格，可能致解析失败）
+  - wss 场景删除多余 tls-host（obfs-host 已用作 TLS 握手 SNI）
+  - 字段顺序对齐文档（obfs-host 在 obfs-uri 前）
+- 6 个 vless/vmess/trojan 生成器重写；anytls 原本符合文档未动
+- 断言测试同步更新
+
 ## [v2.5.17] - 2026-08-29
 
 ### 🌐 QuanX 导出 server 字段 IPv6 裸地址

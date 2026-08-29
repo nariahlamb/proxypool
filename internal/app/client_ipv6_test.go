@@ -74,13 +74,13 @@ func TestAllClientsIPv6Format(t *testing.T) {
 		t.Errorf("clash server 不应带方括号:\n%s", co)
 	}
 
-	// QuanX vless：server 字段裸 IPv6（用户确认 QuanX 不需要方括号）
+	// QuanX vless：等号无空格 + server 裸 IPv6（对齐官方文档）
 	qo := out(Format{QuanX: true, Vless: true})
-	if !strings.Contains(qo, "vless = 2606:4700::1:443") {
-		t.Errorf("quanx server 应裸 IPv6 2606:4700::1:443:\n%s", qo)
+	if !strings.Contains(qo, "vless=2606:4700::1:443") {
+		t.Errorf("quanx 应为 vless=裸IPv6:443（无空格）:\n%s", qo)
 	}
-	if strings.Contains(qo, "vless = [2606:4700::1]:443") {
-		t.Errorf("quanx server 不应带方括号:\n%s", qo)
+	if strings.Contains(qo, "vless = ") {
+		t.Errorf("quanx 等号不应有空格:\n%s", qo)
 	}
 
 	// v2rayN vless：URL host 方括号（输出 base64，解码验证）

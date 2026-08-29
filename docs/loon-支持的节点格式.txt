@@ -1,0 +1,43 @@
+[Proxy]
+# 内置 DIRECT、REJECT 策略
+# 内置 PROXY 指向本地节点或者订阅节点中的任何一个（有本地节点默认指向第一个本地节点，当没有本地节点但有订阅节点时，指向第一个订阅的第一个节点，本地节点和订阅节点都不存在时指向DIRECT）
+#ss
+ss1 = Shadowsocks,example.com,443,aes-128-gcm,"password",fast-open=false,udp=true
+ss2 = Shadowsocks,example2.com,443,chacha20,"password",fast-open=true,udp=true
+#ss+simple obfs
+ssObfs1 = Shadowsocks,example.com,80,aes-128-gcm,"password",obfs-name=http,obfs-host=www.micsoft.com,fast-open=true,udp=true
+ssObfs2 = Shadowsocks,example.com,443,aes-128-gcm,"password",obfs-name=tls,obfs-host=www.micsoft.com,fast-open=true,udp=true
+#ssr
+# 节点名称 = 协议，服务器地址，端口，加密方式，密码，protocol = 协议，protocol-param = 协议参数，obfs=混淆，obfs-param=混淆参数
+ssr1 = ShadowsocksR,example.com,443,aes-256-cfb,"password",protocol=orig,obfs=http_simple,obfs-param=download.windows.com,fast-open=false,udp=true
+ssr2 = ShadowsocksR,example.com,10076,aes-128-cfb,"password",protocol=auth_chain_a,protocol-param=9555:loon,obfs=http_post,obfs-param=download.windows.com,fast-open=false,udp=true
+ssr3 = ShadowsocksR,example.com,10076,chacha20,"password",protocol=auth_aes128_md5,protocol-param=9555:loon,obfs=tls1.2_ticket_auth,obfs-param=download.windows.com,fast-open=false,udp=true
+ssr4 = ShadowsocksR,example.com,10076,chacha20-ietf,"password",protocol=auth_aes128_sha1,protocol-param=9555:loon,obfs=plain,fast-open=false,udp=true
+#http
+http1 = http,example.com,80
+http2 = http,example.com,80,username,"password"
+#https
+https1 = https,example.com,443
+https2 = https,example.com,443,username,"password"
+https3 = https,example.com,443,username,"password",skip-cert-verify=true,sni=example.com
+#vmess+tcp
+# 节点名称 = 协议,服务器地址,端口,加密方式,UUID,传输方式:(tcp/ws),path=websocket握手header中的path, host=websocket握手header中的path, over-tls=是否tls, sni=tls名字, skip-cert-verify=是否跳过证书校验（默认否）,alterId = 0(0表示开启VMESSAead head，v2ray 4.28版本后支持)
+vmess1 = vmess,example.com,10086,aes-128-gcm,"52396e06-041a-4cc2-be5c-8525eb457809",transport=tcp,path=/,host=v3-dy-y.ixigua.com,over-tls=false
+#vmess+tcp+tls
+vmess2 = vmess,example.com,10086,aes-128-gcm,"52396e06-041a-4cc2-be5c-8525eb457809",transport=tcp,path=/,host=v3-dy-y.ixigua.com,over-tls=true,sni=example.com,skip-cert-verify=true
+#vmess+ws
+vmess3 = vmess,example.com,10086,aes-128-gcm,"52396e06-041a-4cc2-be5c-8525eb457809",transport=ws,path=/,host=v3-dy-y.ixigua.com,over-tls=false
+#vmess+wss
+vmess4 = vmess,example.com,10086,aes-128-gcm,"52396e06-041a-4cc2-be5c-8525eb457809",transport=ws,path=/,host=v3-dy-y.ixigua.com,over-tls=true,sni=example.com,skip-cert-verify=true
+#VLESS
+vless1 = VLESS,example.com,10087,"52396e06-041a-4cc2-be5c-8525eb457809",,transport=tcp,path=/,host=v3-dy-y.ixigua.com,over-tls=false
+vless2 = VLESS,example.com,10087,"52396e06-041a-4cc2-be5c-8525eb457809",transport=ws,path=/,host=v3-dy-y.ixigua.com,over-tls=true,sni=example.com,skip-cert-verify=true
+#trojan
+trojan1 = trojan,example.com,443,"password",transport=tcp,skip-cert-verify=false,sni=example.com,udp=true
+trojan2 = trojan,example.com,443,"password",transport=ws,path=/,host=micsoft.com,skip-cert-verify=true,sni=example.com,udp=true
+
+#js custom
+jsHTTP = custom,192.168.1.139,6152,script-path=http.js
+
+#wireguard
+wireguardNode = wireguard,interface-ip=192.168.2.2,private-key="qF22B3ezOhWGJA4SHwQSsgMa9d6mPGHyFdZMaDTae2E=",mtu=1280,dns=192.168.2.1,keeyalive=45,peers=[{public-key="JFuTIJEcFnt8R04UnAE5o2WfIPJUsumSxsD2ayXzoWY=",preshared-key="yVNv5K05AwVnWaR4OB8BlMX3jJlkS74aKlYC3PD95IE=",allowed-ips="0.0.0.0/0",endpoint=192.168.3.17:51820}]
