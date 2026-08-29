@@ -59,8 +59,8 @@
                 </div>
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
                     <span class="w-44 shrink-0 font-medium text-sm">本地部署时配置文件</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400">http://127.0.0.1:{{ .port }}/clash/config</span>
-                    <a href="clash://install-config?url=http://127.0.0.1:{{ .port }}/clash/localconfig" class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">一键导入</a>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400">https://{{ .domain }}{{ .base_path }}/clash/localconfig</span>
+                    <a href="clash://install-config?url=https://{{ .domain }}{{ .base_path }}/clash/localconfig" class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">一键导入</a>
                 </div>
             </div>
             <div class="rounded-xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 p-4 mt-3 text-sm">
