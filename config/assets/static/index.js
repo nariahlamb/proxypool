@@ -41,13 +41,12 @@ function ensureBestToken() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    // 移动端导航菜单切换
-    var burger = document.querySelector(".navbar-burger");
+    // 移动端导航菜单切换（Tailwind 重构版：toggle hidden）
+    var burger = document.getElementById("nav-burger");
     if (burger) {
         burger.addEventListener("click", function () {
-            burger.classList.toggle("is-active");
-            var menu = document.getElementById(burger.getAttribute("data-target"));
-            if (menu) menu.classList.toggle("is-active");
+            var menu = document.getElementById("nav-menu");
+            if (menu) menu.classList.toggle("hidden");
         });
     }
     // 首页品牌链接跳转部署前缀首页
