@@ -140,3 +140,25 @@ func TestParseSubIpListUrl(t *testing.T) {
 		t.Errorf("SubIpListUrl should be empty when not configured, got %v", Config().SubIpListUrl)
 	}
 }
+
+func TestProxyInfoCountriesProtocols(t *testing.T) {
+	p := ProxyInfo{
+		"KR": ProxyType{"vmess": map[string]any{}, "trojan": map[string]any{}},
+		"JP": ProxyType{"vless": map[string]any{}, "vmess": map[string]any{}, "trojan": map[string]any{}, "anytls": map[string]any{}},
+		"US": ProxyType{"anytls": map[string]any{}},
+	}
+	cs := p.Countries()
+	if len(cs) != 3 || cs[0] != "JP" || cs[1] != "KR" || cs[2] != "US" {
+		t.Errorf("Countries() 应按字母排序: %v", cs)
+	}
+	cp := p.CountryProtocols()
+	if got := cp["JP"]; len(got) != 4 || got[0] != "vless" || got[3] != "anytls" {
+		t.Errorf("JP 应含全部 4 协议按固定顺序: %v", got)
+	}
+	if got := cp["KR"]; len(got) != 2 || got[0] != "vmess" || got[1] != "trojan" {
+		t.Errorf("KR 应只含 vmess/trojan: %v", got)
+	}
+	if got := cp["US"]; len(got) != 1 || got[0] != "anytls" {
+		t.Errorf("US 应只含 anytls: %v", got)
+	}
+}

@@ -1,3 +1,13 @@
+## [v2.5.19] - 2026-08-29
+
+### 🎛️ 优选订阅动态生成器（页面）
+
+- best 页新增「动态生成」区块：客户端（clash/surge/loon/quanx/v2rayn）× 协议（vmess/vless/trojan/anytls）× 落地国家（从 proxy_info 配置动态注入）
+- 协议下拉按所选国家自动联动（仅显示该国家已配置的协议，如 KR 无 vless 则不出现在下拉）
+- 实时预览完整订阅 URL（自动带 best_token）+ 一键复制
+- 后端：config.ProxyInfo 新增 Countries()/CountryProtocols()（仅暴露国家与协议名，不含任何凭据）
+- 保留下方静态订阅端点表格
+
 ## [v2.5.18] - 2026-08-29
 
 ### 🌐 Loon / Surge 导出格式对齐官方文档

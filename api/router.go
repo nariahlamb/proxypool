@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"html/template"
 	"io/fs"
@@ -367,9 +368,12 @@ func setupRouter() {
 
 	// 优选 IP 订阅说明页
 	router.GET("/best", func(c *gin.Context) {
+		cp, _ := json.Marshal(config.Config().ProxyInfo.CountryProtocols())
 		c.HTML(http.StatusOK, "best.html", gin.H{
-			"domain": config.Config().Domain,
-			"base_path": templateBasePath(c),
+			"domain":            config.Config().Domain,
+			"base_path":         templateBasePath(c),
+			"countries":         config.Config().ProxyInfo.Countries(),
+			"country_protocols": template.JS(cp),
 		})
 	})
 

@@ -70,6 +70,8 @@ document.addEventListener("DOMContentLoaded", function () {
             el.setAttribute("data-copy", url);
         }
     }
+    // 动态生成器初始化：填充协议下拉并生成初始预览 URL
+    if (document.getElementById("gen-client")) refreshBestGen();
 });
 
 // 复制文本：优先 navigator.clipboard，降级 execCommand
@@ -116,6 +118,56 @@ function onCopyThis(e) {
     var rel = e.getAttribute("data-sub-path");
     if (rel && rel.indexOf("/best") === 0) ensureBestToken();
     copyText(getSubURL(rel)).then(function (ok) {
+        showTip(ok ? "复制成功" : "复制失败");
+    });
+}
+
+// 动态生成器：客户端 × 协议 × 落地国家 → /bestProxyIp/{client}{Protocol}?d={country}
+// 协议下拉按所选国家联动（仅显示该国家已配置的协议）
+var BEST_GEN_PROTO_ORDER = ["vless", "vmess", "trojan", "anytls"];
+
+function bestGenProtocols(country) {
+    var m = window.BEST_GEN_COUNTRIES || {};
+    return (m[country] || []).slice();
+}
+
+function bestGenURL() {
+    var client = document.getElementById("gen-client").value;
+    var proto = document.getElementById("gen-protocol").value;
+    var country = document.getElementById("gen-country").value;
+    if (!client || !proto || !country) return "";
+    var cap = proto.charAt(0).toUpperCase() + proto.slice(1);
+    return getSubURL("/bestProxyIp/" + client + cap + "?d=" + country);
+}
+
+function refreshBestGen() {
+    var countrySel = document.getElementById("gen-country");
+    var protoSel = document.getElementById("gen-protocol");
+    var country = countrySel.value || (countrySel.options.length ? countrySel.options[0].value : "");
+    var cur = protoSel.value;
+    var protos = bestGenProtocols(country);
+    protoSel.innerHTML = "";
+    for (var i = 0; i < protos.length; i++) {
+        var o = document.createElement("option");
+        o.value = protos[i];
+        o.textContent = protos[i];
+        protoSel.appendChild(o);
+    }
+    if (protos.length) {
+        var idx = protos.indexOf(cur);
+        protoSel.value = (idx >= 0 ? cur : protos[0]);
+    }
+    var url = bestGenURL();
+    document.getElementById("gen-url").value = url;
+    return url;
+}
+
+// 复制动态生成的订阅链接（best 鉴权：先 ensureBestToken）
+function copyBestGen(btn) {
+    ensureBestToken();
+    var url = bestGenURL();
+    if (!url) { showTip("请先选择客户端/协议/国家"); return; }
+    copyText(url).then(function (ok) {
         showTip(ok ? "复制成功" : "复制失败");
     });
 }

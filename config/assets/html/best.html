@@ -43,6 +43,47 @@
         </div>
 
         <section class="section">
+            <h5 class="title is-4">动态生成</h5>
+            <p>选择客户端、节点协议与落地国家，一键复制优选订阅链接（默认包含全部健康节点）。</p>
+            <div class="field is-grouped mt-2 is-flex-wrap-wrap">
+                <div class="control">
+                    <div class="select">
+                        <select id="gen-client" onchange="refreshBestGen()">
+                            <option value="clash">Clash</option>
+                            <option value="surge">Surge</option>
+                            <option value="loon">Loon</option>
+                            <option value="quanx">QuanX</option>
+                            <option value="v2rayn">v2rayN</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control">
+                    <div class="select">
+                        <select id="gen-protocol" onchange="refreshBestGen()"></select>
+                    </div>
+                </div>
+                <div class="control">
+                    <div class="select">
+                        <select id="gen-country" onchange="refreshBestGen()">
+                            {{ range .countries }}<option value="{{ . }}">{{ . }}</option>{{ end }}
+                        </select>
+                    </div>
+                </div>
+                <div class="control">
+                    <button class="button is-primary" id="gen-copy" onclick="copyBestGen(this)">复制订阅链接</button>
+                </div>
+            </div>
+            <div class="field mt-2">
+                <input class="input" id="gen-url" type="text" readonly placeholder="选择后自动生成订阅链接…">
+            </div>
+            <article class="message is-info mt-2">
+                <div class="message-body is-size-7">
+                    协议下拉按所选国家自动联动（仅显示该国家已配置的协议）；如导出为空请检查该国家对应探测是否启用。
+                </div>
+            </article>
+        </section>
+
+        <section class="section">
             <h5 class="title is-4">订阅端点</h5>
             <p>格式参数 <code>:format</code> = 客户端 + 节点类型，例如 <code>clashVmess</code>、<code>surgeTrojan</code>、<code>quanxVless</code>、<code>loonAnytls</code>、<code>v2raynVmess</code>。</p>
             <div class="table-container mt-2">
@@ -116,6 +157,7 @@
         <p><b>Theme</b>&nbspby&nbsp<a href="https://github.com/sansui233/" class="has-text-primary"><b>Sansui233</b></a> Powered&nbspby&nbsp<b>Bulma</b></p>
     </footer>
     <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
+    <script>window.BEST_GEN_COUNTRIES = {{ .country_protocols }};</script>
     <script src="static/index.js"></script>
 </body>
 
