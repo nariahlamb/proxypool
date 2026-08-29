@@ -199,23 +199,43 @@ function refreshBestGen() {
     setGenEnabled("gen-random", caps.random);
     setGenEnabled("gen-cdn", caps.cdn);
     setGenEnabled("gen-ipv6", caps.ipv6);
-    // 协议联动：bestIpKr 强制 KR（d 不生效），其他按国家下拉；再 ∩ 客户端支持
+
     var client = document.getElementById("gen-client").value;
-    var country = caps.d ? document.getElementById("gen-country").value : "KR";
     var protoSel = document.getElementById("gen-protocol");
     var cur = protoSel.value;
+
+    // 1. 协议 → 国家候选：只保留配置了当前协议的国家（按模板注入顺序）
+    var countrySel = document.getElementById("gen-country");
+    var protoForCountry = window.BEST_GEN_COUNTRIES || {};
+    var countryOpts = countrySel.querySelectorAll("option");
+    for (var i = 0; i < countryOpts.length; i++) {
+        var ps = protoForCountry[countryOpts[i].value] || [];
+        var hide = cur && ps.indexOf(cur) < 0;
+        countryOpts[i].style.display = hide ? "none" : "";
+        countryOpts[i].disabled = hide;
+    }
+    // 当前国家不可用则回退到第一个可见项
+    if (countrySel.selectedOptions.length && countrySel.selectedOptions[0].disabled) {
+        for (var j = 0; j < countryOpts.length; j++) {
+            if (!countryOpts[j].disabled) { countrySel.value = countryOpts[j].value; break; }
+        }
+    }
+    var country = caps.d ? countrySel.value : "KR";
+
+    // 2. 国家 → 协议候选：客户端支持 ∩ 国家配置
     var protos = bestGenProtocols(client, country);
     protoSel.innerHTML = "";
-    for (var i = 0; i < protos.length; i++) {
+    for (var k = 0; k < protos.length; k++) {
         var o = document.createElement("option");
-        o.value = protos[i];
-        o.textContent = protos[i];
+        o.value = protos[k];
+        o.textContent = protos[k];
         protoSel.appendChild(o);
     }
     if (protos.length) {
         var idx = protos.indexOf(cur);
         protoSel.value = (idx >= 0 ? cur : protos[0]);
     }
+
     var url = bestGenURL();
     document.getElementById("gen-url").value = url;
     return url;
