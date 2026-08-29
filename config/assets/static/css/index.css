@@ -97,3 +97,70 @@ body {
         pointer-events: auto;
     }
 }
+/* ===== 手机端优化（<=768px）：表格→卡片、生成器控件全宽 ===== */
+@media screen and (max-width: 768px) {
+    /* 订阅/端点/参数表格：行变卡片，避免横向滚动 */
+    .table.is-fullwidth {
+        border: 0;
+    }
+    .table.is-fullwidth tbody {
+        display: block;
+    }
+    .table.is-fullwidth tr {
+        display: block;
+        border: 1px solid rgba(128, 128, 128, .35);
+        border-radius: .5rem;
+        padding: .5rem .75rem;
+        margin-bottom: .75rem;
+        box-shadow: 0 .25em .5em -0.125em rgba(10, 10, 10, .1);
+    }
+    .table.is-fullwidth th,
+    .table.is-fullwidth td {
+        display: block;
+        min-width: 0;
+        width: 100%;
+        border: 0;
+        padding: .25rem 0;
+        word-break: break-all;
+        vertical-align: middle;
+    }
+    .table.is-fullwidth th {
+        font-size: .9em;
+        opacity: .85;
+    }
+    .table.is-fullwidth td.has-text-right,
+    .table.is-fullwidth th.has-text-right {
+        text-align: left;
+    }
+    .table.is-fullwidth td .button {
+        margin-top: .25rem;
+        margin-right: .25rem;
+        white-space: normal;
+        height: auto;
+        padding: .375rem .75rem;
+    }
+
+    /* 动态生成器：控件堆叠全宽 */
+    .field.is-grouped {
+        flex-wrap: wrap;
+    }
+    .field.is-grouped > .control {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+    .field.is-grouped .select,
+    .field.is-grouped .select select,
+    .field.is-grouped .control .input {
+        width: 100%;
+        max-width: 100%;
+    }
+    .field.is-grouped .control .checkbox {
+        padding: .4rem 0;
+        display: inline-block;
+    }
+
+    /* 首页统计段落：减小字号，长数字不撑破 */
+    .section p {
+        overflow-wrap: break-word;
+    }
+}
