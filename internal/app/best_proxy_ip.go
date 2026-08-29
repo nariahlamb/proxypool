@@ -1103,7 +1103,7 @@ func genClashTrojanUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, node_co
 func genQuanXVlessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`vless = %s:%d, method=none, password=%s, obfs=wss, obfs-uri=%s, obfs-host=%s, tls-verification=false, tls-host=%s, fast-open=false, udp-relay=true, tag=%s %s:%d
 `,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vless"]["uuid"],
 		proxyInfo[nodeCountry]["vless"]["path"],
 		proxyInfo[nodeCountry]["vless"]["host"],
@@ -1114,7 +1114,7 @@ func genQuanXVlessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCoun
 func genQuanXVmessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`vmess = %s:%d, method=none, password=%s, obfs=wss, obfs-uri=%s, obfs-host=%s, tls-host=%s, aead=true, udp-relay=true, tag=%s %s:%d
 `,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vmess"]["uuid"],
 		proxyInfo[nodeCountry]["vmess"]["path"],
 		proxyInfo[nodeCountry]["vmess"]["host"],
@@ -1125,7 +1125,7 @@ func genQuanXVmessUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCoun
 func genQuanXTrojanUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`trojan = %s:%d, password=%s, obfs=wss, obfs-uri=%s, obfs-host=%s, tls-host=%s, udp-relay=true, tag=%s %s:%d
 `,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["trojan"]["password"],
 		proxyInfo[nodeCountry]["trojan"]["path"],
 		proxyInfo[nodeCountry]["trojan"]["host"],
@@ -1222,7 +1222,7 @@ func genClashTrojanUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, node_c
 func genQuanXVlessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`vless = %s:%d, method=none, password=%s, obfs=wss, obfs-uri=%s, obfs-host=%s, tls-verification=false, tls-host=%s, fast-open=false, udp-relay=true, tag=%s %s
 `,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vless"]["uuid"],
 		proxyInfo[nodeCountry]["vless"]["path"],
 		proxyInfo[nodeCountry]["vless"]["host"],
@@ -1233,7 +1233,7 @@ func genQuanXVlessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 func genQuanXVmessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`vmess = %s:%d, method=none, password=%s, obfs=wss, obfs-uri=%s, obfs-host=%s, tls-host=%s, aead=true, udp-relay=true, tag=%s %s
 `,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["vmess"]["uuid"],
 		proxyInfo[nodeCountry]["vmess"]["path"],
 		proxyInfo[nodeCountry]["vmess"]["host"],
@@ -1244,7 +1244,7 @@ func genQuanXVmessUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 func genQuanXTrojanUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`trojan = %s:%d, password=%s, obfs=wss, obfs-uri=%s, obfs-host=%s, tls-host=%s, udp-relay=true, tag=%s %s
 `,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["trojan"]["password"],
 		proxyInfo[nodeCountry]["trojan"]["path"],
 		proxyInfo[nodeCountry]["trojan"]["host"],
@@ -1481,7 +1481,7 @@ func genClashAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCou
 func genQuanXAnytlsUrl(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`anytls=%s:%d, password=%v, over-tls=true, udp-relay=true, tls-host=%v, tag=%s %s:%d
 `,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["anytls"]["password"],
 		proxyInfo[nodeCountry]["anytls"]["host"],
 		country, ip, port))
@@ -1557,7 +1557,7 @@ func genClashAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCo
 func genQuanXAnytlsUrl2(buf *strings.Builder, proxyInfo config.ProxyInfo, nodeCountry, country, nodeName string, ip string, port int) {
 	buf.WriteString(fmt.Sprintf(`anytls=%s:%d, password=%v, over-tls=true, udp-relay=true, tls-host=%v, tag=%s %s
 `,
-		ip, port,
+		stripBrackets(ip), port,
 		proxyInfo[nodeCountry]["anytls"]["password"],
 		proxyInfo[nodeCountry]["anytls"]["host"],
 		country, nodeName))

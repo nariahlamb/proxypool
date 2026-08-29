@@ -1,3 +1,11 @@
+## [v2.5.17] - 2026-08-29
+
+### 🌐 QuanX 导出 server 字段 IPv6 裸地址
+
+- 按实际客户端语义：Quantumult X 的 server 字段（vless = addr:port）IPv6
+  不需要方括号，8 个 QuanX 生成器（vless/vmess/trojan/anytls + 2 版本）修正为裸地址
+- tag 显示名保留方括号（可读性）；断言测试同步更新
+
 ## [v2.5.16] - 2026-08-29
 
 ### 🌐 best 订阅各客户端 IPv6 格式修正

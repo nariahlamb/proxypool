@@ -74,10 +74,13 @@ func TestAllClientsIPv6Format(t *testing.T) {
 		t.Errorf("clash server 不应带方括号:\n%s", co)
 	}
 
-	// QuanX vless：连写 addr:port 需方括号
+	// QuanX vless：server 字段裸 IPv6（用户确认 QuanX 不需要方括号）
 	qo := out(Format{QuanX: true, Vless: true})
-	if !strings.Contains(qo, "vless = [2606:4700::1]:443") {
-		t.Errorf("quanx 应 [addr]:443 连写:\n%s", qo)
+	if !strings.Contains(qo, "vless = 2606:4700::1:443") {
+		t.Errorf("quanx server 应裸 IPv6 2606:4700::1:443:\n%s", qo)
+	}
+	if strings.Contains(qo, "vless = [2606:4700::1]:443") {
+		t.Errorf("quanx server 不应带方括号:\n%s", qo)
 	}
 
 	// v2rayN vless：URL host 方括号（输出 base64，解码验证）
@@ -100,7 +103,7 @@ func TestAllClientsIPv6Format(t *testing.T) {
 	if s := out(Format{Loon: true, Anytls: true}); strings.Contains(s, "anytls, [2606:4700::1]") {
 		t.Errorf("loon anytls server 应裸:\n%s", s)
 	}
-	if s := out(Format{QuanX: true, Anytls: true}); !strings.Contains(s, "anytls=[2606:4700::1]:443") {
-		t.Errorf("quanx anytls 应 [addr]:443:\n%s", s)
+	if s := out(Format{QuanX: true, Anytls: true}); !strings.Contains(s, "anytls=2606:4700::1:443") {
+		t.Errorf("quanx anytls server 应裸 IPv6:\n%s", s)
 	}
 }
