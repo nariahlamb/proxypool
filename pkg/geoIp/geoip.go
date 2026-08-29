@@ -14,6 +14,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/One-Piecs/proxypool/pkg/cdn"
 	"github.com/One-Piecs/proxypool/config"
 	"github.com/One-Piecs/proxypool/log"
 
@@ -355,27 +356,13 @@ func GetASN(ipStr string) (string, error) {
 	return record.AutonomousSystemOrganization, nil
 }
 
-// cdnKeywordsUpper 判断 CDN 的关键词（大写预编译，避免循环内重复 ToUpper）
-var cdnKeywordsUpper = []string{
-	"CDN", "CONTENT DELIVERY", "EDGE", "ANYCAST", "CACHE",
-	"AKAMAI", "INCAP", "STACKPATH", "BUNNY", "ZSCALER", "CLOUDFLARE", "FASTLY",
-	"MICROSOFT", "AZURE", "AMAZON", "GOOGLE", "EDGIO", "EDGECAST", "LIMELIGHT",
-	"CACHEFLY", "CDNETWORKS", "ARVANCLOUD", "TENCENT", "ALIBABA",
-}
-
-// IsCDN 基于本地 ASN 库判断 IP 是否属于 CDN
+// IsCDN 基于本地 ASN 库判断 IP 是否属于 CDN（关键词逻辑统一收敛到 pkg/cdn.MatchOrg）
 func IsCDN(ipStr string) bool {
 	org, err := GetASN(ipStr)
 	if err != nil {
 		return false
 	}
-	orgUpper := strings.ToUpper(org)
-	for _, kw := range cdnKeywordsUpper {
-		if strings.Contains(orgUpper, kw) {
-			return true
-		}
-	}
-	return false
+	return cdn.MatchOrg(strings.ToUpper(org))
 }
 
 // httpGet 带超时与状态码检查的 GET 请求

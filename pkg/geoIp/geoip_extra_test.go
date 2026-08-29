@@ -3,7 +3,6 @@ package geoIp
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 )
 
@@ -60,24 +59,5 @@ func TestFindInvalidInput(t *testing.T) {
 	_, _, err := GeoIpDB.Find("not-an-ip-or-domain!!")
 	if err == nil {
 		t.Fatal("expected error for invalid input")
-	}
-}
-
-func TestIsCDNKeywordsPrecompiled(t *testing.T) {
-	// 校验大写关键词表覆盖原实现的关键词
-	originals := []string{
-		"CDN", "Content Delivery", "Edge", "Anycast", "Cache",
-		"Akamai", "Incap", "Stackpath", "Bunny", "Zscaler", "Cloudflare", "Fastly",
-		"Microsoft", "Azure", "Amazon", "Google", "Edgio", "Edgecast", "Limelight",
-		"CacheFly", "CDNetworks", "ArvanCloud", "Tencent", "Alibaba",
-	}
-	upperSet := make(map[string]bool, len(cdnKeywordsUpper))
-	for _, kw := range cdnKeywordsUpper {
-		upperSet[kw] = true
-	}
-	for _, orig := range originals {
-		if !upperSet[strings.ToUpper(orig)] {
-			t.Errorf("keyword %q missing from precompiled list", orig)
-		}
 	}
 }

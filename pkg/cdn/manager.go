@@ -100,9 +100,18 @@ func (m *Manager) Update() {
 	wg.Wait()
 
 	m.mu.Lock()
-	m.ranges = newRanges
+	kept := len(m.ranges)
+	if len(newRanges) > 0 {
+		m.ranges = newRanges
+		kept = len(m.ranges)
+	}
 	m.mu.Unlock()
-	log.Infoln("Updated CDN IP ranges, total count: %d", len(newRanges))
+	if len(newRanges) > 0 {
+		log.Infoln("Updated CDN IP ranges, total count: %d", kept)
+	} else {
+		// 全部来源拉取失败：保留上次成功的 ranges，避免 CDN 判断退化为空
+		log.Warnln("All CDN range sources failed, keeping last-good ranges (count=%d)", kept)
+	}
 }
 
 // Fetchers

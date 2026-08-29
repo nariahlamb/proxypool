@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/One-Piecs/proxypool/log"
 )
@@ -13,12 +15,17 @@ import (
 // IP-API.com batch endpoint
 const ipApiBatchUrl = "http://ip-api.com/batch"
 
-// Keywords to detect CDN
-var cdKeywords = []string{
-	"CDN", "Content Delivery", "Edge", "Anycast", "Cache",
-	"Akamai", "Incap", "Stackpath", "Bunny", "Zscaler", "Cloudflare", "Fastly",
-	"Microsoft", "Azure", "Amazon", "Google", "Edgio", "Edgecast", "Limelight",
-	"CacheFly", "CDNetworks", "ArvanCloud", "Tencent", "Alibaba",
+// asnCheckCache 记录 ip-api 查询结果，避免每个周期都重复打外部接口，
+// 也能降低外部接口抖动导致的同一 IP 判定不稳定。
+var (
+	asnCheckCacheMu sync.Mutex
+	asnCheckCache   = make(map[string]asnCheckCacheEntry)
+	asnCheckCacheTTL = 30 * time.Minute
+)
+
+type asnCheckCacheEntry struct {
+	isCDN bool
+	exp   time.Time
 }
 
 type IPAPIResponse struct {
@@ -35,22 +42,48 @@ func CheckIPsForCDN(ips []string) (map[string]bool, error) {
 	results := make(map[string]bool)
 	chunkSize := 100
 
-	for i := 0; i < len(ips); i += chunkSize {
+	// 1) 命中缓存（未过期）的直接返回；去重待查询列表
+	now := time.Now()
+	asnCheckCacheMu.Lock()
+	toFetch := make([]string, 0)
+	seen := make(map[string]struct{})
+	for _, ip := range ips {
+		if e, ok := asnCheckCache[ip]; ok && e.exp.After(now) {
+			results[ip] = e.isCDN
+			continue
+		}
+		if _, dup := seen[ip]; dup {
+			continue
+		}
+		seen[ip] = struct{}{}
+		toFetch = append(toFetch, ip)
+	}
+	asnCheckCacheMu.Unlock()
+
+	if len(toFetch) == 0 {
+		return results, nil
+	}
+
+	// 2) 分批查询，并写入缓存（仅成功的批次，避免失败污染缓存）
+	for i := 0; i < len(toFetch); i += chunkSize {
 		end := i + chunkSize
-		if end > len(ips) {
-			end = len(ips)
+		if end > len(toFetch) {
+			end = len(toFetch)
 		}
 
-		batchIPs := ips[i:end]
+		batchIPs := toFetch[i:end]
 		batchResults, err := fetchIPAPIBatch(batchIPs)
 		if err != nil {
 			log.Errorln("fetchIPAPIBatch failed: %v", err)
 			continue
 		}
 
+		asnCheckCacheMu.Lock()
 		for ip, isCDN := range batchResults {
 			results[ip] = isCDN
+			asnCheckCache[ip] = asnCheckCacheEntry{isCDN: isCDN, exp: now.Add(asnCheckCacheTTL)}
 		}
+		asnCheckCacheMu.Unlock()
 	}
 	return results, nil
 }
@@ -87,11 +120,5 @@ func fetchIPAPIBatch(ips []string) (map[string]bool, error) {
 func isCDNInfo(info IPAPIResponse) bool {
 	combined := strings.Join([]string{info.ISP, info.Org, info.AS}, " ")
 	combined = strings.ToUpper(combined)
-
-	for _, kw := range cdKeywords {
-		if strings.Contains(combined, strings.ToUpper(kw)) {
-			return true
-		}
-	}
-	return false
+	return MatchOrg(combined)
 }
