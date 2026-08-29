@@ -3,7 +3,6 @@
 <nav class="sticky top-0 z-50 bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md">
     <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
         <a href="#" id="brand-home" class="font-bold text-lg tracking-tight">Free Proxies</a>
-        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-white/10 text-lg leading-none" aria-label="切换主题">🌙</button>
         <button id="nav-burger" class="lg:hidden p-2 rounded-lg hover:bg-white/10" aria-label="menu">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -17,6 +16,9 @@
             <a href="quanx" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm{{ if eq .active "quanx" }} bg-white/15{{ else }} hover:bg-white/10{{ end }}"><i aria-hidden="true" class="metron-quanx text-base"></i>QuanX</a>
             <a href="v2rayn" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm{{ if eq .active "v2rayn" }} bg-white/15{{ else }} hover:bg-white/10{{ end }}"><span class="inline-flex items-center justify-center w-4 h-4 rounded bg-white/20 text-xs font-bold">V</span>v2rayN</a>
             <a href="best" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm{{ if eq .active "best" }} bg-white/15{{ else }} hover:bg-white/10{{ end }}">★优选IP</a>
+            <div class="mt-1 pt-2 border-t border-white/20 lg:border-t-0 lg:ml-2 lg:mt-0 lg:pt-0">
+                <button id="theme-toggle" class="flex items-center gap-2 w-full lg:w-auto px-3 py-2 rounded-lg hover:bg-white/10 text-sm" aria-label="切换主题"><span id="theme-icon"></span><span class="lg:hidden">主题</span></button>
+            </div>
         </div>
     </div>
 </nav>
