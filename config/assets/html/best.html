@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>优选IP - Free Proxies</title>
     <meta property="og:description" content="Cloudflare 优选 IP 订阅：clash、surge、loon、quanx、v2rayN、anytls 格式">
-    <link rel="stylesheet" type="text/css" href="static/css/index.css" />
+    <link rel="stylesheet" type="text/css" href="static/css/index.css?v={{ .version }}" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 21a9 9 0 1 0-9-9c0 1.13.21 2.2.59 3.19L2 21l5.81-1.59A9.02 9.02 0 0 0 12 21Z'/%3E%3C/svg%3E">
     <meta name="theme-color" content="#f6f7fb">
     <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
@@ -199,7 +199,7 @@
     <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
     <script>window.BEST_GEN_COUNTRIES = {{ .country_protocols }};</script>
     <script>window.BEST_GEN_CLIENTS = {{ .client_protocols }};</script>
-    <script src="static/index.js"></script>
+    <script src="static/index.js?v={{ .version }}"></script>
 </body>
 
 </html>

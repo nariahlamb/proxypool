@@ -394,7 +394,7 @@ func setupRouter() {
 	store := persistence.NewInMemoryStore(time.Minute)
 	// 站点响应缓存；触发类/动态接口跳过（/task/*、/health、/link/、/debug/*）
 	router.Use(gin.Recovery(), siteCache(store, time.Minute,
-		"/task/", "/health", "/link/", "/debug/statsviz", "/debug/pprof"))
+		"/task/", "/health", "/link/", "/static/", "/debug/statsviz", "/debug/pprof"))
 
 	pprof.Register(router)
 
@@ -487,6 +487,7 @@ func setupRouter() {
 		c.HTML(http.StatusOK, "best.html", gin.H{
 			"domain":            requestHost(c),
 			"base_path":         templateBasePath(c),
+			"version":           version,
 			"countries":         config.Config().ProxyInfo.Countries(),
 			"country_protocols": template.JS(cp),
 			"client_protocols":  template.JS(cpc),
