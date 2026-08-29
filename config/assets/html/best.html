@@ -7,7 +7,8 @@
     <title>优选IP - Free Proxies</title>
     <meta property="og:description" content="Cloudflare 优选 IP 订阅：clash、surge、loon、quanx、v2rayN、anytls 格式">
     <link rel="stylesheet" type="text/css" href="static/css/index.css" />
-        <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
+        <meta name="theme-color" content="#f8fafc">
+    <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
     <script>
     (function () {
         var t = localStorage.getItem("proxypool_theme");
@@ -17,6 +18,7 @@
     </script>
 </head>
 
+<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-slate-900 focus:px-3 focus:py-2 focus:rounded-lg focus:text-sm focus:shadow-lg">跳到主要内容</a>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200">
 
     <!-- Navigation -->
@@ -30,18 +32,18 @@
                 </svg>
             </button>
             <div id="nav-menu" class="hidden sm:flex absolute sm:static left-0 right-0 top-14 sm:top-auto flex-col sm:flex-row bg-indigo-700 sm:bg-transparent sm:items-center gap-1 px-4 pb-3 pt-2 sm:p-0 shadow-lg sm:shadow-none">
-                <a href="clash" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i class="metron-clash text-base"></i>Clash</a>
-                <a href="shadowrocket" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i class="metron-shadowrocket text-base"></i>ShadowRocket</a>
-                <a href="surge" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i class="metron-surge text-base"></i>Surge</a>
-                <a href="loon" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i class="metron-loon text-base"></i>Loon</a>
-                <a href="quanx" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i class="metron-quanx text-base"></i>QuanX</a>
+                <a href="clash" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-clash text-base"></i>Clash</a>
+                <a href="shadowrocket" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-shadowrocket text-base"></i>ShadowRocket</a>
+                <a href="surge" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-surge text-base"></i>Surge</a>
+                <a href="loon" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-loon text-base"></i>Loon</a>
+                <a href="quanx" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-quanx text-base"></i>QuanX</a>
                 <a href="v2rayn" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><span class="inline-flex items-center justify-center w-4 h-4 rounded bg-white/20 text-xs font-bold">V</span>v2rayN</a>
                 <a href="best" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/15 text-sm">★优选IP</a>
             </div>
         </div>
     </nav>
 
-    <main class="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
+    <main id="main-content" class="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
 
         <section class="mb-6">
             <h1 class="text-2xl font-bold mb-2">★ Cloudflare 优选 IP</h1>
@@ -49,7 +51,7 @@
         </section>
 
         <section class="mb-6">
-            <h5 class="text-lg font-semibold mb-3">动态生成</h5>
+            <h2 class="text-lg font-semibold mb-3">动态生成</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">选择端点、客户端、节点协议与落地国家，一键复制优选订阅链接（默认包含全部健康节点）。</p>
             <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
@@ -90,14 +92,14 @@
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="gen-random" onchange="refreshBestGen()" class="rounded border-slate-300">random</label>
                     <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="gen-cdn" onchange="refreshBestGen()" class="rounded border-slate-300">cdn</label>
                     <div>
-                        <select id="gen-ipv6" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm">
+                        <select id="gen-ipv6" aria-label="IPv6 模式" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm">
                             <option value="">IPv4+IPv6</option>
                             <option value="true">仅 IPv6</option>
                             <option value="false">仅 IPv4</option>
                         </select>
                     </div>
                     <div>
-                        <select id="gen-sort" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm">
+                        <select id="gen-sort" aria-label="排序方式" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm">
                             <option value="">固定排序</option>
                             <option value="country">按国家</option>
                             <option value="ip">按 IP</option>
@@ -105,17 +107,17 @@
                         </select>
                     </div>
                     <div>
-                        <input id="gen-limit" type="number" min="1" placeholder="limit 数量" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm placeholder:text-slate-400">
+                        <input id="gen-limit" type="number" min="1" placeholder="limit 数量…" aria-label="limit 数量" autocomplete="off" spellcheck="false" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm placeholder:text-slate-400">
                     </div>
                     <div>
-                        <input id="gen-c" type="text" placeholder="节点国家 c" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm placeholder:text-slate-400">
+                        <input id="gen-c" type="text" placeholder="节点国家 c…" aria-label="节点国家代码 c" autocomplete="off" spellcheck="false" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm placeholder:text-slate-400">
                     </div>
                 </div>
                 <div class="mb-3">
-                    <input id="gen-sub" type="text" placeholder="sub CF 明文订阅源链接（bestCfProxySub 必填）" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm placeholder:text-slate-400">
+                    <input id="gen-sub" type="text" placeholder="sub CF 明文订阅源链接…" aria-label="sub CF 明文订阅源链接" autocomplete="off" spellcheck="false" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm placeholder:text-slate-400">
                 </div>
                 <div class="flex flex-col sm:flex-row gap-2">
-                    <input id="gen-url" type="text" readonly placeholder="选择后自动生成订阅链接…" class="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs font-mono text-slate-500 dark:text-slate-400 focus:outline-none">
+                    <input id="gen-url" type="text" readonly placeholder="选择后自动生成订阅链接…" aria-label="订阅链接预览" class="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs font-mono text-slate-500 dark:text-slate-400 focus:outline-none">
                     <button class="shrink-0 px-4 py-2 text-sm rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="copyBestGen(this)">复制订阅链接</button>
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">三维联动：国家候选只显示配置了所选协议的国家；协议候选 = 客户端支持 ∩ 国家配置（如 Surge 不支持 vless）。筛选参数按端点支持度自动禁用（bestIpKr 强制韩国、不支持 d；bestCfProxySub 需填写 sub 订阅源链接）。如导出为空请检查该国家对应探测是否启用。</p>
@@ -123,7 +125,7 @@
         </section>
 
         <section class="mb-6">
-            <h5 class="text-lg font-semibold mb-1">订阅端点</h5>
+            <h2 class="text-lg font-semibold mb-1">订阅端点</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">格式参数 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">:format</code> = 客户端 + 节点类型，例如 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">clashVmess</code>、<code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">surgeTrojan</code>、<code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">quanxVless</code>、<code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">loonAnytls</code>、<code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">v2raynVmess</code>。</p>
             <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
@@ -165,7 +167,7 @@
         </section>
 
         <section>
-            <h5 class="text-lg font-semibold mb-3">筛选参数</h5>
+            <h2 class="text-lg font-semibold mb-3">筛选参数</h2>
             <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
                 <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
                     <span class="font-mono text-sm">d</span>
@@ -202,6 +204,7 @@
         </section>
     </main>
 
+    <a href="#main-content" class="fixed bottom-4 right-4 z-40 bg-slate-900/80 dark:bg-slate-100/80 text-white dark:text-slate-900 rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-slate-900" aria-label="回到顶部">↑</a>
     <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
         <p>本程序为 fork 版：<a href="https://github.com/One-Piecs/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">One-Piecs/proxypool</a> {{ .version }}</p>
         <p class="mt-1">上游项目：<a href="https://github.com/zu1k/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">zu1k/proxypool</a> · <a href="https://github.com/sansui233/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">sansui233/proxypool</a></p>

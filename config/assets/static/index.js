@@ -92,6 +92,9 @@ function applyTheme(t) {
     document.documentElement.classList.toggle("dark", dark);
     var btn = document.getElementById("theme-toggle");
     if (btn) btn.textContent = THEME_ICONS[t];
+    // 移动端浏览器状态栏/主题色匹配页面背景
+    var mc = document.querySelector('meta[name="theme-color"]');
+    if (mc) mc.setAttribute("content", dark ? "#020617" : "#f8fafc");
 }
 
 // 切换：dark → light → system → dark 循环
@@ -128,16 +131,18 @@ function copyText(text) {
     return Promise.resolve(ok);
 }
 
+// 复制/操作反馈 toast（Tailwind 版，aria-live 供读屏播报）
 function showTip(msg) {
-    var el = document.createElement("div");
-    el.className = "notification has-text-primary";
-    el.innerHTML = "<i>✔</i><p>" + msg + "</p>";
-    document.body.appendChild(el);
-    setTimeout(function () { el.classList.add("show"); }, 30);
-    setTimeout(function () {
-        el.classList.remove("show");
-        setTimeout(function () { el.remove(); }, 500);
-    }, 1800);
+    var wrap = document.createElement("div");
+    wrap.className = "fixed inset-0 z-[100] flex items-center justify-center pointer-events-none px-6";
+    wrap.setAttribute("role", "status");
+    wrap.setAttribute("aria-live", "polite");
+    var inner = document.createElement("div");
+    inner.className = "bg-slate-900/90 dark:bg-slate-100/90 text-white dark:text-slate-900 rounded-xl px-5 py-4 shadow-lg text-sm text-center max-w-[80vw]";
+    inner.innerHTML = "<div class='text-3xl mb-1 leading-none'>✔</div>" + msg;
+    wrap.appendChild(inner);
+    document.body.appendChild(wrap);
+    setTimeout(function () { wrap.remove(); }, 1800);
 }
 
 // 复制按钮：从上一单元格（td[data-sub-path]）取相对路径拼接完整 URL

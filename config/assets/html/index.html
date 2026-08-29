@@ -8,7 +8,8 @@
     <meta property="og:description" content="免费的ss、ssr、vmess、trojan、vless、anytls节点与 Cloudflare 优选 IP">
     <meta name="keywords" content="免费ss、ssr、vmess、trojan、vless、anytls节点、优选IP">
     <link rel="stylesheet" type="text/css" href="static/css/index.css" />
-        <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
+        <meta name="theme-color" content="#f8fafc">
+    <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
     <script>
     (function () {
         var t = localStorage.getItem("proxypool_theme");
@@ -18,6 +19,7 @@
     </script>
 </head>
 
+<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-slate-900 focus:px-3 focus:py-2 focus:rounded-lg focus:text-sm focus:shadow-lg">跳到主要内容</a>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200">
 
     <!-- Navigation -->
@@ -31,11 +33,11 @@
                 </svg>
             </button>
             <div id="nav-menu" class="hidden sm:flex absolute sm:static left-0 right-0 top-14 sm:top-auto flex-col sm:flex-row bg-indigo-700 sm:bg-transparent sm:items-center gap-1 px-4 pb-3 pt-2 sm:p-0 shadow-lg sm:shadow-none">
-                <a href="clash" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i class="metron-clash text-base"></i>Clash</a>
-                <a href="shadowrocket" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i class="metron-shadowrocket text-base"></i>ShadowRocket</a>
-                <a href="surge" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i class="metron-surge text-base"></i>Surge</a>
-                <a href="loon" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i class="metron-loon text-base"></i>Loon</a>
-                <a href="quanx" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i class="metron-quanx text-base"></i>QuanX</a>
+                <a href="clash" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-clash text-base"></i>Clash</a>
+                <a href="shadowrocket" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-shadowrocket text-base"></i>ShadowRocket</a>
+                <a href="surge" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-surge text-base"></i>Surge</a>
+                <a href="loon" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-loon text-base"></i>Loon</a>
+                <a href="quanx" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-quanx text-base"></i>QuanX</a>
                 <a href="v2rayn" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><span class="inline-flex items-center justify-center w-4 h-4 rounded bg-white/20 text-xs font-bold">V</span>v2rayN</a>
                 <a href="best" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm">★优选IP</a>
             </div>
@@ -43,7 +45,7 @@
     </nav>
 
     <!-- Body -->
-    <main class="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
+    <main id="main-content" class="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
 
         <section class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 mb-6 text-sm leading-relaxed">
             <p>⭐️ 自动抓取 tg 频道、订阅地址、公开互联网上的 ss、ssr、vmess、trojan、vless、anytls 节点信息，聚合去重检测后提供节点列表与 Cloudflare 优选 IP 订阅</p>
@@ -51,7 +53,7 @@
         </section>
 
         <section class="mb-6">
-            <h5 class="text-lg font-semibold mb-3">统计</h5>
+            <h2 class="text-lg font-semibold mb-3">统计</h2>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
                     <div class="text-xs text-slate-500 dark:text-slate-400">抓取源</div>
@@ -83,10 +85,10 @@
         </section>
 
         <section class="mb-6">
-            <h5 class="text-lg font-semibold mb-3">客户端</h5>
+            <h2 class="text-lg font-semibold mb-3">客户端</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
-                    <div class="font-medium mb-3 flex items-center gap-2"><i class="metron-clash text-lg"></i>Clash</div>
+                    <div class="font-medium mb-3 flex items-center gap-2"><i aria-hidden="true" class="metron-clash text-lg"></i>Clash</div>
                     <div class="flex flex-wrap gap-2 mb-3">
                         <button data-sub-path="/clash/config" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">配置文件</button>
                         <a href="#" data-sub-path="/clash/config" data-install-scheme="clash" class="px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">一键导入</a>
@@ -94,7 +96,7 @@
                     <a href="clash" class="mt-auto text-xs text-indigo-600 dark:text-indigo-400 hover:underline">如何筛选等更多信息 &gt;&gt;</a>
                 </div>
                 <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
-                    <div class="font-medium mb-3 flex items-center gap-2"><i class="metron-shadowrocket text-lg"></i>ShadowRocket</div>
+                    <div class="font-medium mb-3 flex items-center gap-2"><i aria-hidden="true" class="metron-shadowrocket text-lg"></i>ShadowRocket</div>
                     <div class="flex flex-wrap gap-2 mb-3">
                         <button data-sub-path="/clash/proxies" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">复制订阅</button>
                         <button data-sub-path="/clash/proxies?c=HK,TW,US,JP,SG" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-amber-500 hover:bg-amber-600 text-white">常用国家</button>
@@ -102,7 +104,7 @@
                     <a href="shadowrocket" class="mt-auto text-xs text-indigo-600 dark:text-indigo-400 hover:underline">如何筛选等更多信息 &gt;&gt;</a>
                 </div>
                 <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
-                    <div class="font-medium mb-3 flex items-center gap-2"><i class="metron-surge text-lg"></i>Surge</div>
+                    <div class="font-medium mb-3 flex items-center gap-2"><i aria-hidden="true" class="metron-surge text-lg"></i>Surge</div>
                     <div class="flex flex-wrap gap-2 mb-3">
                         <button data-sub-path="/surge/config" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">配置文件</button>
                         <a href="#" data-sub-path="/surge/config" data-install-scheme="surge3" class="px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">一键导入</a>
@@ -121,7 +123,7 @@
         </section>
 
         <section class="mb-6">
-            <h5 class="text-lg font-semibold mb-1">订阅链接</h5>
+            <h2 class="text-lg font-semibold mb-1">订阅链接</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">❗️ 不建议日常使用，节点过多时易造成卡顿，建议筛选后使用订阅转换</p>
             <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
@@ -163,7 +165,7 @@
         </section>
 
         <section class="mb-6">
-            <h5 class="text-lg font-semibold mb-1">优选 IP 订阅</h5>
+            <h2 class="text-lg font-semibold mb-1">优选 IP 订阅</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Cloudflare 优选 IP，多源采集 + 健康检查（bestip_probe）+ anytls 透传探测（sni_probe）。格式参数见 <a href="best" class="text-indigo-600 dark:text-indigo-400 underline">优选IP说明</a>。</p>
             <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
@@ -190,7 +192,7 @@
         </section>
 
         <section class="mb-6">
-            <h5 class="text-lg font-semibold mb-1">任务</h5>
+            <h2 class="text-lg font-semibold mb-1">任务</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">触发后台任务（抓取 / 测速 / 优选IP / GeoIP 更新）。配置了 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">admin_token</code> 时需输入 Token，未配置则直接可用。</p>
             <div class="flex flex-wrap gap-3">
                 <button class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="runTask('crawl')">触发抓取</button>
@@ -202,6 +204,7 @@
         </section>
     </main>
 
+    <a href="#main-content" class="fixed bottom-4 right-4 z-40 bg-slate-900/80 dark:bg-slate-100/80 text-white dark:text-slate-900 rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-slate-900" aria-label="回到顶部">↑</a>
     <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
         <!-- 所有使用本代码提供服务的禁止删除、修改版权信息 -->
         <p>欢迎关注 tg 频道：<a href="https://t.me/peekfun" class="text-indigo-600 dark:text-indigo-400 hover:underline">@peekfun</a></p>
