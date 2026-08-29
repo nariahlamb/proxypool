@@ -96,7 +96,7 @@ var clientPages = map[string]clientPage{
 	"loon": {
 		Name:  "loon",
 		Title: "Loon - Free Proxies",
-		Icon:  `<i aria-hidden="true" class="metron-loon text-2xl"></i>`,
+		Icon:  `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-base font-bold">L</span>`,
 		Desc:  "Loon 节点订阅",
 		Note:  `Loon 导入方法：打开 Loon，进入 <b>配置 → 订阅 → 远程订阅</b>，粘贴上方订阅地址保存后拉取；或在 <b>节点</b> 页右上角添加订阅。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。`,
 		NodeRows: []clientPageRow{
@@ -108,7 +108,7 @@ var clientPages = map[string]clientPage{
 	"quanx": {
 		Name:  "quanx",
 		Title: "QuanX - Free Proxies",
-		Icon:  `<i aria-hidden="true" class="metron-quanx text-2xl"></i>`,
+		Icon:  `<i aria-hidden="true" class="metron-quantumultx text-2xl"></i>`,
 		Desc:  "Quantumult X 节点订阅",
 		Note:  `QuanX 导入方法：打开 Quantumult X，进入 <b>节点 → 订阅</b>，右上角 + 号粘贴订阅地址；或将地址填入 <b>设置 → 资源解析器</b> 的 server 段自动解析。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。`,
 		NodeRows: []clientPageRow{
@@ -120,7 +120,7 @@ var clientPages = map[string]clientPage{
 	"v2rayn": {
 		Name:  "v2rayn",
 		Title: "v2rayN - Free Proxies",
-		Icon:  `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-base font-bold">V</span>`,
+		Icon:  `<i aria-hidden="true" class="metron-v2rayng text-2xl"></i>`,
 		Desc:  "v2rayN 节点订阅",
 		Note:  `v2rayN 导入方法：<b>订阅分组 → 订阅设置 → 添加</b>，填入上方订阅地址（URL）后点击「订阅更新」。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。`,
 		NodeRows: []clientPageRow{

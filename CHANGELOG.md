@@ -1,3 +1,9 @@
+## [v2.5.25] - 2026-08-29
+
+### 🐛 修复
+
+- 客户端图标：Loon 补文字徽章（metron 字体无 loon 字形）、QuanX 改用 metron-quantumultx（原 quanx 类无字形）、v2rayN 改用 metron-v2rayng 字体图标
+
 ## [v2.5.24] - 2026-08-29
 
 ### 🎨 主题切换按钮优化
