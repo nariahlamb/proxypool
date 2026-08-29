@@ -77,6 +77,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     // 动态生成器初始化：填充协议下拉并生成初始预览 URL
     if (document.getElementById("gen-client")) refreshBestGen();
+    // 订阅表搜索过滤
+    initSubSearch();
 });
 
 // 主题切换（三态：dark / light / 跟随系统）。状态存 localStorage('proxypool_theme')，
@@ -98,7 +100,7 @@ function applyTheme(t) {
     if (icon) icon.innerHTML = THEME_ICONS[t] || THEME_ICONS.system;
     // 移动端浏览器状态栏/主题色匹配页面背景
     var mc = document.querySelector('meta[name="theme-color"]');
-    if (mc) mc.setAttribute("content", dark ? "#020617" : "#f8fafc");
+    if (mc) mc.setAttribute("content", dark ? "#020617" : "#f6f7fb");
 }
 
 // 切换：dark → light → system → dark 循环
@@ -115,6 +117,20 @@ function watchSystemTheme() {
     if (!window.matchMedia) return;
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
         if (currentTheme() === "system") applyTheme("system");
+    });
+}
+
+// 订阅表搜索过滤（subscription-search → subscription-row）
+function initSubSearch() {
+    var input = document.getElementById("subscription-search");
+    if (!input) return;
+    var rows = document.querySelectorAll(".subscription-row");
+    input.addEventListener("input", function () {
+        var kw = input.value.trim().toLowerCase();
+        for (var i = 0; i < rows.length; i++) {
+            var name = (rows[i].getAttribute("data-name") || "").toLowerCase();
+            rows[i].style.display = name.indexOf(kw) >= 0 ? "" : "none";
+        }
     });
 }
 
