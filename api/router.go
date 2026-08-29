@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"net/url"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -77,8 +76,8 @@ var clientPages = map[string]clientPage{
 		Title: "Clash - Free Proxies",
 		Icon:  `<i aria-hidden="true" class="metron-clash text-2xl"></i>`,
 		ConfigRows: []clientPageRow{
-			{Label: "远程配置文件", Rel: "/clash/config", LinkScheme: "clash://install-config", LinkLabel: "一键导入"},
-			{Label: "本地部署时配置文件", Text: "LOCAL", LinkScheme: "clash://install-config", LinkLabel: "一键导入"},
+			{Label: "远程配置文件", Rel: "/clash/config", LinkScheme: "clash", LinkLabel: "一键导入"},
+			{Label: "本地部署时配置文件", Rel: "/clash/localconfig", LinkScheme: "clash", LinkLabel: "一键导入"},
 		},
 		NodeRows: []clientPageRow{{Label: "所有节点", Rel: "/clash/proxies"}},
 	},
@@ -89,7 +88,7 @@ var clientPages = map[string]clientPage{
 		Desc:  "Surge 配置文件与节点订阅",
 		Note:  `Surge 导入方法：点击「一键导入」自动跳转安装配置；或手动在 <b>设置 → 配置 → 从 URL 下载配置</b> 填入配置地址。节点列表也可粘贴到 <b>代理 → 手动添加</b> 使用。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。`,
 		ConfigRows: []clientPageRow{
-			{Label: "Surge 配置文件（含节点与规则）", Rel: "/surge/config", LinkScheme: "surge3:///install-config", LinkLabel: "一键导入"},
+			{Label: "Surge 配置文件（含节点与规则）", Rel: "/surge/config", LinkScheme: "surge3", LinkLabel: "一键导入"},
 		},
 		NodeRows: []clientPageRow{
 			{Label: "全部节点订阅", Rel: "/surge/proxies"},
@@ -152,20 +151,8 @@ func renderClientPage(c *gin.Context, name string) {
 	base := templateBasePath(c)
 	origin := requestOrigin(c)
 	host := requestHost(c)
-	// 用副本渲染，避免改写全局 clientPages 中的行（否则占位符 "LOCAL" 会被覆盖为
-	// 某次请求拼出的域名/前缀，导致后续所有请求复用第一次的结果）。
-	rows := make([]clientPageRow, len(pg.ConfigRows))
-	copy(rows, pg.ConfigRows)
-	for i := range rows {
-		r := &rows[i]
-		switch {
-		case r.Text == "LOCAL":
-			r.Text = origin + base + "/clash/localconfig"
-			r.LinkURL = template.URL("clash://install-config?url=" + url.QueryEscape(r.Text))
-		case r.LinkScheme != "":
-			r.LinkURL = template.URL(r.LinkScheme + "?url=" + url.QueryEscape(origin+base+r.Rel))
-		}
-	}
+	// 订阅链接与一键导入深链统一由前端 JS 基于 location 拼接（能感知 nginx "/show/ --> /" 这类外置前缀），
+	// 服务端不再改写全局 clientPages，避免跨请求前缀/主机串扰。
 	c.HTML(http.StatusOK, "client.html", gin.H{
 		"domain":       host,
 		"origin":       origin,
@@ -178,7 +165,7 @@ func renderClientPage(c *gin.Context, name string) {
 		"client_icon":  pg.Icon,
 		"client_desc":  pg.Desc,
 		"client_note":  template.HTML(pg.Note),
-		"config_rows":  rows,
+		"config_rows":  pg.ConfigRows,
 		"node_rows":    pg.NodeRows,
 	})
 }
