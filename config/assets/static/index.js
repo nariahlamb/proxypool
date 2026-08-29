@@ -41,13 +41,18 @@ function ensureBestToken() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    // 移动端导航菜单切换
-    var burger = document.querySelector(".navbar-burger");
+    // 主题初始化 + 跟随系统监听
+    applyTheme(currentTheme());
+    watchSystemTheme();
+    var themeBtn = document.getElementById("theme-toggle");
+    if (themeBtn) themeBtn.addEventListener("click", toggleTheme);
+
+    // 移动端导航菜单切换（Tailwind 重构版：toggle hidden）
+    var burger = document.getElementById("nav-burger");
     if (burger) {
         burger.addEventListener("click", function () {
-            burger.classList.toggle("is-active");
-            var menu = document.getElementById(burger.getAttribute("data-target"));
-            if (menu) menu.classList.toggle("is-active");
+            var menu = document.getElementById("nav-menu");
+            if (menu) menu.classList.toggle("hidden");
         });
     }
     // 首页品牌链接跳转部署前缀首页
@@ -74,6 +79,41 @@ document.addEventListener("DOMContentLoaded", function () {
     if (document.getElementById("gen-client")) refreshBestGen();
 });
 
+// 主题切换（三态：dark / light / 跟随系统）。状态存 localStorage('proxypool_theme')，
+// 未手动选择时跟随系统 prefers-color-scheme（含实时监听）。
+var THEME_ICONS = { dark: "🌙", light: "☀️", system: "🔄" };
+
+function currentTheme() {
+    return localStorage.getItem("proxypool_theme") || "system";
+}
+
+function applyTheme(t) {
+    var dark = t === "dark" || (t !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", dark);
+    var btn = document.getElementById("theme-toggle");
+    if (btn) btn.textContent = THEME_ICONS[t];
+    // 移动端浏览器状态栏/主题色匹配页面背景
+    var mc = document.querySelector('meta[name="theme-color"]');
+    if (mc) mc.setAttribute("content", dark ? "#020617" : "#f8fafc");
+}
+
+// 切换：dark → light → system → dark 循环
+function toggleTheme() {
+    var t = currentTheme();
+    var next = t === "dark" ? "light" : (t === "light" ? "system" : "dark");
+    localStorage.setItem("proxypool_theme", next);
+    applyTheme(next);
+    showTip(next === "system" ? "已切换：跟随系统" : (next === "dark" ? "已切换：夜间模式" : "已切换：日间模式"));
+}
+
+// 未手动选择时跟随系统主题变化
+function watchSystemTheme() {
+    if (!window.matchMedia) return;
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+        if (currentTheme() === "system") applyTheme("system");
+    });
+}
+
 // 复制文本：优先 navigator.clipboard，降级 execCommand
 function copyText(text) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -91,16 +131,18 @@ function copyText(text) {
     return Promise.resolve(ok);
 }
 
+// 复制/操作反馈 toast（Tailwind 版，aria-live 供读屏播报）
 function showTip(msg) {
-    var el = document.createElement("div");
-    el.className = "notification has-text-primary";
-    el.innerHTML = "<i>✔</i><p>" + msg + "</p>";
-    document.body.appendChild(el);
-    setTimeout(function () { el.classList.add("show"); }, 30);
-    setTimeout(function () {
-        el.classList.remove("show");
-        setTimeout(function () { el.remove(); }, 500);
-    }, 1800);
+    var wrap = document.createElement("div");
+    wrap.className = "fixed inset-0 z-[100] flex items-center justify-center pointer-events-none px-6";
+    wrap.setAttribute("role", "status");
+    wrap.setAttribute("aria-live", "polite");
+    var inner = document.createElement("div");
+    inner.className = "bg-slate-900/90 dark:bg-slate-100/90 text-white dark:text-slate-900 rounded-xl px-5 py-4 shadow-lg text-sm text-center max-w-[80vw]";
+    inner.innerHTML = "<div class='text-3xl mb-1 leading-none'>✔</div>" + msg;
+    wrap.appendChild(inner);
+    document.body.appendChild(wrap);
+    setTimeout(function () { wrap.remove(); }, 1800);
 }
 
 // 复制按钮：从上一单元格（td[data-sub-path]）取相对路径拼接完整 URL

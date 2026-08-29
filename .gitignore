@@ -51,3 +51,6 @@ config/assets/flags.json
 # 根目录编译产物与运行时数据
 proxypool*
 data
+# Tailwind 构建产物（build-tailwind.sh 自包含，依赖走 node_modules 卷）
+package.json
+package-lock.json

@@ -4,206 +4,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="HandheldFriendly" content="True">
     <title>Free Proxies</title>
     <meta property="og:description" content="免费的ss、ssr、vmess、trojan、vless、anytls节点与 Cloudflare 优选 IP">
     <meta name="keywords" content="免费ss、ssr、vmess、trojan、vless、anytls节点、优选IP">
     <link rel="stylesheet" type="text/css" href="static/css/index.css" />
+        <meta name="theme-color" content="#f8fafc">
     <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
+    <script>
+    (function () {
+        var t = localStorage.getItem("proxypool_theme");
+        var dark = t === "dark" || (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+    })();
+    </script>
 </head>
 
-<body>
-<!-- Navigation -->
-<nav class="navbar is-primary pl-2 pr-2" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-        <a href="#" id="brand-home" class="navbar-item">
-            <h1 class="title is-4">Free Proxies</h1>
-        </a>
-        <a role="button" class="navbar-burger burger is-white" aria-label="menu" aria-expanded="false" data-target="clients">
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-        </a>
-    </div>
-    <div id="clients" class="navbar-menu">
-        <div class="navbar-start is-size-6">
-            <a href="clash" class="navbar-item"><span class="icon"><i class="metron-clash"></i></span>&nbspClash</a>
-            <a href="shadowrocket" class="navbar-item"><span class="icon"><i class="metron-shadowrocket"></i></span>&nbspShadowRocket</a>
-            <a href="surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
-            <a href="loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
-            <a href="quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
-            <a href="v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
-            <a href="best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
-        </div>
-    </div>
-</nav>
-<!-- Body -->
-<div class="container">
-    <div class="section pb-0">
-        <p>⭐️ 自动抓取tg频道、订阅地址、公开互联网上的ss、ssr、vmess、trojan、vless、anytls节点信息，聚合去重检测后提供节点列表与 Cloudflare 优选 IP 订阅</p>
-        <p>❗️ 任何使用此开源项目的人须遵守<a href="https://www.gnu.org/licenses/gpl-3.0.html">GPL3.0</a>协议，禁止盈利</p>
-        <hr class="pt-0 pb-0 mb-0 mt-2">
-    </div>
-    <section class='section'>
-        <h5 class="title is-4 mt-3">统计</h5>
-        <p>目前共有抓取源<b class="has-text-primary"> {{ .getters_count }} </b>个，
-            全部节点<b class="has-text-primary"> {{ .all_proxies_count }} </b>个（ss <b class="has-text-primary">{{ .ss_proxies_count }}</b>，ssr <b class="has-text-primary">{{ .ssr_proxies_count }}</b>，vmess <b class="has-text-primary">{{ .vmess_proxies_count }}</b>，trojan <b class="has-text-primary">{{ .trojan_proxies_count }}</b>，vless <b class="has-text-primary">{{ .vless_proxies_count }}</b>，anytls <b class="has-text-primary">{{ .anytls_proxies_count }}</b>）</p>
-        <p>可用节点数量：全部 <b class="has-text-primary"> {{ .useful_proxies_count }} </b>个（ss <b class="has-text-primary">{{ .useful_ss_proxies_count }}</b>，ssr <b class="has-text-primary">{{ .useful_ssr_proxies_count }}</b>，vmess <b class="has-text-primary">{{ .useful_vmess_proxies_count }}</b>，trojan <b class="has-text-primary">{{ .useful_trojan_proxies_count }}</b>，vless <b class="has-text-primary">{{ .useful_vless_proxies_count }}</b>，anytls <b class="has-text-primary">{{ .useful_anytls_proxies_count }}</b>）</p>
-        <p>优选 IP：节点 <b class="has-text-primary"> {{ .best_total }} </b>个，健康 <b class="has-text-primary">{{ .best_healthy }}</b>，IPv6 可用 <b class="has-text-primary">{{ .best_v6_healthy }}</b>，anytls 透传 <b class="has-text-primary">{{ .best_anytls }}</b>，更新时间 <b class="has-text-primary">{{ .best_last_update }}</b></p>
-        <p>是否开启测速：<b class="has-text-primary">{{ .is_speed_test }}</b></p>
-        <p>最后更新时间：<b class="has-text-primary">{{ .last_crawl_time }}</b></p>
-        <p>GeoIP：<b class="has-text-primary">{{ .geo_ip_db_version }}</b></p>
-    </section>
-    <section class="section">
-        <h5 class="title is-4">客户端</h5>
-        <div class="columns">
-            <div class="column">
-                <div class="card">
-                    <div class="card-header">
-                        <p class="card-header-title"><span class="icon"><i class="metron-clash"></i></span>Clash</p>
-                    </div>
-                    <div class="card-content pt-0">
-                        <button data-sub-path="/clash/config" onclick="onCopyThis(this)" class="button is-small is-primary">配置文件</button>
-                        <a href="#" data-sub-path="/clash/config" data-install-scheme="clash" class="button is-small is-info">一键导入</a>
-                    </div>
-                    <footer class="card-footer"><a href="clash" class="card-footer-item is-justify-content-flex-end has-text-right is-size-7">如何筛选等更多信息 >></a></footer>
-                </div>
-            </div>
-            <div class="column">
-                <div class="card">
-                    <div class="card-header">
-                        <p class="card-header-title"><span class="icon"><i class="metron-shadowrocket"></i></span>ShadowRocket</p>
-                    </div>
-                    <div class="card-content pt-0">
-                        <button data-sub-path="/clash/proxies" onclick="onCopyThis(this)" class="button is-small is-primary">复制订阅</button>
-                        <button data-sub-path="/clash/proxies?c=HK,TW,US,JP,SG" onclick="onCopyThis(this)" class="button is-small is-warning">常用国家</button>
-                    </div>
-                    <footer class="card-footer"><a href="shadowrocket" class="card-footer-item is-justify-content-flex-end is-size-7">如何筛选等更多信息 >></a></footer>
-                </div>
-            </div>
-            <div class="column">
-                <div class="card">
-                    <div class="card-header">
-                        <p class="card-header-title"><span class="icon"><i class="metron-surge"></i></span>Surge</p>
-                    </div>
-                    <div class="card-content pt-0">
-                        <button data-sub-path="/surge/config" onclick="onCopyThis(this)" class="button is-small is-primary">配置文件</button>
-                        <a href="#" data-sub-path="/surge/config" data-install-scheme="surge3" class="button is-small is-info">一键导入</a>
-                    </div>
-                    <footer class="card-footer"><a href="surge" class="card-footer-item is-justify-content-flex-end is-size-7">更多信息 >></a></footer>
-                </div>
-            </div>
-            <div class="column">
-                <div class="card">
-                    <div class="card-header">
-                        <p class="card-header-title"><span class="icon">★</span>优选IP</p>
-                    </div>
-                    <div class="card-content pt-0">
-                        <a href="best" class="button is-small is-primary">订阅说明</a>
-                        <button data-sub-path="/bestCfProxyIp/clashVmess" onclick="onCopyThis(this)" class="button is-small is-warning">复制订阅</button>
-                    </div>
-                    <footer class="card-footer"><a href="best" class="card-footer-item is-justify-content-flex-end is-size-7">更多信息 >></a></footer>
-                </div>
+<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-slate-900 focus:px-3 focus:py-2 focus:rounded-lg focus:text-sm focus:shadow-lg">跳到主要内容</a>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+            <a href="#" id="brand-home" class="font-bold text-lg tracking-tight">Free Proxies</a>
+                        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-white/10 text-lg leading-none" aria-label="切换主题">🌙</button>
+            <button id="nav-burger" class="sm:hidden p-2 rounded-lg hover:bg-white/10" aria-label="menu">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <div id="nav-menu" class="hidden sm:flex absolute sm:static left-0 right-0 top-14 sm:top-auto flex-col sm:flex-row bg-indigo-700 sm:bg-transparent sm:items-center gap-1 px-4 pb-3 pt-2 sm:p-0 shadow-lg sm:shadow-none">
+                <a href="clash" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-clash text-base"></i>Clash</a>
+                <a href="shadowrocket" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-shadowrocket text-base"></i>ShadowRocket</a>
+                <a href="surge" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-surge text-base"></i>Surge</a>
+                <a href="loon" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-loon text-base"></i>Loon</a>
+                <a href="quanx" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-quanx text-base"></i>QuanX</a>
+                <a href="v2rayn" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><span class="inline-flex items-center justify-center w-4 h-4 rounded bg-white/20 text-xs font-bold">V</span>v2rayN</a>
+                <a href="best" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm">★优选IP</a>
             </div>
         </div>
-    </section>
-    <section class="section ">
-        <h5 class="title is-4">订阅链接</h5>
-        <p>❗️不建议日常使用，节点过多时易造成卡顿，建议筛选后使用订阅转换</p>
-        <div class="table-container mt-2">
-            <table class="table is-fullwidth">
-                <tbody>
-                <tr>
-                    <th>ss</th>
-                    <td data-sub-path="/ss/sub"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                <tr>
-                    <th>ss-sip002</th>
-                    <td data-sub-path="/sip002/sub"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                <tr>
-                    <th>ssr</th>
-                    <td data-sub-path="/ssr/sub"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                <tr>
-                    <th>vmess</th>
-                    <td data-sub-path="/vmess/sub"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                <tr>
-                    <th>trojan</th>
-                    <td data-sub-path="/trojan/sub"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                <tr>
-                    <th>vless</th>
-                    <td data-sub-path="/vless/sub"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                <tr>
-                    <th>anytls（优选）</th>
-                    <td data-sub-path="/bestCfProxySub/clashAnytls"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-    <section class="section">
-        <h5 class="title is-4">优选 IP 订阅</h5>
-        <p>Cloudflare 优选 IP，多源采集 + 健康检查（bestip_probe）+ anytls 透传探测（sni_probe）。格式参数见 <a href="best">优选IP说明</a>。</p>
-        <div class="table-container mt-2">
-            <table class="table is-fullwidth">
-                <tbody>
-                <tr>
-                    <th>Clash / vmess</th>
-                    <td data-sub-path="/bestCfProxyIp/clashVmess"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                <tr>
-                    <th>Surge / trojan</th>
-                    <td data-sub-path="/bestCfProxyIp/surgeTrojan"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                <tr>
-                    <th>QuanX / vless</th>
-                    <td data-sub-path="/bestCfProxyIpTop20/quanxVless"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                <tr>
-                    <th>Loon / anytls</th>
-                    <td data-sub-path="/bestCfProxySub/loonAnytls"></td>
-                    <td class="has-text-right"><button class="button is-small is-primary" onclick="onCopy(this)">复制</button></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-    <section class="section">
-        <h5 class="title is-4">任务</h5>
-        <p>触发后台任务（抓取 / 测速 / 优选IP / GeoIP 更新）。配置了 <code>admin_token</code> 时需输入 Token，未配置则直接可用。</p>
-        <div class="buttons mt-2">
-            <button class="button is-small is-primary" onclick="runTask('crawl')">触发抓取</button>
-            <button class="button is-small is-primary" onclick="runTask('speedtest')">触发测速</button>
-            <button class="button is-small is-primary" onclick="runTask('updateBestNode')">更新优选IP</button>
-            <button class="button is-small is-primary" onclick="runTask('updateGeoIP')">更新GeoIP</button>
-            <button class="button is-small is-light" onclick="clearToken()">清除Token</button>
-        </div>
-    </section>
-</div>
-<footer class="footer has-text-centered">
-    <!-- 所有使用本代码提供服务的禁止删除、修改版权信息 -->
-    <p>欢迎关注tg频道：<a href="https://t.me/peekfun">@peekfun</a></p>
-    <p>本程序为 fork 版：<a href="https://github.com/One-Piecs/proxypool">One-Piecs/proxypool</a><br>{{ .version }}</p>
-    <p>上游项目：<a href="https://github.com/zu1k/proxypool">zu1k/proxypool</a> · <a href="https://github.com/sansui233/proxypool">sansui233/proxypool</a></p>
-    <br>
-    <p><b>Theme</b>&nbspby&nbsp<a href="https://github.com/sansui233/" class="has-text-primary"><b>Sansui233</b></a> Powered&nbspby&nbsp<b>Bulma</b></p>
-</footer>
-<script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
+    </nav>
+
+    <!-- Body -->
+    <main id="main-content" class="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
+
+        <section class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 mb-6 text-sm leading-relaxed">
+            <p>⭐️ 自动抓取 tg 频道、订阅地址、公开互联网上的 ss、ssr、vmess、trojan、vless、anytls 节点信息，聚合去重检测后提供节点列表与 Cloudflare 优选 IP 订阅</p>
+            <p class="mt-2">❗️ 任何使用此开源项目的人须遵守 <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-indigo-600 dark:text-indigo-400 underline">GPL3.0</a> 协议，禁止盈利</p>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="text-lg font-semibold mb-3">统计</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
+                    <div class="text-xs text-slate-500 dark:text-slate-400">抓取源</div>
+                    <div class="text-xl font-bold tabular-nums">{{ .getters_count }}</div>
+                </div>
+                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
+                    <div class="text-xs text-slate-500 dark:text-slate-400">全部节点</div>
+                    <div class="text-xl font-bold tabular-nums">{{ .all_proxies_count }}</div>
+                    <div class="text-xs text-slate-400 mt-1">ss {{ .ss_proxies_count }} · ssr {{ .ssr_proxies_count }} · vmess {{ .vmess_proxies_count }} · trojan {{ .trojan_proxies_count }} · vless {{ .vless_proxies_count }} · anytls {{ .anytls_proxies_count }}</div>
+                </div>
+                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
+                    <div class="text-xs text-slate-500 dark:text-slate-400">可用节点</div>
+                    <div class="text-xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">{{ .useful_proxies_count }}</div>
+                    <div class="text-xs text-slate-400 mt-1">ss {{ .useful_ss_proxies_count }} · ssr {{ .useful_ssr_proxies_count }} · vmess {{ .useful_vmess_proxies_count }} · trojan {{ .useful_trojan_proxies_count }} · vless {{ .useful_vless_proxies_count }} · anytls {{ .useful_anytls_proxies_count }}</div>
+                </div>
+                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
+                    <div class="text-xs text-slate-500 dark:text-slate-400">优选 IP 节点</div>
+                    <div class="text-xl font-bold tabular-nums">{{ .best_total }}</div>
+                    <div class="text-xs text-slate-400 mt-1">健康 <span class="text-emerald-600 dark:text-emerald-400">{{ .best_healthy }}</span> · IPv6 <span class="text-emerald-600 dark:text-emerald-400">{{ .best_v6_healthy }}</span> · anytls 透传 {{ .best_anytls }}</div>
+                </div>
+                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 col-span-2 sm:col-span-3 lg:col-span-2">
+                    <div class="text-xs text-slate-500 dark:text-slate-400">运行状态</div>
+                    <div class="text-sm mt-1">测速：<b class="text-indigo-600 dark:text-indigo-400">{{ .is_speed_test }}</b></div>
+                    <div class="text-xs text-slate-400 mt-0.5">优选更新 {{ .best_last_update }}</div>
+                    <div class="text-xs text-slate-400 mt-0.5">抓取更新 {{ .last_crawl_time }}</div>
+                    <div class="text-xs text-slate-400 mt-0.5">GeoIP {{ .geo_ip_db_version }}</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="text-lg font-semibold mb-3">客户端</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
+                    <div class="font-medium mb-3 flex items-center gap-2"><i aria-hidden="true" class="metron-clash text-lg"></i>Clash</div>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <button data-sub-path="/clash/config" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">配置文件</button>
+                        <a href="#" data-sub-path="/clash/config" data-install-scheme="clash" class="px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">一键导入</a>
+                    </div>
+                    <a href="clash" class="mt-auto text-xs text-indigo-600 dark:text-indigo-400 hover:underline">如何筛选等更多信息 &gt;&gt;</a>
+                </div>
+                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
+                    <div class="font-medium mb-3 flex items-center gap-2"><i aria-hidden="true" class="metron-shadowrocket text-lg"></i>ShadowRocket</div>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <button data-sub-path="/clash/proxies" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">复制订阅</button>
+                        <button data-sub-path="/clash/proxies?c=HK,TW,US,JP,SG" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-amber-500 hover:bg-amber-600 text-white">常用国家</button>
+                    </div>
+                    <a href="shadowrocket" class="mt-auto text-xs text-indigo-600 dark:text-indigo-400 hover:underline">如何筛选等更多信息 &gt;&gt;</a>
+                </div>
+                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
+                    <div class="font-medium mb-3 flex items-center gap-2"><i aria-hidden="true" class="metron-surge text-lg"></i>Surge</div>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <button data-sub-path="/surge/config" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">配置文件</button>
+                        <a href="#" data-sub-path="/surge/config" data-install-scheme="surge3" class="px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">一键导入</a>
+                    </div>
+                    <a href="surge" class="mt-auto text-xs text-indigo-600 dark:text-indigo-400 hover:underline">更多信息 &gt;&gt;</a>
+                </div>
+                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
+                    <div class="font-medium mb-3 flex items-center gap-2">★优选IP</div>
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <a href="best" class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white">订阅说明</a>
+                        <button data-sub-path="/bestCfProxyIp/clashVmess" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-amber-500 hover:bg-amber-600 text-white">复制订阅</button>
+                    </div>
+                    <a href="best" class="mt-auto text-xs text-indigo-600 dark:text-indigo-400 hover:underline">更多信息 &gt;&gt;</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="text-lg font-semibold mb-1">订阅链接</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">❗️ 不建议日常使用，节点过多时易造成卡顿，建议筛选后使用订阅转换</p>
+            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">ss</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/ss/sub"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/ss/sub" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">ss-sip002</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/sip002/sub"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/sip002/sub" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">ssr</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/ssr/sub"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/ssr/sub" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">vmess</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/vmess/sub"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/vmess/sub" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">trojan</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/trojan/sub"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/trojan/sub" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">vless</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/vless/sub"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/vless/sub" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">anytls（优选）</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxySub/clashAnytls"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestCfProxySub/clashAnytls" onclick="onCopyThis(this)">复制</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="text-lg font-semibold mb-1">优选 IP 订阅</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Cloudflare 优选 IP，多源采集 + 健康检查（bestip_probe）+ anytls 透传探测（sni_probe）。格式参数见 <a href="best" class="text-indigo-600 dark:text-indigo-400 underline">优选IP说明</a>。</p>
+            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">Clash / vmess</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxyIp/clashVmess"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestCfProxyIp/clashVmess" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">Surge / trojan</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxyIp/surgeTrojan"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestCfProxyIp/surgeTrojan" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">QuanX / vless</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxyIpTop20/quanxVless"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestCfProxyIpTop20/quanxVless" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-28 shrink-0 font-medium text-sm">Loon / anytls</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxySub/loonAnytls"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestCfProxySub/loonAnytls" onclick="onCopyThis(this)">复制</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="text-lg font-semibold mb-1">任务</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">触发后台任务（抓取 / 测速 / 优选IP / GeoIP 更新）。配置了 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">admin_token</code> 时需输入 Token，未配置则直接可用。</p>
+            <div class="flex flex-wrap gap-3">
+                <button class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="runTask('crawl')">触发抓取</button>
+                <button class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="runTask('speedtest')">触发测速</button>
+                <button class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="runTask('updateBestNode')">更新优选IP</button>
+                <button class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="runTask('updateGeoIP')">更新GeoIP</button>
+                <button class="px-3 py-1.5 text-xs rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700" onclick="clearToken()">清除Token</button>
+            </div>
+        </section>
+    </main>
+
+    <a href="#main-content" class="fixed bottom-4 right-4 z-40 bg-slate-900/80 dark:bg-slate-100/80 text-white dark:text-slate-900 rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-slate-900" aria-label="回到顶部">↑</a>
+    <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
+        <!-- 所有使用本代码提供服务的禁止删除、修改版权信息 -->
+        <p>欢迎关注 tg 频道：<a href="https://t.me/peekfun" class="text-indigo-600 dark:text-indigo-400 hover:underline">@peekfun</a></p>
+        <p class="mt-1">本程序为 fork 版：<a href="https://github.com/One-Piecs/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">One-Piecs/proxypool</a> {{ .version }}</p>
+        <p class="mt-1">上游项目：<a href="https://github.com/zu1k/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">zu1k/proxypool</a> · <a href="https://github.com/sansui233/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">sansui233/proxypool</a></p>
+        <p class="mt-2">Theme by <a href="https://github.com/sansui233/" class="text-indigo-600 dark:text-indigo-400 hover:underline">Sansui233</a> · Powered by Tailwind CSS</p>
+    </footer>
+    <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
     <script src="static/index.js"></script>
 </body>
 

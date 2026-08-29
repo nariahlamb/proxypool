@@ -4,51 +4,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="HandheldFriendly" content="True">
     <title>优选IP - Free Proxies</title>
     <meta property="og:description" content="Cloudflare 优选 IP 订阅：clash、surge、loon、quanx、v2rayN、anytls 格式">
     <link rel="stylesheet" type="text/css" href="static/css/index.css" />
+        <meta name="theme-color" content="#f8fafc">
     <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
+    <script>
+    (function () {
+        var t = localStorage.getItem("proxypool_theme");
+        var dark = t === "dark" || (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+    })();
+    </script>
 </head>
 
-<body>
-    <nav class="navbar is-primary pl-2 pr-2" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a href="#" id="brand-home" class="navbar-item">
-                <h1 class="title is-4">Free Proxies</h1>
-            </a>
-            <a role="button" class="navbar-burger burger is-white" aria-label="menu" aria-expanded="false" data-target="clients">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
-        </div>
-        <div id="clients" class="navbar-menu">
-            <div class="navbar-start is-size-6">
-                <a href="clash" class="navbar-item"><span class="icon"><i class="metron-clash"></i></span>&nbspClash</a>
-                <a href="shadowrocket" class="navbar-item"><span class="icon"><i class="metron-shadowrocket"></i></span>&nbspShadowRocket</a>
-                <a href="surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
-                <a href="loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
-                <a href="quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
-                <a href="v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
-                <a href="best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
+<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-slate-900 focus:px-3 focus:py-2 focus:rounded-lg focus:text-sm focus:shadow-lg">跳到主要内容</a>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+            <a href="#" id="brand-home" class="font-bold text-lg tracking-tight">Free Proxies</a>
+                        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-white/10 text-lg leading-none" aria-label="切换主题">🌙</button>
+            <button id="nav-burger" class="sm:hidden p-2 rounded-lg hover:bg-white/10" aria-label="menu">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <div id="nav-menu" class="hidden sm:flex absolute sm:static left-0 right-0 top-14 sm:top-auto flex-col sm:flex-row bg-indigo-700 sm:bg-transparent sm:items-center gap-1 px-4 pb-3 pt-2 sm:p-0 shadow-lg sm:shadow-none">
+                <a href="clash" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-clash text-base"></i>Clash</a>
+                <a href="shadowrocket" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-shadowrocket text-base"></i>ShadowRocket</a>
+                <a href="surge" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-surge text-base"></i>Surge</a>
+                <a href="loon" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-loon text-base"></i>Loon</a>
+                <a href="quanx" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-quanx text-base"></i>QuanX</a>
+                <a href="v2rayn" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><span class="inline-flex items-center justify-center w-4 h-4 rounded bg-white/20 text-xs font-bold">V</span>v2rayN</a>
+                <a href="best" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/15 text-sm">★优选IP</a>
             </div>
         </div>
     </nav>
-    <div class="container">
-        <div class="section pb-0">
-            <h1 class="title is-2"><span class="icon">★</span>&nbspCloudflare 优选 IP</h1>
-            <p>多源采集 + 端口白名单 + 多级排序；<b>bestip_probe</b>（vless 健康检查）与 <b>sni_probe</b>（anytls 透传探测）对入口做真实可用性验证。</p>
-        </div>
 
-        <section class="section">
-            <h5 class="title is-4">动态生成</h5>
-            <p>选择端点、客户端、节点协议与落地国家，一键复制优选订阅链接（默认包含全部健康节点）。</p>
-            <div class="field is-grouped mt-2 is-flex-wrap-wrap">
-                <div class="control">
-                    <div class="select">
-                        <select id="gen-endpoint" onchange="refreshBestGen()">
+    <main id="main-content" class="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
+
+        <section class="mb-6">
+            <h1 class="text-2xl font-bold mb-2">★ Cloudflare 优选 IP</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">多源采集 + 端口白名单 + 多级排序；<b>bestip_probe</b>（vless 健康检查）与 <b>sni_probe</b>（anytls 透传探测）对入口做真实可用性验证。</p>
+        </section>
+
+        <section class="mb-6">
+            <h2 class="text-lg font-semibold mb-3">动态生成</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">选择端点、客户端、节点协议与落地国家，一键复制优选订阅链接（默认包含全部健康节点）。</p>
+            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">端点</label>
+                        <select id="gen-endpoint" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <option value="bestProxyIp" selected>bestProxyIp（全部优选）</option>
                             <option value="bestCfProxyIp">bestCfProxyIp（CF 优选 IP）</option>
                             <option value="bestCfProxyIpTop20">bestCfProxyIpTop20（CF Top20）</option>
@@ -58,10 +67,9 @@
                             <option value="bestIpKr">bestIpKr（韩国优选）</option>
                         </select>
                     </div>
-                </div>
-                <div class="control">
-                    <div class="select">
-                        <select id="gen-client" onchange="refreshBestGen()">
+                    <div>
+                        <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">客户端</label>
+                        <select id="gen-client" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             <option value="clash">Clash</option>
                             <option value="surge">Surge</option>
                             <option value="loon">Loon</option>
@@ -69,146 +77,138 @@
                             <option value="v2rayn">v2rayN</option>
                         </select>
                     </div>
-                </div>
-                <div class="control">
-                    <div class="select">
-                        <select id="gen-protocol" onchange="refreshBestGen()"></select>
+                    <div>
+                        <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">协议</label>
+                        <select id="gen-protocol" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                     </div>
-                </div>
-                <div class="control">
-                    <div class="select">
-                        <select id="gen-country" onchange="refreshBestGen()">
+                    <div>
+                        <label class="block text-xs text-slate-500 dark:text-slate-400 mb-1">落地国家</label>
+                        <select id="gen-country" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                             {{ range .countries }}<option value="{{ . }}">{{ . }}</option>{{ end }}
                         </select>
                     </div>
                 </div>
-                <div class="control">
-                    <button class="button is-primary" id="gen-copy" onclick="copyBestGen(this)">复制订阅链接</button>
-                </div>
-            </div>
-            <div class="field is-grouped mt-2 is-flex-wrap-wrap">
-                <div class="control">
-                    <label class="checkbox">
-                        <input type="checkbox" id="gen-random" onchange="refreshBestGen()"> random
-                    </label>
-                </div>
-                <div class="control">
-                    <label class="checkbox">
-                        <input type="checkbox" id="gen-cdn" onchange="refreshBestGen()"> cdn
-                    </label>
-                </div>
-                <div class="control">
-                    <div class="select">
-                        <select id="gen-sort" onchange="refreshBestGen()">
-                            <option value="">固定排序（国家→IP→端口）</option>
-                            <option value="country">按国家排序</option>
-                            <option value="ip">按 IP 排序</option>
-                            <option value="random">随机打乱</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="control">
-                    <div class="select">
-                        <select id="gen-ipv6" onchange="refreshBestGen()">
+                <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-3">
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="gen-random" onchange="refreshBestGen()" class="rounded border-slate-300">random</label>
+                    <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="gen-cdn" onchange="refreshBestGen()" class="rounded border-slate-300">cdn</label>
+                    <div>
+                        <select id="gen-ipv6" aria-label="IPv6 模式" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm">
                             <option value="">IPv4+IPv6</option>
                             <option value="true">仅 IPv6</option>
                             <option value="false">仅 IPv4</option>
                         </select>
                     </div>
+                    <div>
+                        <select id="gen-sort" aria-label="排序方式" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm">
+                            <option value="">固定排序</option>
+                            <option value="country">按国家</option>
+                            <option value="ip">按 IP</option>
+                            <option value="random">随机</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input id="gen-limit" type="number" min="1" placeholder="limit 数量…" aria-label="limit 数量" autocomplete="off" spellcheck="false" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm placeholder:text-slate-400">
+                    </div>
+                    <div>
+                        <input id="gen-c" type="text" placeholder="节点国家 c…" aria-label="节点国家代码 c" autocomplete="off" spellcheck="false" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm placeholder:text-slate-400">
+                    </div>
                 </div>
-                <div class="control">
-                    <input class="input" id="gen-limit" type="number" min="1" placeholder="limit 数量（可选）" oninput="refreshBestGen()" style="width:10em">
+                <div class="mb-3">
+                    <input id="gen-sub" type="text" placeholder="sub CF 明文订阅源链接…" aria-label="sub CF 明文订阅源链接" autocomplete="off" spellcheck="false" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm placeholder:text-slate-400">
                 </div>
-                <div class="control">
-                    <input class="input" id="gen-c" type="text" placeholder="节点国家代码 c（可选）" oninput="refreshBestGen()" style="width:12em">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input id="gen-url" type="text" readonly placeholder="选择后自动生成订阅链接…" aria-label="订阅链接预览" class="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs font-mono text-slate-500 dark:text-slate-400 focus:outline-none">
+                    <button class="shrink-0 px-4 py-2 text-sm rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="copyBestGen(this)">复制订阅链接</button>
                 </div>
-                <div class="control">
-                    <input class="input" id="gen-sub" type="text" placeholder="sub CF 明文订阅源链接（bestCfProxySub 必填）" oninput="refreshBestGen()" style="width:20em">
-                </div>
-            </div>
-            <div class="field mt-2">
-                <input class="input" id="gen-url" type="text" readonly placeholder="选择后自动生成订阅链接…">
-            </div>
-            <article class="message is-info mt-2">
-                <div class="message-body is-size-7">
-                    端点默认 <code>bestProxyIp</code>（全部优选节点）；筛选参数按端点支持度自动禁用（如 bestIpKr 强制韩国、不支持 d；bestCfProxySub 需填写 sub 订阅源链接）。三维联动：国家候选只显示配置了所选协议的国家（如 anytls 仅 JP/KR），协议候选 = 客户端支持 ∩ 国家配置（如 Surge 不支持 vless）。如导出为空请检查该国家对应探测是否启用。
-                </div>
-            </article>
-        </section>
-
-        <section class="section">
-            <h5 class="title is-4">订阅端点</h5>
-            <p>格式参数 <code>:format</code> = 客户端 + 节点类型，例如 <code>clashVmess</code>、<code>surgeTrojan</code>、<code>quanxVless</code>、<code>loonAnytls</code>、<code>v2raynVmess</code>。</p>
-            <div class="table-container mt-2">
-                <table class="table is-fullwidth">
-                    <tbody>
-                        <tr>
-                            <th>全部优选节点</th>
-                            <td data-sub-path="/bestProxyIp/clashVmess"></td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestProxyIp/clashVmess" onclick="onCopyThis(this)">复制</button></td>
-                        </tr>
-                        <tr>
-                            <th>CF 优选 IP</th>
-                            <td data-sub-path="/bestCfProxyIp/surgeTrojan"></td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestCfProxyIp/surgeTrojan" onclick="onCopyThis(this)">复制</button></td>
-                        </tr>
-                        <tr>
-                            <th>CF Top20</th>
-                            <td data-sub-path="/bestCfProxyIpTop20/quanxVless"></td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestCfProxyIpTop20/quanxVless" onclick="onCopyThis(this)">复制</button></td>
-                        </tr>
-                        <tr>
-                            <th>CF 运营商优选</th>
-                            <td data-sub-path="/bestCfProxyIpIsp/loonVmess"></td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestCfProxyIpIsp/loonVmess" onclick="onCopyThis(this)">复制</button></td>
-                        </tr>
-                        <tr>
-                            <th>CF 域名 Top20</th>
-                            <td data-sub-path="/bestCfProxyDomainTop20/v2raynVmess"></td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestCfProxyDomainTop20/v2raynVmess" onclick="onCopyThis(this)">复制</button></td>
-                        </tr>
-                        <tr>
-                            <th>CF 明文订阅源</th>
-                            <td data-sub-path="/bestCfProxySub/clashAnytls"></td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestCfProxySub/clashAnytls" onclick="onCopyThis(this)">复制</button></td>
-                        </tr>
-                        <tr>
-                            <th>韩国优选</th>
-                            <td data-sub-path="/bestIpKr/clashTrojan"></td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/bestIpKr/clashTrojan" onclick="onCopyThis(this)">复制</button></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3">三维联动：国家候选只显示配置了所选协议的国家；协议候选 = 客户端支持 ∩ 国家配置（如 Surge 不支持 vless）。筛选参数按端点支持度自动禁用（bestIpKr 强制韩国、不支持 d；bestCfProxySub 需填写 sub 订阅源链接）。如导出为空请检查该国家对应探测是否启用。</p>
             </div>
         </section>
 
-        <section class="section">
-            <h5 class="title is-4">筛选参数</h5>
-            <div class="table-container">
-                <table class="table is-fullwidth">
-                    <tbody>
-                        <tr><th>d</th><td>落地国家，如 <code>?d=US</code>（默认 JP）</td></tr>
-                        <tr><th>c</th><td>节点名中的国家代码，如 <code>?c=US</code></td></tr>
-                        <tr><th>limit</th><td>限制返回数量，如 <code>?limit=20</code></td></tr>
-                        <tr><th>random</th><td>随机返回，如 <code>?random=true</code></td></tr>
-                        <tr><th>cdn</th><td>仅保留 CDN 节点，如 <code>?cdn=true</code></td></tr>
-                        <tr><th>ipv6</th><td>仅保留 IPv6 节点，如 <code>?ipv6=true</code></td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <article class="message is-warning">
-                <div class="message-body">
-                    <b>探测语义：</b>vless/vmess/trojan 格式在启用 <code>bestip_probe</code> 时仅导出健康节点；
-                    <code>xxxAnytls</code> 格式在启用 <code>sni_probe</code> 时仅导出可透传 anytls 的节点；未启用相应探测时该格式导出为空。
+        <section class="mb-6">
+            <h2 class="text-lg font-semibold mb-1">订阅端点</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">格式参数 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">:format</code> = 客户端 + 节点类型，例如 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">clashVmess</code>、<code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">surgeTrojan</code>、<code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">quanxVless</code>、<code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">loonAnytls</code>、<code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">v2raynVmess</code>。</p>
+            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-40 shrink-0 font-medium text-sm">全部优选节点</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestProxyIp/clashVmess"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestProxyIp/clashVmess" onclick="onCopyThis(this)">复制</button>
                 </div>
-            </article>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-40 shrink-0 font-medium text-sm">CF 优选 IP</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxyIp/surgeTrojan"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestCfProxyIp/surgeTrojan" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-40 shrink-0 font-medium text-sm">CF Top20</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxyIpTop20/quanxVless"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestCfProxyIpTop20/quanxVless" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-40 shrink-0 font-medium text-sm">CF 运营商优选</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxyIpIsp/loonVmess"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestCfProxyIpIsp/loonVmess" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-40 shrink-0 font-medium text-sm">CF 域名 Top20</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxyDomainTop20/v2raynVmess"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestCfProxyDomainTop20/v2raynVmess" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-40 shrink-0 font-medium text-sm">CF 明文订阅源</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxySub/clashAnytls"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestCfProxySub/clashAnytls" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-40 shrink-0 font-medium text-sm">韩国优选</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestIpKr/clashTrojan"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/bestIpKr/clashTrojan" onclick="onCopyThis(this)">复制</button>
+                </div>
+            </div>
         </section>
-    </div>
-    <footer class="footer has-text-centered">
-        <p>本程序为 fork 版：<a href="https://github.com/One-Piecs/proxypool">One-Piecs/proxypool</a><br>{{ .version }}</p>
-        <p>上游项目：<a href="https://github.com/zu1k/proxypool">zu1k/proxypool</a> · <a href="https://github.com/sansui233/proxypool">sansui233/proxypool</a></p>
-        <br>
-        <p><b>Theme</b>&nbspby&nbsp<a href="https://github.com/sansui233/" class="has-text-primary"><b>Sansui233</b></a> Powered&nbspby&nbsp<b>Bulma</b></p>
+
+        <section>
+            <h2 class="text-lg font-semibold mb-3">筛选参数</h2>
+            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm">d</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">落地国家，如 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">?d=US</code>（默认 JP）</span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm">c</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">节点名中的国家代码，如 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">?c=US</code></span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm">limit</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">限制返回数量，如 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">?limit=20</code></span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm">sort</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">排序：<code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">country</code> / <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">ip</code> / <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">random</code>，默认固定排序（国家→IP→端口）</span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm">random</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">随机返回，如 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">?random=true</code></span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm">cdn</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">仅保留 CDN 节点，如 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">?cdn=true</code></span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm">ipv6</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">仅保留 IPv6 节点，如 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">?ipv6=true</code></span>
+                </div>
+            </div>
+            <div class="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4 mt-3 text-sm">
+                <b>探测语义：</b>vless/vmess/trojan 格式在启用 <code class="px-1 py-0.5 rounded bg-white/60 dark:bg-slate-800 text-xs">bestip_probe</code> 时仅导出健康节点；<code class="px-1 py-0.5 rounded bg-white/60 dark:bg-slate-800 text-xs">xxxAnytls</code> 格式在启用 <code class="px-1 py-0.5 rounded bg-white/60 dark:bg-slate-800 text-xs">sni_probe</code> 时仅导出可透传 anytls 的节点；未启用相应探测时该格式导出为空。
+            </div>
+        </section>
+    </main>
+
+    <a href="#main-content" class="fixed bottom-4 right-4 z-40 bg-slate-900/80 dark:bg-slate-100/80 text-white dark:text-slate-900 rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-slate-900" aria-label="回到顶部">↑</a>
+    <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p>本程序为 fork 版：<a href="https://github.com/One-Piecs/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">One-Piecs/proxypool</a> {{ .version }}</p>
+        <p class="mt-1">上游项目：<a href="https://github.com/zu1k/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">zu1k/proxypool</a> · <a href="https://github.com/sansui233/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">sansui233/proxypool</a></p>
+        <p class="mt-2">Theme by <a href="https://github.com/sansui233/" class="text-indigo-600 dark:text-indigo-400 hover:underline">Sansui233</a> · Powered by Tailwind CSS</p>
     </footer>
     <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
     <script>window.BEST_GEN_COUNTRIES = {{ .country_protocols }};</script>

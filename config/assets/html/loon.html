@@ -4,78 +4,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="HandheldFriendly" content="True">
     <title>Loon - Free Proxies</title>
-    <meta property="og:description" content="Loon 订阅：ss、ssr、vmess、trojan、vless 节点">
+    <meta property="og:description" content="Loon 节点订阅">
     <link rel="stylesheet" type="text/css" href="static/css/index.css" />
+        <meta name="theme-color" content="#f8fafc">
     <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
+    <script>
+    (function () {
+        var t = localStorage.getItem("proxypool_theme");
+        var dark = t === "dark" || (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+    })();
+    </script>
 </head>
 
-<body>
-    <nav class="navbar is-primary pl-2 pr-2" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a href="#" id="brand-home" class="navbar-item">
-                <h1 class="title is-4">Free Proxies</h1>
-            </a>
-            <a role="button" class="navbar-burger burger is-white" aria-label="menu" aria-expanded="false" data-target="clients">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
-        </div>
-        <div id="clients" class="navbar-menu">
-            <div class="navbar-start is-size-6">
-                <a href="clash" class="navbar-item"><span class="icon"><i class="metron-clash"></i></span>&nbspClash</a>
-                <a href="shadowrocket" class="navbar-item"><span class="icon"><i class="metron-shadowrocket"></i></span>&nbspShadowRocket</a>
-                <a href="surge" class="navbar-item"><span class="icon"><i class="metron-surge"></i></span>&nbspSurge</a>
-                <a href="loon" class="navbar-item"><span class="icon"><i class="metron-loon"></i></span>&nbspLoon</a>
-                <a href="quanx" class="navbar-item"><span class="icon"><i class="metron-quanx"></i></span>&nbspQuanX</a>
-                <a href="v2rayn" class="navbar-item"><span class="icon">V</span>&nbspv2rayN</a>
-                <a href="best" class="navbar-item"><span class="icon">★</span>&nbsp优选IP</a>
+<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-slate-900 focus:px-3 focus:py-2 focus:rounded-lg focus:text-sm focus:shadow-lg">跳到主要内容</a>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+            <a href="#" id="brand-home" class="font-bold text-lg tracking-tight">Free Proxies</a>
+                        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-white/10 text-lg leading-none" aria-label="切换主题">🌙</button>
+            <button id="nav-burger" class="sm:hidden p-2 rounded-lg hover:bg-white/10" aria-label="menu">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+            <div id="nav-menu" class="hidden sm:flex absolute sm:static left-0 right-0 top-14 sm:top-auto flex-col sm:flex-row bg-indigo-700 sm:bg-transparent sm:items-center gap-1 px-4 pb-3 pt-2 sm:p-0 shadow-lg sm:shadow-none">
+                <a href="clash" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm hover:bg-white/10"><i aria-hidden="true" class="metron-clash text-base"></i>Clash</a>
+                <a href="shadowrocket" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm hover:bg-white/10"><i aria-hidden="true" class="metron-shadowrocket text-base"></i>ShadowRocket</a>
+                <a href="surge" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm hover:bg-white/10"><i aria-hidden="true" class="metron-surge text-base"></i>Surge</a>
+                <a href="loon" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm bg-white/15"><i aria-hidden="true" class="metron-loon text-base"></i>Loon</a>
+                <a href="quanx" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm hover:bg-white/10"><i aria-hidden="true" class="metron-quanx text-base"></i>QuanX</a>
+                <a href="v2rayn" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm hover:bg-white/10"><span class="inline-flex items-center justify-center w-4 h-4 rounded bg-white/20 text-xs font-bold">V</span>v2rayN</a>
+                <a href="best" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm hover:bg-white/10">★优选IP</a>
             </div>
         </div>
     </nav>
-    <div class="container">
-        <div class="section pb-0">
-            <h1 class="title is-2"><i class="metron-loon"></i>&nbspLoon</h1>
-        </div>
-        <section class="section">
-            <h5 class="title is-4">节点列表</h5>
-            <div class="table-container">
-                <table class="table is-fullwidth">
-                    <tbody>
-                        <tr>
-                            <th>全部节点订阅</th>
-                            <td data-sub-path="/loon/proxies"></td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/loon/proxies" onclick="onCopyThis(this)">复制</button></td>
-                        </tr>
-                        <tr>
-                            <th>按类型订阅</th>
-                            <td data-sub-path="/loon/proxies?type=vless"></td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/loon/proxies?type=vless" onclick="onCopyThis(this)">复制</button></td>
-                        </tr>
-                        <tr>
-                            <th>常用国家订阅</th>
-                            <td data-sub-path="/loon/proxies?c=CN,HK,TW,JP,US"></td>
-                            <td class="has-text-right"><button class="button is-small is-primary" data-sub-path="/loon/proxies?c=CN,HK,TW,JP,US" onclick="onCopyThis(this)">复制</button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <article class="message is-info">
-                <div class="message-body">
-                    Loon 导入方法：打开 Loon，进入 <b>配置 → 订阅 → 远程订阅</b>，粘贴上方订阅地址保存后拉取；
-                    或在 <b>节点</b> 页右上角添加订阅。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。
-                </div>
-            </article>
+
+    <main id="main-content" class="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
+
+                <section class="mb-6">
+            <h1 class="text-2xl font-bold mb-2 flex items-center gap-2"><i aria-hidden="true" class="metron-loon text-2xl"></i>Loon</h1>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Loon 节点订阅</p>
         </section>
-    </div>
-    <footer class="footer has-text-centered">
-        <p>本程序为 fork 版：<a href="https://github.com/One-Piecs/proxypool">One-Piecs/proxypool</a><br>{{ .version }}</p>
-        <p>上游项目：<a href="https://github.com/zu1k/proxypool">zu1k/proxypool</a> · <a href="https://github.com/sansui233/proxypool">sansui233/proxypool</a></p>
-        <br>
-        <p><b>Theme</b>&nbspby&nbsp<a href="https://github.com/sansui233/" class="has-text-primary"><b>Sansui233</b></a> Powered&nbspby&nbsp<b>Bulma</b></p>
+
+
+        <section class="mb-6">
+            <h2 class="text-lg font-semibold mb-3">节点列表</h2>
+            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-44 shrink-0 font-medium text-sm">全部节点订阅</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/loon/proxies"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/loon/proxies" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-44 shrink-0 font-medium text-sm">按类型订阅</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/loon/proxies?type=vless"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/loon/proxies?type=vless" onclick="onCopyThis(this)">复制</button>
+                </div>
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                    <span class="w-44 shrink-0 font-medium text-sm">常用国家订阅</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/loon/proxies?c=CN,HK,TW,JP,US"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/loon/proxies?c=CN,HK,TW,JP,US" onclick="onCopyThis(this)">复制</button>
+                </div>
+            </div>
+                        <div class="rounded-xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 p-4 mt-3 text-sm">
+                Loon 导入方法：打开 Loon，进入 <b>配置 → 订阅 → 远程订阅</b>，粘贴上方订阅地址保存后拉取；或在 <b>节点</b> 页右上角添加订阅。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。
+            </div>
+        </section>
+    </main>
+
+    <a href="#main-content" class="fixed bottom-4 right-4 z-40 bg-slate-900/80 dark:bg-slate-100/80 text-white dark:text-slate-900 rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-slate-900" aria-label="回到顶部">↑</a>
+    <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
+        <p>本程序为 fork 版：<a href="https://github.com/One-Piecs/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">One-Piecs/proxypool</a> {{ .version }}</p>
+        <p class="mt-1">上游项目：<a href="https://github.com/zu1k/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">zu1k/proxypool</a> · <a href="https://github.com/sansui233/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">sansui233/proxypool</a></p>
+        <p class="mt-2">Theme by <a href="https://github.com/sansui233/" class="text-indigo-600 dark:text-indigo-400 hover:underline">Sansui233</a> · Powered by Tailwind CSS</p>
     </footer>
     <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
     <script src="static/index.js"></script>
