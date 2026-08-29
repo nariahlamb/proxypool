@@ -47,21 +47,21 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
                     <div class="text-xs text-slate-500 dark:text-slate-400">抓取源</div>
-                    <div class="text-xl font-bold">{{ .getters_count }}</div>
+                    <div class="text-xl font-bold tabular-nums">{{ .getters_count }}</div>
                 </div>
                 <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
                     <div class="text-xs text-slate-500 dark:text-slate-400">全部节点</div>
-                    <div class="text-xl font-bold">{{ .all_proxies_count }}</div>
+                    <div class="text-xl font-bold tabular-nums">{{ .all_proxies_count }}</div>
                     <div class="text-xs text-slate-400 mt-1">ss {{ .ss_proxies_count }} · ssr {{ .ssr_proxies_count }} · vmess {{ .vmess_proxies_count }} · trojan {{ .trojan_proxies_count }} · vless {{ .vless_proxies_count }} · anytls {{ .anytls_proxies_count }}</div>
                 </div>
                 <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
                     <div class="text-xs text-slate-500 dark:text-slate-400">可用节点</div>
-                    <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400">{{ .useful_proxies_count }}</div>
+                    <div class="text-xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">{{ .useful_proxies_count }}</div>
                     <div class="text-xs text-slate-400 mt-1">ss {{ .useful_ss_proxies_count }} · ssr {{ .useful_ssr_proxies_count }} · vmess {{ .useful_vmess_proxies_count }} · trojan {{ .useful_trojan_proxies_count }} · vless {{ .useful_vless_proxies_count }} · anytls {{ .useful_anytls_proxies_count }}</div>
                 </div>
                 <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
                     <div class="text-xs text-slate-500 dark:text-slate-400">优选 IP 节点</div>
-                    <div class="text-xl font-bold">{{ .best_total }}</div>
+                    <div class="text-xl font-bold tabular-nums">{{ .best_total }}</div>
                     <div class="text-xs text-slate-400 mt-1">健康 <span class="text-emerald-600 dark:text-emerald-400">{{ .best_healthy }}</span> · IPv6 <span class="text-emerald-600 dark:text-emerald-400">{{ .best_v6_healthy }}</span> · anytls 透传 {{ .best_anytls }}</div>
                 </div>
                 <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 col-span-2 sm:col-span-3 lg:col-span-2">
@@ -184,7 +184,7 @@
         <section class="mb-6">
             <h5 class="text-lg font-semibold mb-1">任务</h5>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">触发后台任务（抓取 / 测速 / 优选IP / GeoIP 更新）。配置了 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">admin_token</code> 时需输入 Token，未配置则直接可用。</p>
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-3">
                 <button class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="runTask('crawl')">触发抓取</button>
                 <button class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="runTask('speedtest')">触发测速</button>
                 <button class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="runTask('updateBestNode')">更新优选IP</button>
