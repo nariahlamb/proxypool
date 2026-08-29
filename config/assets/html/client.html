@@ -65,8 +65,8 @@
                 {{ if eq .active "clash" }}
                 <div class="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center">
                     <span class="w-44 shrink-0 font-medium text-sm text-slate-900 dark:text-white">筛选节点示例</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400">https://{{ .domain }}{{ .base_path }}/clash/proxies?c=CN,HK,TW&amp;speed=15,30&amp;type=ss<br>https://{{ .domain }}{{ .base_path }}/clash/proxies?filter=1</span>
-                    <button class="shrink-0 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-3 py-1.5 text-xs font-medium text-white hover:from-indigo-500 hover:to-violet-500" onclick="copyText('https://{{ .domain }}{{ .base_path }}/clash/proxies?c=CN,HK,TW&amp;speed=15,30&amp;type=ss&#10;https://{{ .domain }}{{ .base_path }}/clash/proxies?filter=1').then(function(ok){showTip(ok?'复制成功':'复制失败');})">复制</button>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400">{{ .origin }}{{ .base_path }}/clash/proxies?c=CN,HK,TW&amp;speed=15,30&amp;type=ss<br>{{ .origin }}{{ .base_path }}/clash/proxies?filter=1</span>
+                    <button class="shrink-0 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-3 py-1.5 text-xs font-medium text-white hover:from-indigo-500 hover:to-violet-500" onclick="copyText('{{ .origin }}{{ .base_path }}/clash/proxies?c=CN,HK,TW&amp;speed=15,30&amp;type=ss&#10;{{ .origin }}{{ .base_path }}/clash/proxies?filter=1').then(function(ok){showTip(ok?'复制成功':'复制失败');})">复制</button>
                 </div>
                 {{ end }}
             </div>

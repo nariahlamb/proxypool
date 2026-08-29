@@ -7,9 +7,10 @@ var ROOT_ROUTES = ["clash", "surge", "shadowrocket", "loon", "quanx", "v2rayn", 
     "link", "debug", "bestProxyIp", "bestCfProxyIp", "bestCfProxyIpTop20",
     "bestCfProxyIpIsp", "bestCfProxyDomainTop20", "bestCfProxySub", "bestIpKr"];
 
-// 获取部署前缀：服务端注入 > 前端从 location 自算（nginx 剥离前缀等场景兜底）
+// 获取部署前缀：服务端已注入 window.PROXYPOOL_BASE_PATH（含空串=根路径）则直接采用，
+// 不再从 location 自算（外部前缀由反向代理如 nginx "/show/ --> /" 处理，应用自身不主动加前缀）。
 function getBasePath() {
-    if (window.PROXYPOOL_BASE_PATH) return window.PROXYPOOL_BASE_PATH;
+    if (typeof window.PROXYPOOL_BASE_PATH !== "undefined") return window.PROXYPOOL_BASE_PATH;
     var segs = location.pathname.split("/"); // ["", "show", "clash", ...]
     if (segs.length >= 3 && segs[1] && ROOT_ROUTES.indexOf(segs[1]) === -1) {
         return "/" + segs[1];

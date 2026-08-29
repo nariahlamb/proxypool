@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"net/url"
@@ -37,9 +36,6 @@ var (
 	version string
 	router  *gin.Engine
 )
-
-// basePathCtxKey 在请求上下文中传递已解析的部署前缀（供模板渲染复用路由层推断结果）。
-type basePathCtxKey struct{}
 
 // clientProtocols 各客户端实际支持的协议（与 internal/app 生成器矩阵一致：Surge 无 vless 生成器）
 var clientProtocols = map[string][]string{
@@ -150,19 +146,21 @@ var clientPages = map[string]clientPage{
 func renderClientPage(c *gin.Context, name string) {
 	pg := clientPages[name]
 	base := templateBasePath(c)
-	domain := config.Config().Domain
+	origin := requestOrigin(c)
+	host := requestHost(c)
 	for i := range pg.ConfigRows {
 		r := &pg.ConfigRows[i]
 		switch {
 		case r.Text == "LOCAL":
-			r.Text = "https://" + domain + base + "/clash/localconfig"
+			r.Text = origin + base + "/clash/localconfig"
 			r.LinkURL = template.URL("clash://install-config?url=" + url.QueryEscape(r.Text))
 		case r.LinkScheme != "":
-			r.LinkURL = template.URL(r.LinkScheme + "?url=" + url.QueryEscape("https://"+domain+base+r.Rel))
+			r.LinkURL = template.URL(r.LinkScheme + "?url=" + url.QueryEscape(origin+base+r.Rel))
 		}
 	}
 	c.HTML(http.StatusOK, "client.html", gin.H{
-		"domain":       domain,
+		"domain":       host,
+		"origin":       origin,
 		"base_path":    base,
 		"version":      version,
 		"active":       pg.Name,
@@ -240,7 +238,8 @@ func siteCache(store persistence.CacheStore, expire time.Duration, skipPrefixes 
 
 		// 用 URL.RequestURI() 重建请求 URI（含 query）作为缓存 key：
 		// 不依赖服务端填充的 RequestURI 字段，httptest 等场景也正确区分
-		key := cache.CreateKey(c.Request.URL.RequestURI())
+		// 拼上实际请求来源（scheme+host），避免不同主机/端口/协议命中同一缓存而串内容。
+		key := cache.CreateKey(requestOrigin(c) + c.Request.URL.RequestURI())
 		var resp cachedResponse
 		if err := store.Get(key, &resp); err == nil {
 			// 命中缓存：回放状态码、响应头与响应体
@@ -434,7 +433,7 @@ func setupRouter() {
 			}
 		}
 		c.HTML(http.StatusOK, "index.html", gin.H{
-			"domain":                      config.Config().Domain,
+			"domain":                      requestHost(c),
 			"getters_count":               appcache.GettersCount,
 			"all_proxies_count":           appcache.AllProxiesCount,
 			"ss_proxies_count":            appcache.SSProxiesCount,
@@ -490,7 +489,7 @@ func setupRouter() {
 		cp, _ := json.Marshal(config.Config().ProxyInfo.CountryProtocols())
 		cpc, _ := json.Marshal(clientProtocols)
 		c.HTML(http.StatusOK, "best.html", gin.H{
-			"domain":            config.Config().Domain,
+			"domain":            requestHost(c),
 			"base_path":         templateBasePath(c),
 			"countries":         config.Config().ProxyInfo.Countries(),
 			"country_protocols": template.JS(cp),
@@ -500,7 +499,7 @@ func setupRouter() {
 
 	router.GET("/clash/config", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "clash-config.yaml", gin.H{
-			"domain": config.Config().Domain,
+			"domain": requestHost(c),
 			"base_path": templateBasePath(c),
 		})
 	})
@@ -512,7 +511,7 @@ func setupRouter() {
 
 	router.GET("/surge/config", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "surge.conf", gin.H{
-			"domain": config.Config().Domain,
+			"domain": requestHost(c),
 			"base_path": templateBasePath(c),
 		})
 	})
@@ -642,31 +641,36 @@ func setupRouter() {
 }
 
 
-// templateBasePath 模板渲染用的部署前缀（注入前端 window.PROXYPOOL_BASE_PATH 用）：
-// 配置 base_path > X-Forwarded-Prefix 头 > X-Forwarded-URI/X-Original-URL 首段。
+// templateBasePath 模板渲染用的部署前缀（注入前端 window.PROXYPOOL_BASE_PATH 用）。
+// 部署前缀只以显式配置的 config.base_path 为准，不在请求中主动推断 /show 等前缀
+//（外部由反向代理负责路径映射，如 nginx "/show/ --> /"），避免把代理前缀写进业务链接；
 // 返回不带尾斜杠的前缀（如 "/show"），空串表示根路径部署。
-// 订阅链接的前缀最终由前端从 location 自算兜底，此处仅尽力而为。
 func templateBasePath(c *gin.Context) string {
-	// 优先使用路由层在 serveHandler 中解析出的部署前缀（含 URL 自动推断），
-	// 保证模板中硬编码的 URL（如 clash/localconfig、筛选示例）也带上 /show 等前缀。
-	if bp, ok := c.Request.Context().Value(basePathCtxKey{}).(string); ok && bp != "" {
-		return strings.TrimSuffix(bp, "/")
-	}
 	if bp := config.Config().BasePath; bp != "" {
 		return strings.TrimSuffix(bp, "/")
 	}
-	if bp := c.GetHeader("X-Forwarded-Prefix"); bp != "" {
-		return strings.TrimSuffix(bp, "/")
-	}
-	for _, h := range []string{"X-Forwarded-URI", "X-Original-URL"} {
-		if u := c.GetHeader(h); u != "" && strings.HasPrefix(u, "/") {
-			if i := strings.Index(u[1:], "/"); i > 0 {
-				return u[:i+1]
-			}
-			return ""
-		}
-	}
 	return ""
+}
+
+// requestHost 从请求实际推断主机名（X-Forwarded-Host 优先，回退 r.Host），
+// 不再读取 config.Domain，保证链接与前端 location 一致。
+func requestHost(c *gin.Context) string {
+	if fh := c.GetHeader("X-Forwarded-Host"); fh != "" {
+		return strings.TrimSpace(strings.Split(fh, ",")[0])
+	}
+	return c.Request.Host
+}
+
+// requestOrigin 从请求实际推断完整来源 scheme://host（供页面展示链接使用，
+// 与前端 JS 基于 location.origin 拼接的结果保持一致）。
+func requestOrigin(c *gin.Context) string {
+	scheme := "http"
+	if proto := c.GetHeader("X-Forwarded-Proto"); proto != "" {
+		scheme = strings.TrimSpace(strings.Split(proto, ",")[0])
+	} else if c.Request.TLS != nil {
+		scheme = "https"
+	}
+	return scheme + "://" + requestHost(c)
 }
 
 // applyBasePath 剥离部署前缀并规范化路径（确保以 / 开头）。
@@ -782,7 +786,6 @@ func Run() {
 
 	serveHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		basePath := resolveBasePath(r)
-		r = r.WithContext(context.WithValue(r.Context(), basePathCtxKey{}, basePath))
 		r.URL.Path = applyBasePath(r.URL.Path, basePath)
 		router.ServeHTTP(w, r)
 	})
