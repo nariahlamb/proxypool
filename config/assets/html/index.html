@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
@@ -8,7 +8,7 @@
     <meta property="og:description" content="免费的ss、ssr、vmess、trojan、vless、anytls节点与 Cloudflare 优选 IP">
     <meta name="keywords" content="免费ss、ssr、vmess、trojan、vless、anytls节点、优选IP">
     <link rel="stylesheet" type="text/css" href="static/css/index.css" />
-        <meta name="theme-color" content="#f8fafc">
+    <meta name="theme-color" content="#f8fafc">
     <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
     <script>
     (function () {
@@ -19,170 +19,320 @@
     </script>
 </head>
 
-<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-slate-900 focus:px-3 focus:py-2 focus:rounded-lg focus:text-sm focus:shadow-lg">跳到主要内容</a>{{ template "_nav.html" . }}
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200">
 
-    <!-- Body -->
-    <main id="main-content" class="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
+    {{ template "_nav.html" . }}
 
-        <section class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 mb-6 text-sm leading-relaxed">
-            <p>⭐️ 自动抓取 tg 频道、订阅地址、公开互联网上的 ss、ssr、vmess、trojan、vless、anytls 节点信息，聚合去重检测后提供节点列表与 Cloudflare 优选 IP 订阅</p>
-            <p class="mt-2">❗️ 任何使用此开源项目的人须遵守 <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="text-blue-600 dark:text-blue-400 underline">GPL3.0</a> 协议，禁止盈利</p>
-        </section>
+    <main id="main-content" class="flex-1 w-full max-w-[1440px] mx-auto px-4 sm:px-6 py-8">
 
-        <section class="mb-6">
-            <h2 class="text-lg font-semibold mb-3">统计</h2>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
-                    <div class="text-xs text-slate-500 dark:text-slate-400">抓取源</div>
-                    <div class="text-xl font-bold tabular-nums">{{ .getters_count }}</div>
+        <!-- ===== HERO ===== -->
+        <section class="mb-10 space-y-3">
+            <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                    <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1 text-xs text-slate-500 dark:text-slate-400">
+                        <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                        Proxy Aggregator Online
+                    </div>
+                    <h1 class="text-3xl font-semibold tracking-tight md:text-4xl text-slate-900 dark:text-white">Free Proxies</h1>
+                    <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
+                        自动聚合 Telegram 频道、公开订阅地址及互联网公开代理节点，
+                        提供 SS、SSR、VMess、Trojan、VLESS、AnyTLS 等多种订阅格式。
+                    </p>
                 </div>
-                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
-                    <div class="text-xs text-slate-500 dark:text-slate-400">全部节点</div>
-                    <div class="text-xl font-bold tabular-nums">{{ .all_proxies_count }}</div>
-                    <div class="text-xs text-slate-400 mt-1">ss {{ .ss_proxies_count }} · ssr {{ .ssr_proxies_count }} · vmess {{ .vmess_proxies_count }} · trojan {{ .trojan_proxies_count }} · vless {{ .vless_proxies_count }} · anytls {{ .anytls_proxies_count }}</div>
-                </div>
-                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
-                    <div class="text-xs text-slate-500 dark:text-slate-400">可用节点</div>
-                    <div class="text-xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400">{{ .useful_proxies_count }}</div>
-                    <div class="text-xs text-slate-400 mt-1">ss {{ .useful_ss_proxies_count }} · ssr {{ .useful_ssr_proxies_count }} · vmess {{ .useful_vmess_proxies_count }} · trojan {{ .useful_trojan_proxies_count }} · vless {{ .useful_vless_proxies_count }} · anytls {{ .useful_anytls_proxies_count }}</div>
-                </div>
-                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3">
-                    <div class="text-xs text-slate-500 dark:text-slate-400">优选 IP 节点</div>
-                    <div class="text-xl font-bold tabular-nums">{{ .best_total }}</div>
-                    <div class="text-xs text-slate-400 mt-1">健康 <span class="text-emerald-600 dark:text-emerald-400">{{ .best_healthy }}</span> · IPv6 <span class="text-emerald-600 dark:text-emerald-400">{{ .best_v6_healthy }}</span> · anytls 透传 {{ .best_anytls }}</div>
-                </div>
-                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 col-span-2 sm:col-span-3 lg:col-span-2">
-                    <div class="text-xs text-slate-500 dark:text-slate-400">运行状态</div>
-                    <div class="text-sm mt-1">测速：<b class="text-blue-600 dark:text-blue-400">{{ .is_speed_test }}</b></div>
-                    <div class="text-xs text-slate-400 mt-0.5">优选更新 {{ .best_last_update }}</div>
-                    <div class="text-xs text-slate-400 mt-0.5">抓取更新 {{ .last_crawl_time }}</div>
-                    <div class="text-xs text-slate-400 mt-0.5">GeoIP {{ .geo_ip_db_version }}</div>
+                <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                    Last updated: <span class="font-medium text-slate-700 dark:text-slate-200">{{ .last_crawl_time }}</span>
                 </div>
             </div>
         </section>
 
-        <section class="mb-6">
-            <h2 class="text-lg font-semibold mb-3">客户端</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
-                    <div class="font-medium mb-3 flex items-center gap-2"><i aria-hidden="true" class="metron-clash text-lg"></i>Clash</div>
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        <button data-sub-path="/clash/config" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white">配置文件</button>
-                        <a href="#" data-sub-path="/clash/config" data-install-scheme="clash" class="px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">一键导入</a>
+        <!-- ===== NOTICE ===== -->
+        <section class="mb-10">
+            <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+                <div class="flex gap-3">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>
                     </div>
-                    <a href="clash" class="mt-auto text-xs text-blue-600 dark:text-blue-400 hover:underline">如何筛选等更多信息 &gt;&gt;</a>
-                </div>
-                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
-                    <div class="font-medium mb-3 flex items-center gap-2"><i aria-hidden="true" class="metron-shadowrocket text-lg"></i>ShadowRocket</div>
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        <button data-sub-path="/clash/proxies" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white">复制订阅</button>
-                        <button data-sub-path="/clash/proxies?c=HK,TW,US,JP,SG" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-amber-500 hover:bg-amber-600 text-white">常用国家</button>
+                    <div class="space-y-2 text-sm">
+                        <p class="font-medium">自动聚合公开代理资源</p>
+                        <p class="leading-6 text-slate-500 dark:text-slate-400">自动抓取 Telegram 频道、订阅地址及互联网公开节点，并进行去重与可用性检测。</p>
+                        <p class="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+                            任何使用此开源项目的人须遵守 <a href="https://www.gnu.org/licenses/gpl-3.0.html" class="font-medium text-blue-600 dark:text-blue-400 hover:underline">GPL-3.0</a> 协议，禁止盈利。
+                        </p>
                     </div>
-                    <a href="shadowrocket" class="mt-auto text-xs text-blue-600 dark:text-blue-400 hover:underline">如何筛选等更多信息 &gt;&gt;</a>
-                </div>
-                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
-                    <div class="font-medium mb-3 flex items-center gap-2"><i aria-hidden="true" class="metron-surge text-lg"></i>Surge</div>
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        <button data-sub-path="/surge/config" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white">配置文件</button>
-                        <a href="#" data-sub-path="/surge/config" data-install-scheme="surge3" class="px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">一键导入</a>
-                    </div>
-                    <a href="surge" class="mt-auto text-xs text-blue-600 dark:text-blue-400 hover:underline">更多信息 &gt;&gt;</a>
-                </div>
-                <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 flex flex-col">
-                    <div class="font-medium mb-3 flex items-center gap-2">★优选IP</div>
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        <a href="best" class="px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white">订阅说明</a>
-                        <button data-sub-path="/bestCfProxyIp/clashVmess" onclick="onCopyThis(this)" class="px-3 py-1.5 text-xs rounded-lg bg-amber-500 hover:bg-amber-600 text-white">复制订阅</button>
-                    </div>
-                    <a href="best" class="mt-auto text-xs text-blue-600 dark:text-blue-400 hover:underline">更多信息 &gt;&gt;</a>
                 </div>
             </div>
         </section>
 
-        <section class="mb-6">
-            <h2 class="text-lg font-semibold mb-1">订阅链接</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">❗️ 不建议日常使用，节点过多时易造成卡顿，建议筛选后使用订阅转换</p>
-            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">ss</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/ss/sub"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/ss/sub" onclick="onCopyThis(this)">复制</button>
+        <!-- ===== OVERVIEW ===== -->
+        <section class="mb-10 space-y-5">
+            <div>
+                <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Overview</h2>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">当前节点抓取与检测状态</p>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <!-- 抓取源 -->
+                <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-500 dark:text-slate-400">抓取源</span>
+                        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-3xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ .getters_count }}</div>
+                        <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">Active sources</p>
+                    </div>
                 </div>
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">ss-sip002</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/sip002/sub"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/sip002/sub" onclick="onCopyThis(this)">复制</button>
+
+                <!-- 全部节点 -->
+                <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-500 dark:text-slate-400">全部节点</span>
+                        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-3xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ .all_proxies_count }}</div>
+                        <p class="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">SS {{ .ss_proxies_count }} · SSR {{ .ssr_proxies_count }} · VMess {{ .vmess_proxies_count }} · VLESS {{ .vless_proxies_count }} · AnyTLS {{ .anytls_proxies_count }}</p>
+                    </div>
                 </div>
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">ssr</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/ssr/sub"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/ssr/sub" onclick="onCopyThis(this)">复制</button>
+
+                <!-- 可用节点 -->
+                <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-500 dark:text-slate-400">可用节点</span>
+                        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-3xl font-semibold tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400">{{ .useful_proxies_count }}</div>
+                        <p class="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">SS {{ .useful_ss_proxies_count }} · SSR {{ .useful_ssr_proxies_count }} · VMess {{ .useful_vmess_proxies_count }} · VLESS {{ .useful_vless_proxies_count }} · AnyTLS {{ .useful_anytls_proxies_count }}</p>
+                    </div>
                 </div>
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">vmess</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/vmess/sub"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/vmess/sub" onclick="onCopyThis(this)">复制</button>
+
+                <!-- 优选 IP -->
+                <div id="preferred" class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-500 dark:text-slate-400">优选 IP 节点</span>
+                        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-3xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ .best_total }}</div>
+                        <p class="mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">健康 <span class="text-emerald-600 dark:text-emerald-400">{{ .best_healthy }}</span> · IPv6 <span class="text-emerald-600 dark:text-emerald-400">{{ .best_v6_healthy }}</span> · AnyTLS 透传 {{ .best_anytls }}</p>
+                    </div>
                 </div>
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">trojan</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/trojan/sub"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/trojan/sub" onclick="onCopyThis(this)">复制</button>
-                </div>
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">vless</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/vless/sub"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/vless/sub" onclick="onCopyThis(this)">复制</button>
-                </div>
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">anytls（优选）</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxySub/clashAnytls"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/bestCfProxySub/clashAnytls" onclick="onCopyThis(this)">复制</button>
+            </div>
+
+            <!-- 运行状态 -->
+            <div class="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <div class="flex flex-col gap-4 p-5 md:flex-row md:items-center">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-medium text-slate-900 dark:text-white">运行状态</span>
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-xs text-slate-500 dark:text-slate-400">
+                                <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>{{ .is_speed_test }}
+                            </span>
+                        </div>
+                        <div class="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
+                            <span>优选更新：{{ .best_last_update }}</span>
+                            <span>抓取更新：{{ .last_crawl_time }}</span>
+                            <span>GeoIP {{ .geo_ip_db_version }}</span>
+                        </div>
+                    </div>
+                    <a href="#" onclick="location.reload(); return false;" class="inline-flex h-9 shrink-0 items-center justify-center rounded-md border border-slate-300 dark:border-slate-700 px-4 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"/></svg>
+                        刷新状态
+                    </a>
                 </div>
             </div>
         </section>
 
-        <section class="mb-6">
-            <h2 class="text-lg font-semibold mb-1">优选 IP 订阅</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Cloudflare 优选 IP，多源采集 + 健康检查（bestip_probe）+ anytls 透传探测（sni_probe）。格式参数见 <a href="best" class="text-blue-600 dark:text-blue-400 underline">优选IP说明</a>。</p>
-            <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">Clash / vmess</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxyIp/clashVmess"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/bestCfProxyIp/clashVmess" onclick="onCopyThis(this)">复制</button>
-                </div>
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">Surge / trojan</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxyIp/surgeTrojan"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/bestCfProxyIp/surgeTrojan" onclick="onCopyThis(this)">复制</button>
-                </div>
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">QuanX / vless</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxyIpTop20/quanxVless"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/bestCfProxyIpTop20/quanxVless" onclick="onCopyThis(this)">复制</button>
-                </div>
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-28 shrink-0 font-medium text-sm">Loon / anytls</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/bestCfProxySub/loonAnytls"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="/bestCfProxySub/loonAnytls" onclick="onCopyThis(this)">复制</button>
-                </div>
+        <!-- ===== CLIENTS ===== -->
+        <section class="mb-10 space-y-5">
+            <div>
+                <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Clients</h2>
+                <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">选择客户端并获取对应的订阅配置。</p>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <!-- Clash -->
+                <article class="flex min-h-[230px] flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 transition hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"><i aria-hidden="true" class="metron-clash text-xl"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-slate-900 dark:text-white">Clash</h3>
+                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Universal proxy configuration</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-2">
+                        <button data-sub-path="/clash/config" onclick="onCopyThis(this)" class="flex-1 rounded-md bg-slate-900 dark:bg-white px-3 py-2 text-sm font-medium text-white dark:text-slate-900 transition hover:opacity-90">配置文件</button>
+                        <a href="#" data-sub-path="/clash/config" data-install-scheme="clash" class="rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800">导入</a>
+                    </div>
+                    <a href="clash" class="mt-auto pt-5 text-sm text-slate-500 dark:text-slate-400 transition hover:text-slate-900 dark:hover:text-white">如何筛选节点<span class="ml-1">→</span></a>
+                </article>
+
+                <!-- ShadowRocket -->
+                <article class="flex min-h-[230px] flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 transition hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"><i aria-hidden="true" class="metron-shadowrocket text-xl"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-slate-900 dark:text-white">ShadowRocket</h3>
+                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">iOS proxy client subscription</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-2">
+                        <button data-sub-path="/clash/proxies" onclick="onCopyThis(this)" class="flex-1 rounded-md bg-slate-900 dark:bg-white px-3 py-2 text-sm font-medium text-white dark:text-slate-900 transition hover:opacity-90">复制订阅</button>
+                        <button data-sub-path="/clash/proxies?c=HK,TW,US,JP,SG" onclick="onCopyThis(this)" class="rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800">常用国家</button>
+                    </div>
+                    <a href="shadowrocket" class="mt-auto pt-5 text-sm text-slate-500 dark:text-slate-400 transition hover:text-slate-900 dark:hover:text-white">如何筛选更多信息<span class="ml-1">→</span></a>
+                </article>
+
+                <!-- Surge -->
+                <article class="flex min-h-[230px] flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 transition hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"><i aria-hidden="true" class="metron-surge text-xl"></i></div>
+                        <div>
+                            <h3 class="font-semibold text-slate-900 dark:text-white">Surge</h3>
+                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Advanced network toolkit</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-2">
+                        <button data-sub-path="/surge/config" onclick="onCopyThis(this)" class="flex-1 rounded-md bg-slate-900 dark:bg-white px-3 py-2 text-sm font-medium text-white dark:text-slate-900 transition hover:opacity-90">配置文件</button>
+                        <a href="#" data-sub-path="/surge/config" data-install-scheme="surge3" class="rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800">导入</a>
+                    </div>
+                    <a href="surge" class="mt-auto pt-5 text-sm text-slate-500 dark:text-slate-400 transition hover:text-slate-900 dark:hover:text-white">更多信息<span class="ml-1">→</span></a>
+                </article>
+
+                <!-- 优选 IP -->
+                <article class="flex min-h-[230px] flex-col rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 transition hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-slate-900 dark:text-white">优选 IP</h3>
+                            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Cloudflare preferred endpoints</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-2">
+                        <a href="best" class="flex-1 rounded-md bg-slate-900 dark:bg-white px-3 py-2 text-sm font-medium text-center text-white dark:text-slate-900 transition hover:opacity-90">订阅说明</a>
+                        <button data-sub-path="/bestCfProxyIp/clashVmess" onclick="onCopyThis(this)" class="rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800">复制订阅</button>
+                    </div>
+                    <a href="best" class="mt-auto pt-5 text-sm text-slate-500 dark:text-slate-400 transition hover:text-slate-900 dark:hover:text-white">更多信息<span class="ml-1">→</span></a>
+                </article>
             </div>
         </section>
 
-        <section class="mb-6">
-            <h2 class="text-lg font-semibold mb-1">任务</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">触发后台任务（抓取 / 测速 / 优选IP / GeoIP 更新）。配置了 <code class="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs">admin_token</code> 时需输入 Token，未配置则直接可用。</p>
-            <div class="flex flex-wrap gap-3">
-                <button class="px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" onclick="runTask('crawl')">触发抓取</button>
-                <button class="px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" onclick="runTask('speedtest')">触发测速</button>
-                <button class="px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" onclick="runTask('updateBestNode')">更新优选IP</button>
-                <button class="px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" onclick="runTask('updateGeoIP')">更新GeoIP</button>
-                <button class="px-3 py-1.5 text-xs rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700" onclick="clearToken()">清除Token</button>
+        <!-- ===== SUBSCRIPTIONS ===== -->
+        <section class="mb-10 space-y-5">
+            <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">Subscriptions</h2>
+                    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">不建议日常直接使用全部节点，建议筛选后使用订阅转换。</p>
+                </div>
+                <div class="relative w-full md:w-72">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+                    <input id="subscription-search" type="text" placeholder="搜索订阅类型…" class="h-10 w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 pl-10 pr-3 text-sm text-slate-800 dark:text-slate-200 outline-none transition placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+
+            <div class="flex gap-3 rounded-xl border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mt-0.5 h-4 w-4 shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+                <p class="text-amber-900 dark:text-amber-200">节点数量较多时可能造成客户端卡顿，建议使用筛选功能生成适合自己的订阅。</p>
+            </div>
+
+            <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                <div class="grid grid-cols-[1fr_auto] border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 px-5 py-3 text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <div>Subscription</div>
+                    <div>Action</div>
+                </div>
+                <div id="subscription-list">
+                    <div class="subscription-row grid grid-cols-[1fr_auto] items-center border-b border-slate-100 dark:border-slate-800 px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/50" data-name="ss" data-rel="/ss/sub">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300">SS</div>
+                            <div class="min-w-0">
+                                <div class="font-medium text-slate-900 dark:text-white">SS</div>
+                                <div class="truncate text-xs text-slate-500 dark:text-slate-400 font-mono" data-text data-sub-path="/ss/sub"></div>
+                            </div>
+                        </div>
+                        <button class="copy-btn inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-slate-300 dark:border-slate-700 px-3 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800" data-sub-path="/ss/sub" onclick="copySubRow(this)">复制</button>
+                    </div>
+                    <div class="subscription-row grid grid-cols-[1fr_auto] items-center border-b border-slate-100 dark:border-slate-800 px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/50" data-name="ss sip002" data-rel="/sip002/sub">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300">SS</div>
+                            <div class="min-w-0">
+                                <div class="font-medium text-slate-900 dark:text-white">SS-SIP002</div>
+                                <div class="truncate text-xs text-slate-500 dark:text-slate-400 font-mono" data-text data-sub-path="/sip002/sub"></div>
+                            </div>
+                        </div>
+                        <button class="copy-btn inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-slate-300 dark:border-slate-700 px-3 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800" data-sub-path="/sip002/sub" onclick="copySubRow(this)">复制</button>
+                    </div>
+                    <div class="subscription-row grid grid-cols-[1fr_auto] items-center border-b border-slate-100 dark:border-slate-800 px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/50" data-name="ssr" data-rel="/ssr/sub">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300">SSR</div>
+                            <div class="min-w-0">
+                                <div class="font-medium text-slate-900 dark:text-white">SSR</div>
+                                <div class="truncate text-xs text-slate-500 dark:text-slate-400 font-mono" data-text data-sub-path="/ssr/sub"></div>
+                            </div>
+                        </div>
+                        <button class="copy-btn inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-slate-300 dark:border-slate-700 px-3 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800" data-sub-path="/ssr/sub" onclick="copySubRow(this)">复制</button>
+                    </div>
+                    <div class="subscription-row grid grid-cols-[1fr_auto] items-center border-b border-slate-100 dark:border-slate-800 px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/50" data-name="vmess" data-rel="/vmess/sub">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300">VM</div>
+                            <div class="min-w-0">
+                                <div class="font-medium text-slate-900 dark:text-white">VMess</div>
+                                <div class="truncate text-xs text-slate-500 dark:text-slate-400 font-mono" data-text data-sub-path="/vmess/sub"></div>
+                            </div>
+                        </div>
+                        <button class="copy-btn inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-slate-300 dark:border-slate-700 px-3 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800" data-sub-path="/vmess/sub" onclick="copySubRow(this)">复制</button>
+                    </div>
+                    <div class="subscription-row grid grid-cols-[1fr_auto] items-center border-b border-slate-100 dark:border-slate-800 px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/50" data-name="trojan" data-rel="/trojan/sub">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300">TR</div>
+                            <div class="min-w-0">
+                                <div class="font-medium text-slate-900 dark:text-white">Trojan</div>
+                                <div class="truncate text-xs text-slate-500 dark:text-slate-400 font-mono" data-text data-sub-path="/trojan/sub"></div>
+                            </div>
+                        </div>
+                        <button class="copy-btn inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-slate-300 dark:border-slate-700 px-3 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800" data-sub-path="/trojan/sub" onclick="copySubRow(this)">复制</button>
+                    </div>
+                    <div class="subscription-row grid grid-cols-[1fr_auto] items-center border-b border-slate-100 dark:border-slate-800 px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/50" data-name="vless" data-rel="/vless/sub">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300">VL</div>
+                            <div class="min-w-0">
+                                <div class="font-medium text-slate-900 dark:text-white">VLESS</div>
+                                <div class="truncate text-xs text-slate-500 dark:text-slate-400 font-mono" data-text data-sub-path="/vless/sub"></div>
+                            </div>
+                        </div>
+                        <button class="copy-btn inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-slate-300 dark:border-slate-700 px-3 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800" data-sub-path="/vless/sub" onclick="copySubRow(this)">复制</button>
+                    </div>
+                    <div class="subscription-row grid grid-cols-[1fr_auto] items-center px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/50" data-name="anytls" data-rel="/bestCfProxySub/clashAnytls">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300">AT</div>
+                            <div class="min-w-0">
+                                <div class="font-medium text-slate-900 dark:text-white">AnyTLS <span class="ml-1 rounded bg-blue-50 dark:bg-blue-950 px-1.5 py-0.5 text-[10px] font-medium text-blue-600 dark:text-blue-400">优选</span></div>
+                                <div class="truncate text-xs text-slate-500 dark:text-slate-400 font-mono" data-text data-sub-path="/bestCfProxySub/clashAnytls"></div>
+                            </div>
+                        </div>
+                        <button class="copy-btn inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-slate-300 dark:border-slate-700 px-3 text-sm font-medium transition hover:bg-slate-100 dark:hover:bg-slate-800" data-sub-path="/bestCfProxySub/clashAnytls" onclick="copySubRow(this)">复制</button>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-        {{ template "_footer.html" . }}
+    {{ template "_footer.html" . }}
     <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
     <script src="static/index.js"></script>
 </body>
