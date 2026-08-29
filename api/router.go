@@ -489,7 +489,7 @@ func setupRouter() {
 			}
 			limit = n
 		}
-		return app.SubNiceProxyIp(format, distCountry, c.Query("c"), limit, isTrue(c.Query("random")), parseIPV6Mode(c), c.Query("cdn"))
+		return app.SubNiceProxyIp(format, distCountry, c.Query("c"), limit, isTrue(c.Query("random")), c.Query("sort"), parseIPV6Mode(c), c.Query("cdn"))
 	}))
 
 	router.GET("/bestCfProxyIp/:format", bestIPHandler(func(c *gin.Context) (string, error) {
@@ -527,7 +527,7 @@ func setupRouter() {
 			}
 			limit = n
 		}
-		return app.SubNiceProxyIp(format, "KR", c.Query("c"), limit, isTrue(c.Query("random")), parseIPV6Mode(c), c.Query("cdn"))
+		return app.SubNiceProxyIp(format, "KR", c.Query("c"), limit, isTrue(c.Query("random")), c.Query("sort"), parseIPV6Mode(c), c.Query("cdn"))
 	}))
 }
 

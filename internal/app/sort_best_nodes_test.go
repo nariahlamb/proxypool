@@ -82,3 +82,56 @@ func TestSortBestNodesStable(t *testing.T) {
 		t.Fatalf("稳定排序失效: %+v", nodes)
 	}
 }
+
+// TestSortBestNodesByIP 仅按 IP 排序（IPv4 数值比较）
+func TestSortBestNodesByIP(t *testing.T) {
+	nodes := []cache.BestNode{
+		{Ip: "10.0.0.2", Port: 443, Country: "US"},
+		{Ip: "10.0.0.10", Port: 443, Country: "CN"},
+		{Ip: "10.0.0.1", Port: 443, Country: "JP"},
+	}
+	sortBestNodesByIP(nodes)
+	want := []string{"10.0.0.1", "10.0.0.2", "10.0.0.10"}
+	for i, ip := range want {
+		if nodes[i].Ip != ip {
+			t.Fatalf("按IP排序第 %d 位应为 %s, got %s", i, ip, nodes[i].Ip)
+		}
+	}
+}
+
+// TestApplyBestNodeSort 各 sortMode 排序行为
+func TestApplyBestNodeSort(t *testing.T) {
+	nodes := []cache.BestNode{
+		{Ip: "1.0.0.1", Port: 443, Country: "US"},
+		{Ip: "1.0.0.1", Port: 8443, Country: "US"},
+		{Ip: "2.0.0.1", Port: 443, Country: "CN"},
+	}
+	// country：国家优先，同国家按 IP、端口
+	cp := append([]cache.BestNode(nil), nodes...)
+	if err := applyBestNodeSort(cp, "country"); err != nil {
+		t.Fatal(err)
+	}
+	if cp[0].Country != "CN" || cp[2].Country != "US" {
+		t.Fatalf("country 排序应按国家: %+v", cp)
+	}
+	if cp[1].Port != 443 || cp[2].Port != 8443 {
+		t.Fatalf("country 排序同国家应按 IP/端口: %+v", cp)
+	}
+	// ip：仅按 IP（CN 的 2.0.0.1 排最后，尽管国家 CN 在前）
+	ipc := append([]cache.BestNode(nil), nodes...)
+	if err := applyBestNodeSort(ipc, "ip"); err != nil {
+		t.Fatal(err)
+	}
+	if ipc[2].Ip != "2.0.0.1" {
+		t.Fatalf("ip 排序应按 IP 数值: %+v", ipc)
+	}
+	// random：打乱（只验证合法性与元素集不变）
+	rc := append([]cache.BestNode(nil), nodes...)
+	if err := applyBestNodeSort(rc, "random"); err != nil {
+		t.Fatal(err)
+	}
+	// 非法值报错
+	if err := applyBestNodeSort(nodes, "bogus"); err == nil {
+		t.Fatal("非法 sort 值应报错")
+	}
+}

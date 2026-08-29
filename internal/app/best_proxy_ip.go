@@ -54,6 +54,17 @@ func RestoreBestNodes() {
 
 // sortBestNodes 按照国家名称、IP 和端口多级排序（稳定）。
 // IPv4 使用 TCP 数值比较，IPv6/域名保持字符串比较。
+// compareBestNodeIP 比较两个节点的 IP：IPv4 使用 TCP 数值比较，IPv6/域名保持字符串比较。
+func compareBestNodeIP(a, b string) int {
+	aParts := strings.Split(a, ".")
+	bParts := strings.Split(b, ".")
+	if len(aParts) == 4 && len(bParts) == 4 {
+		return cmp.Compare(ipToUint32(a), ipToUint32(b))
+	}
+	return cmp.Compare(a, b)
+}
+
+// sortBestNodes 按照国家名称、IP 和端口多级排序（稳定）。
 func sortBestNodes(nodes []cache.BestNode) {
 	slices.SortStableFunc(nodes, func(a, b cache.BestNode) int {
 		// 首先按国家排序
@@ -62,18 +73,36 @@ func sortBestNodes(nodes []cache.BestNode) {
 		}
 		// 国家相同时按IP排序，使用TCP数值比较
 		if a.Ip != b.Ip {
-			// 如果是IPv4地址，使用数值比较
-			aParts := strings.Split(a.Ip, ".")
-			bParts := strings.Split(b.Ip, ".")
-			if len(aParts) == 4 && len(bParts) == 4 {
-				return cmp.Compare(ipToUint32(a.Ip), ipToUint32(b.Ip))
-			}
-			// 对于IPv6或其他格式，保持字符串比较
-			return cmp.Compare(a.Ip, b.Ip)
+			return compareBestNodeIP(a.Ip, b.Ip)
 		}
 		// IP相同时按端口排序
 		return cmp.Compare(a.Port, b.Port)
 	})
+}
+
+// sortBestNodesByIP 仅按 IP 排序（stable，同 IP 保持原顺序）。
+func sortBestNodesByIP(nodes []cache.BestNode) {
+	slices.SortStableFunc(nodes, func(a, b cache.BestNode) int {
+		return compareBestNodeIP(a.Ip, b.Ip)
+	})
+}
+
+// applyBestNodeSort 按 sortMode 对节点列表排序：
+// ""/country → 国家→IP→端口多级排序；ip → 仅按 IP；random → 随机打乱。非法值返回错误。
+func applyBestNodeSort(nodes []cache.BestNode, sortMode string) error {
+	switch sortMode {
+	case "", "country":
+		sortBestNodes(nodes)
+	case "ip":
+		sortBestNodesByIP(nodes)
+	case "random":
+		rand.Shuffle(len(nodes), func(i, j int) {
+			nodes[i], nodes[j] = nodes[j], nodes[i]
+		})
+	default:
+		return errors.New("invalid sort parameter (country|ip|random)")
+	}
+	return nil
 }
 
 func CrawlBestNode() {
@@ -424,7 +453,7 @@ func matchIPV6Mode(mode int, addr string) bool {
 	}
 }
 
-func SubNiceProxyIp(format string, distNodeCountry string, proxyCountryIsoCode string, limit int, random bool, ipv6Mode int, cdnFilter string) (s string, err error) {
+func SubNiceProxyIp(format string, distNodeCountry string, proxyCountryIsoCode string, limit int, random bool, sortMode string, ipv6Mode int, cdnFilter string) (s string, err error) {
 	defer trackDuration("SubNiceProxyIp")()
 
 	// 检查格式并获取配置
@@ -439,6 +468,11 @@ func SubNiceProxyIp(format string, distNodeCountry string, proxyCountryIsoCode s
 	if len(bestNodeList) == 0 {
 		log.Errorln("No best nodes found")
 		return "", errors.New("not found best node list")
+	}
+
+	// 按 sortMode 排序（""/country 国家多级、ip 仅IP、random 打乱）
+	if err := applyBestNodeSort(bestNodeList, sortMode); err != nil {
+		return "", err
 	}
 
 	// anytls 格式：仅导出可透传 anytls 的节点；未启用探测时导出空

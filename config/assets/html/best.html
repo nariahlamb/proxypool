@@ -99,6 +99,16 @@
                 </div>
                 <div class="control">
                     <div class="select">
+                        <select id="gen-sort" onchange="refreshBestGen()">
+                            <option value="">固定排序（国家→IP→端口）</option>
+                            <option value="country">按国家排序</option>
+                            <option value="ip">按 IP 排序</option>
+                            <option value="random">随机打乱</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control">
+                    <div class="select">
                         <select id="gen-ipv6" onchange="refreshBestGen()">
                             <option value="">IPv4+IPv6</option>
                             <option value="true">仅 IPv6</option>

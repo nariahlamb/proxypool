@@ -36,7 +36,7 @@ func TestSubNiceProxyIpIPV6Modes(t *testing.T) {
 		{Ip: "2001:db8::1", Port: 443, Country: "JP"},   // IPv6
 	})
 
-	out, err := SubNiceProxyIp("clashVless", "JP", "", 0, false, 0, "")
+	out, err := SubNiceProxyIp("clashVless", "JP", "", 0, false, "", 0, "")
 	if err != nil {
 		t.Fatalf("mode=0: %v", err)
 	}
@@ -44,7 +44,7 @@ func TestSubNiceProxyIpIPV6Modes(t *testing.T) {
 		t.Errorf("mode=0 应同时含 IPv4 与 [IPv6]:\n%s", out)
 	}
 
-	out, err = SubNiceProxyIp("clashVless", "JP", "", 0, false, 1, "")
+	out, err = SubNiceProxyIp("clashVless", "JP", "", 0, false, "", 1, "")
 	if err != nil {
 		t.Fatalf("mode=1: %v", err)
 	}
@@ -52,7 +52,7 @@ func TestSubNiceProxyIpIPV6Modes(t *testing.T) {
 		t.Errorf("mode=1 应仅含 IPv6:\n%s", out)
 	}
 
-	out, err = SubNiceProxyIp("clashVless", "JP", "", 0, false, 2, "")
+	out, err = SubNiceProxyIp("clashVless", "JP", "", 0, false, "", 2, "")
 	if err != nil {
 		t.Fatalf("mode=2: %v", err)
 	}

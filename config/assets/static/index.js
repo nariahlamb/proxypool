@@ -128,13 +128,13 @@ var BEST_GEN_PROTO_ORDER = ["vless", "vmess", "trojan", "anytls"];
 
 // 各端点支持的筛选参数（对照 api/router.go 路由）
 var BEST_GEN_ENDPOINTS = {
-    "bestProxyIp":            { d: true, c: true, limit: true, random: true, cdn: true, ipv6: true },
+    "bestProxyIp":            { d: true, c: true, limit: true, random: true, cdn: true, ipv6: true, sort: true },
     "bestCfProxyIp":          { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
     "bestCfProxyIpTop20":     { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
     "bestCfProxyIpIsp":       { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
     "bestCfProxyDomainTop20": { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
     "bestCfProxySub":         { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true, sub: true },
-    "bestIpKr":               { d: false, c: true, limit: true, random: true, cdn: true, ipv6: true },
+    "bestIpKr":               { d: false, c: true, limit: true, random: true, cdn: true, ipv6: true, sort: true },
 };
 
 function setGenEnabled(id, on) {
@@ -180,6 +180,10 @@ function bestGenURL() {
         if (limit) q.push("limit=" + encodeURIComponent(limit));
     }
     if (caps.random && document.getElementById("gen-random").checked) q.push("random=true");
+    if (caps.sort) {
+        var sort = document.getElementById("gen-sort").value;
+        if (sort) q.push("sort=" + sort);
+    }
     if (caps.cdn && document.getElementById("gen-cdn").checked) q.push("cdn=true");
     if (caps.ipv6) {
         var ipv6 = document.getElementById("gen-ipv6").value;
@@ -197,6 +201,7 @@ function refreshBestGen() {
     setGenEnabled("gen-sub", caps.sub);
     setGenEnabled("gen-limit", caps.limit);
     setGenEnabled("gen-random", caps.random);
+    setGenEnabled("gen-sort", caps.sort);
     setGenEnabled("gen-cdn", caps.cdn);
     setGenEnabled("gen-ipv6", caps.ipv6);
 
