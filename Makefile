@@ -30,6 +30,11 @@ PLATFORM_LIST = \
 
 all: linux-amd64 darwin-amd64 linux-armv8
 
+# 前端：编译 Tailwind CSS（产物入库 config/assets/static/css/index.css；
+# Docker/CI 构建不需要 Node——改页面样式后手动执行 make css）
+css:
+	sh scripts/build-tailwind.sh
+
 docker2:
 	docker run --rm -v `go env GOPATH`:/go \
 		-v "$(shell PWD)":/go/src/$(NAME) \
