@@ -127,17 +127,17 @@
             </div>
             <div class="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900/70 px-5 py-4 shadow-sm">
                 <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                    <div class="flex items-center gap-3">
+                    <div class="flex shrink-0 items-center gap-3">
                         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-500/10 dark:text-sky-400">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg>
                         </div>
-                        <div class="text-sm font-semibold text-slate-900 dark:text-white">运行状态</div>
+                        <div class="whitespace-nowrap text-sm font-semibold text-slate-900 dark:text-white">运行状态</div>
                     </div>
-                    <div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs text-slate-500 dark:text-slate-400 lg:grid-cols-4">
-                        <div>测速：<b class="text-slate-700 dark:text-slate-200">{{ .is_speed_test }}</b></div>
-                        <div>优选更新：{{ .best_last_update }}</div>
-                        <div>抓取更新：{{ .last_crawl_time }}</div>
-                        <div>GeoIP：{{ .geo_ip_db_version }}</div>
+                    <div class="flex flex-wrap items-center gap-x-6 gap-y-1.5 text-xs text-slate-500 dark:text-slate-400">
+                        <div class="whitespace-nowrap">测速：<b class="text-slate-700 dark:text-slate-200">{{ .is_speed_test }}</b></div>
+                        <div class="whitespace-nowrap">优选更新：{{ .best_last_update }}</div>
+                        <div class="whitespace-nowrap">抓取更新：{{ .last_crawl_time }}</div>
+                        <div class="whitespace-nowrap">GeoIP：{{ .geo_ip_db_version }}</div>
                     </div>
                 </div>
             </div>
