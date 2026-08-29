@@ -96,7 +96,7 @@ var clientPages = map[string]clientPage{
 	"loon": {
 		Name:  "loon",
 		Title: "Loon - Free Proxies",
-		Icon:  `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-base font-bold">L</span>`,
+		Icon:  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-7 h-7" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3a6.8 6.8 0 0 1 6.8 6.8c0 2.8-1.5 5-3.7 6.2H8.9a7 7 0 0 1-3.7-6.2A6.8 6.8 0 0 1 12 3Z"/><path stroke-linecap="round" d="M8.4 16h7.2"/><path stroke-linecap="round" stroke-linejoin="round" d="M9.3 16l1.3 3h2.8l1.3-3"/><path stroke-linecap="round" d="M10.6 19h2.8"/></svg>`,
 		Desc:  "Loon 节点订阅",
 		Note:  `Loon 导入方法：打开 Loon，进入 <b>配置 → 订阅 → 远程订阅</b>，粘贴上方订阅地址保存后拉取；或在 <b>节点</b> 页右上角添加订阅。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。`,
 		NodeRows: []clientPageRow{
