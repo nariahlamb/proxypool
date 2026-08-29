@@ -1,23 +1,23 @@
 {{/* 共享导航：active = 当前页路由名（clash/surge/loon/quanx/v2rayn/shadowrocket/best，首页传空） */}}
 <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-slate-900 focus:px-3 focus:py-2 focus:rounded-lg focus:text-sm focus:shadow-lg">跳到主要内容</a>
-<nav class="sticky top-0 z-50 bg-slate-900 text-white shadow-md">
+<nav class="sticky top-0 z-50 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shadow-sm border-b border-slate-200 dark:border-slate-800">
     <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
-        <a href="#" id="brand-home" class="font-bold text-lg tracking-tight">Free Proxies</a>
-        <button id="nav-burger" class="md:hidden p-2 rounded-lg hover:bg-white/10" aria-label="menu">
+        <a href="#" id="brand-home" class="font-bold text-lg tracking-tight text-slate-900 dark:text-white">Free Proxies</a>
+        <button id="nav-burger" class="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300" aria-label="menu">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
         </button>
-        <div id="nav-menu" class="hidden md:flex absolute md:static left-0 right-0 top-14 md:top-auto flex-col md:flex-row bg-slate-800 md:bg-transparent md:items-center gap-1 px-4 pb-3 pt-2 md:p-0 shadow-lg md:shadow-none">
-            <a href="clash" class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm{{ if eq .active "clash" }} bg-white/15{{ else }} hover:bg-white/10{{ end }}"><i aria-hidden="true" class="metron-clash text-base"></i>Clash</a>
-            <a href="shadowrocket" class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm{{ if eq .active "shadowrocket" }} bg-white/15{{ else }} hover:bg-white/10{{ end }}"><i aria-hidden="true" class="metron-shadowrocket text-base"></i>ShadowRocket</a>
-            <a href="surge" class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm{{ if eq .active "surge" }} bg-white/15{{ else }} hover:bg-white/10{{ end }}"><i aria-hidden="true" class="metron-surge text-base"></i>Surge</a>
-            <a href="loon" class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm{{ if eq .active "loon" }} bg-white/15{{ else }} hover:bg-white/10{{ end }}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3a6.8 6.8 0 0 1 6.8 6.8c0 2.8-1.5 5-3.7 6.2H8.9a7 7 0 0 1-3.7-6.2A6.8 6.8 0 0 1 12 3Z"/><path stroke-linecap="round" d="M8.4 16h7.2"/><path stroke-linecap="round" stroke-linejoin="round" d="M9.3 16l1.3 3h2.8l1.3-3"/><path stroke-linecap="round" d="M10.6 19h2.8"/></svg>Loon</a>
-            <a href="quanx" class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm{{ if eq .active "quanx" }} bg-white/15{{ else }} hover:bg-white/10{{ end }}"><i aria-hidden="true" class="metron-quantumultx text-base"></i>QuanX</a>
-            <a href="v2rayn" class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm{{ if eq .active "v2rayn" }} bg-white/15{{ else }} hover:bg-white/10{{ end }}"><i aria-hidden="true" class="metron-v2rayng text-base"></i>v2rayN</a>
-            <a href="best" class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm{{ if eq .active "best" }} bg-white/15{{ else }} hover:bg-white/10{{ end }}">★优选IP</a>
-            <div class="mt-1 pt-2 border-t border-white/20 md:border-t-0 md:ml-2 md:mt-0 md:pt-0">
-                <button id="theme-toggle" class="flex items-center gap-2 w-full md:w-auto px-3 py-2 rounded-lg hover:bg-white/10 text-sm" aria-label="切换主题"><span id="theme-icon"></span><span class="md:hidden">主题</span></button>
+        <div id="nav-menu" class="hidden md:flex absolute md:static left-0 right-0 top-14 md:top-auto flex-col md:flex-row bg-white md:bg-transparent md:items-center gap-1 px-4 pb-3 pt-2 md:p-0 shadow-lg md:shadow-none">
+            <a href="clash" class="flex items-center gap-1.5 px-2.5 py-2 text-slate-700 dark:text-slate-200 rounded-lg text-sm{{ if eq .active "clash" }} bg-blue-50 text-blue-700{{ else }} hover:bg-slate-100{{ end }}"><i aria-hidden="true" class="metron-clash text-base"></i>Clash</a>
+            <a href="shadowrocket" class="flex items-center gap-1.5 px-2.5 py-2 text-slate-700 dark:text-slate-200 rounded-lg text-sm{{ if eq .active "shadowrocket" }} bg-blue-50 text-blue-700{{ else }} hover:bg-slate-100{{ end }}"><i aria-hidden="true" class="metron-shadowrocket text-base"></i>ShadowRocket</a>
+            <a href="surge" class="flex items-center gap-1.5 px-2.5 py-2 text-slate-700 dark:text-slate-200 rounded-lg text-sm{{ if eq .active "surge" }} bg-blue-50 text-blue-700{{ else }} hover:bg-slate-100{{ end }}"><i aria-hidden="true" class="metron-surge text-base"></i>Surge</a>
+            <a href="loon" class="flex items-center gap-1.5 px-2.5 py-2 text-slate-700 dark:text-slate-200 rounded-lg text-sm{{ if eq .active "loon" }} bg-blue-50 text-blue-700{{ else }} hover:bg-slate-100{{ end }}"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3a6.8 6.8 0 0 1 6.8 6.8c0 2.8-1.5 5-3.7 6.2H8.9a7 7 0 0 1-3.7-6.2A6.8 6.8 0 0 1 12 3Z"/><path stroke-linecap="round" d="M8.4 16h7.2"/><path stroke-linecap="round" stroke-linejoin="round" d="M9.3 16l1.3 3h2.8l1.3-3"/><path stroke-linecap="round" d="M10.6 19h2.8"/></svg>Loon</a>
+            <a href="quanx" class="flex items-center gap-1.5 px-2.5 py-2 text-slate-700 dark:text-slate-200 rounded-lg text-sm{{ if eq .active "quanx" }} bg-blue-50 text-blue-700{{ else }} hover:bg-slate-100{{ end }}"><i aria-hidden="true" class="metron-quantumultx text-base"></i>QuanX</a>
+            <a href="v2rayn" class="flex items-center gap-1.5 px-2.5 py-2 text-slate-700 dark:text-slate-200 rounded-lg text-sm{{ if eq .active "v2rayn" }} bg-blue-50 text-blue-700{{ else }} hover:bg-slate-100{{ end }}"><i aria-hidden="true" class="metron-v2rayng text-base"></i>v2rayN</a>
+            <a href="best" class="flex items-center gap-1.5 px-2.5 py-2 text-slate-700 dark:text-slate-200 rounded-lg text-sm{{ if eq .active "best" }} bg-blue-50 text-blue-700{{ else }} hover:bg-slate-100{{ end }}">★优选IP</a>
+            <div class="mt-1 pt-2 border-t border-slate-200 dark:border-slate-800 md:border-t-0 md:ml-2 md:mt-0 md:pt-0">
+                <button id="theme-toggle" class="flex items-center gap-2 w-full md:w-auto px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 text-sm" aria-label="切换主题"><span id="theme-icon"></span><span class="md:hidden">主题</span></button>
             </div>
         </div>
     </div>
