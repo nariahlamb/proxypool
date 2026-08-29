@@ -36,6 +36,15 @@ var (
 	router  *gin.Engine
 )
 
+// clientProtocols 各客户端实际支持的协议（与 internal/app 生成器矩阵一致：Surge 无 vless 生成器）
+var clientProtocols = map[string][]string{
+	"clash":  {"vless", "vmess", "trojan", "anytls"},
+	"surge":  {"vmess", "trojan", "anytls"},
+	"loon":   {"vless", "vmess", "trojan", "anytls"},
+	"quanx":  {"vless", "vmess", "trojan", "anytls"},
+	"v2rayn": {"vless", "vmess", "trojan", "anytls"},
+}
+
 func SetVersion(v string) {
 	version = v
 }
@@ -369,11 +378,13 @@ func setupRouter() {
 	// 优选 IP 订阅说明页
 	router.GET("/best", func(c *gin.Context) {
 		cp, _ := json.Marshal(config.Config().ProxyInfo.CountryProtocols())
+		cpc, _ := json.Marshal(clientProtocols)
 		c.HTML(http.StatusOK, "best.html", gin.H{
 			"domain":            config.Config().Domain,
 			"base_path":         templateBasePath(c),
 			"countries":         config.Config().ProxyInfo.Countries(),
 			"country_protocols": template.JS(cp),
+			"client_protocols":  template.JS(cpc),
 		})
 	})
 
@@ -508,7 +519,15 @@ func setupRouter() {
 
 	router.GET("/bestIpKr/:format", bestIPHandler(func(c *gin.Context) (string, error) {
 		format, _ := parseBestIPParams(c)
-		return app.SubNiceProxyIp(format, "KR", c.Query("c"), 0, isTrue(c.Query("random")), parseIPV6Mode(c), c.Query("cdn"))
+		limit := 0
+		if s := c.Query("limit"); s != "" {
+			n, err := strconv.Atoi(s)
+			if err != nil {
+				return "", errors.New("invalid limit parameter")
+			}
+			limit = n
+		}
+		return app.SubNiceProxyIp(format, "KR", c.Query("c"), limit, isTrue(c.Query("random")), parseIPV6Mode(c), c.Query("cdn"))
 	}))
 }
 

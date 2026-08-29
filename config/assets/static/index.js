@@ -123,7 +123,7 @@ function onCopyThis(e) {
 }
 
 // 动态生成器：端点 × 客户端 × 协议 × 落地国家 → /{endpoint}/{client}{Protocol}?d={country}&...
-// 协议下拉按所选国家联动（仅显示该国家已配置的协议）；筛选参数按端点支持度联动禁用
+// 三维联动：协议候选 = 客户端支持 ∩ 国家配置（BEST_GEN_CLIENTS × BEST_GEN_COUNTRIES）
 var BEST_GEN_PROTO_ORDER = ["vless", "vmess", "trojan", "anytls"];
 
 // 各端点支持的筛选参数（对照 api/router.go 路由）
@@ -133,8 +133,8 @@ var BEST_GEN_ENDPOINTS = {
     "bestCfProxyIpTop20":     { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
     "bestCfProxyIpIsp":       { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
     "bestCfProxyDomainTop20": { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
-    "bestCfProxySub":         { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
-    "bestIpKr":               { d: false, c: true, limit: false, random: true, cdn: true, ipv6: true },
+    "bestCfProxySub":         { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true, sub: true },
+    "bestIpKr":               { d: false, c: true, limit: true, random: true, cdn: true, ipv6: true },
 };
 
 function setGenEnabled(id, on) {
@@ -142,9 +142,16 @@ function setGenEnabled(id, on) {
     if (el) el.disabled = !on;
 }
 
-function bestGenProtocols(country) {
-    var m = window.BEST_GEN_COUNTRIES || {};
-    return (m[country] || []).slice();
+// 客户端 × 国家 交集：返回该组合可用的协议（按 BEST_GEN_PROTO_ORDER 顺序）
+function bestGenProtocols(client, country) {
+    var cs = (window.BEST_GEN_CLIENTS || {})[client] || [];
+    var cs2 = (window.BEST_GEN_COUNTRIES || {})[country] || [];
+    var out = [];
+    for (var i = 0; i < BEST_GEN_PROTO_ORDER.length; i++) {
+        var p = BEST_GEN_PROTO_ORDER[i];
+        if (cs.indexOf(p) >= 0 && cs2.indexOf(p) >= 0) out.push(p);
+    }
+    return out;
 }
 
 function bestGenURL() {
@@ -163,6 +170,10 @@ function bestGenURL() {
     if (caps.c) {
         var c = document.getElementById("gen-c").value;
         if (c) q.push("c=" + encodeURIComponent(c));
+    }
+    if (caps.sub) {
+        var sub = document.getElementById("gen-sub").value;
+        if (sub) q.push("sub=" + encodeURIComponent(sub));
     }
     if (caps.limit) {
         var limit = document.getElementById("gen-limit").value;
@@ -183,15 +194,17 @@ function refreshBestGen() {
     var caps = BEST_GEN_ENDPOINTS[ep] || {};
     setGenEnabled("gen-country", caps.d);
     setGenEnabled("gen-c", caps.c);
+    setGenEnabled("gen-sub", caps.sub);
     setGenEnabled("gen-limit", caps.limit);
     setGenEnabled("gen-random", caps.random);
     setGenEnabled("gen-cdn", caps.cdn);
     setGenEnabled("gen-ipv6", caps.ipv6);
-    // 协议联动：bestIpKr 强制 KR（d 不生效），其他按国家下拉
+    // 协议联动：bestIpKr 强制 KR（d 不生效），其他按国家下拉；再 ∩ 客户端支持
+    var client = document.getElementById("gen-client").value;
     var country = caps.d ? document.getElementById("gen-country").value : "KR";
     var protoSel = document.getElementById("gen-protocol");
     var cur = protoSel.value;
-    var protos = bestGenProtocols(country);
+    var protos = bestGenProtocols(client, country);
     protoSel.innerHTML = "";
     for (var i = 0; i < protos.length; i++) {
         var o = document.createElement("option");
@@ -211,8 +224,18 @@ function refreshBestGen() {
 // 复制动态生成的订阅链接（best 鉴权：先 ensureBestToken）
 function copyBestGen(btn) {
     ensureBestToken();
+    var ep = document.getElementById("gen-endpoint").value;
     var url = bestGenURL();
+    if (!document.getElementById("gen-protocol").value) {
+        showTip("该客户端+国家组合无可用的协议，请调整选择");
+        return;
+    }
     if (!url) { showTip("请先选择客户端/协议/国家"); return; }
+    if (ep === "bestCfProxySub" && !document.getElementById("gen-sub").value) {
+        showTip("bestCfProxySub 需填写 sub 订阅源链接");
+        document.getElementById("gen-sub").focus();
+        return;
+    }
     copyText(url).then(function (ok) {
         showTip(ok ? "复制成功" : "复制失败");
     });

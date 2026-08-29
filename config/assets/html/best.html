@@ -112,13 +112,16 @@
                 <div class="control">
                     <input class="input" id="gen-c" type="text" placeholder="节点国家代码 c（可选）" oninput="refreshBestGen()" style="width:12em">
                 </div>
+                <div class="control">
+                    <input class="input" id="gen-sub" type="text" placeholder="sub CF 明文订阅源链接（bestCfProxySub 必填）" oninput="refreshBestGen()" style="width:20em">
+                </div>
             </div>
             <div class="field mt-2">
                 <input class="input" id="gen-url" type="text" readonly placeholder="选择后自动生成订阅链接…">
             </div>
             <article class="message is-info mt-2">
                 <div class="message-body is-size-7">
-                    端点默认 <code>bestProxyIp</code>（全部优选节点）；筛选参数按端点支持度自动禁用（如 bestIpKr 强制韩国、不支持 limit）。协议下拉按所选国家自动联动；如导出为空请检查该国家对应探测是否启用。
+                    端点默认 <code>bestProxyIp</code>（全部优选节点）；筛选参数按端点支持度自动禁用（如 bestIpKr 强制韩国、不支持 d；bestCfProxySub 需填写 sub 订阅源链接）。协议下拉三维联动：客户端支持 ∩ 国家配置（如 Surge 不支持 vless）。如导出为空请检查该国家对应探测是否启用。
                 </div>
             </article>
         </section>
@@ -199,6 +202,7 @@
     </footer>
     <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
     <script>window.BEST_GEN_COUNTRIES = {{ .country_protocols }};</script>
+    <script>window.BEST_GEN_CLIENTS = {{ .client_protocols }};</script>
     <script src="static/index.js"></script>
 </body>
 

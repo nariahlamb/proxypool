@@ -5,6 +5,8 @@
 - best 页新增「动态生成」区块：客户端（clash/surge/loon/quanx/v2rayn）× 协议（vmess/vless/trojan/anytls）× 落地国家（从 proxy_info 配置动态注入）
 - 协议下拉按所选国家自动联动（仅显示该国家已配置的协议，如 KR 无 vless 则不出现在下拉）
 - 端点可切换（默认 bestProxyIp，共 7 个端点全可选），筛选参数按端点支持度自动禁用联动
+- 客户端 × 协议 × 国家三维联动：协议候选 = 客户端支持（Surge 无 vless）∩ 国家配置
+- bestCfProxySub 新增 sub 订阅源输入（必填校验）；bestIpKr 路由补 limit 支持
 - 筛选参数：random / cdn 复选框、ipv6 三态（全部/仅v6/仅v4）、limit 数量、节点国家代码 c
 - 实时预览完整订阅 URL（自动带 best_token）+ 一键复制
 - 后端：config.ProxyInfo 新增 Countries()/CountryProtocols()（仅暴露国家与协议名，不含任何凭据）
