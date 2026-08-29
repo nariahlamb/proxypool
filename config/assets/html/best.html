@@ -46,7 +46,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">端点</label>
-                        <select id="gen-endpoint" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
+                        <select id="gen-endpoint" onchange="refreshBestGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
                             <option value="bestProxyIp" selected>bestProxyIp（全部优选）</option>
                             <option value="bestCfProxyIp">bestCfProxyIp（CF 优选 IP）</option>
                             <option value="bestCfProxyIpTop20">bestCfProxyIpTop20（CF Top20）</option>
@@ -58,7 +58,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">客户端</label>
-                        <select id="gen-client" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
+                        <select id="gen-client" onchange="refreshBestGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
                             <option value="clash">Clash</option>
                             <option value="surge">Surge</option>
                             <option value="loon">Loon</option>
@@ -68,11 +68,11 @@
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">协议</label>
-                        <select id="gen-protocol" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"></select>
+                        <select id="gen-protocol" onchange="refreshBestGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"></select>
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">落地国家</label>
-                        <select id="gen-country" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
+                        <select id="gen-country" onchange="refreshBestGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
                             {{ range .countries }}<option value="{{ . }}">{{ . }}</option>{{ end }}
                         </select>
                     </div>
@@ -81,14 +81,14 @@
                     <label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"><input type="checkbox" id="gen-random" onchange="refreshBestGen()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30">random</label>
                     <label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"><input type="checkbox" id="gen-cdn" onchange="refreshBestGen()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30">cdn</label>
                     <div>
-                        <select id="gen-ipv6" aria-label="IPv6 模式" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm text-slate-700 dark:text-slate-200">
+                        <select id="gen-ipv6" aria-label="IPv6 模式" onchange="refreshBestGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm text-slate-700 dark:text-slate-200">
                             <option value="">IPv4+IPv6</option>
                             <option value="true">仅 IPv6</option>
                             <option value="false">仅 IPv4</option>
                         </select>
                     </div>
                     <div>
-                        <select id="gen-sort" aria-label="排序方式" onchange="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm text-slate-700 dark:text-slate-200">
+                        <select id="gen-sort" aria-label="排序方式" onchange="refreshBestGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm text-slate-700 dark:text-slate-200">
                             <option value="">固定排序</option>
                             <option value="country">按国家</option>
                             <option value="ip">按 IP</option>

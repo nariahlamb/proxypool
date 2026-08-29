@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"net/url"
@@ -36,6 +37,9 @@ var (
 	version string
 	router  *gin.Engine
 )
+
+// basePathCtxKey 在请求上下文中传递已解析的部署前缀（供模板渲染复用路由层推断结果）。
+type basePathCtxKey struct{}
 
 // clientProtocols 各客户端实际支持的协议（与 internal/app 生成器矩阵一致：Surge 无 vless 生成器）
 var clientProtocols = map[string][]string{
@@ -643,6 +647,11 @@ func setupRouter() {
 // 返回不带尾斜杠的前缀（如 "/show"），空串表示根路径部署。
 // 订阅链接的前缀最终由前端从 location 自算兜底，此处仅尽力而为。
 func templateBasePath(c *gin.Context) string {
+	// 优先使用路由层在 serveHandler 中解析出的部署前缀（含 URL 自动推断），
+	// 保证模板中硬编码的 URL（如 clash/localconfig、筛选示例）也带上 /show 等前缀。
+	if bp, ok := c.Request.Context().Value(basePathCtxKey{}).(string); ok && bp != "" {
+		return strings.TrimSuffix(bp, "/")
+	}
 	if bp := config.Config().BasePath; bp != "" {
 		return strings.TrimSuffix(bp, "/")
 	}
@@ -773,6 +782,7 @@ func Run() {
 
 	serveHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		basePath := resolveBasePath(r)
+		r = r.WithContext(context.WithValue(r.Context(), basePathCtxKey{}, basePath))
 		r.URL.Path = applyBasePath(r.URL.Path, basePath)
 		router.ServeHTTP(w, r)
 	})
