@@ -44,8 +44,21 @@
 
         <section class="section">
             <h5 class="title is-4">动态生成</h5>
-            <p>选择客户端、节点协议与落地国家，一键复制优选订阅链接（默认包含全部健康节点）。</p>
+            <p>选择端点、客户端、节点协议与落地国家，一键复制优选订阅链接（默认包含全部健康节点）。</p>
             <div class="field is-grouped mt-2 is-flex-wrap-wrap">
+                <div class="control">
+                    <div class="select">
+                        <select id="gen-endpoint" onchange="refreshBestGen()">
+                            <option value="bestProxyIp" selected>bestProxyIp（全部优选）</option>
+                            <option value="bestCfProxyIp">bestCfProxyIp（CF 优选 IP）</option>
+                            <option value="bestCfProxyIpTop20">bestCfProxyIpTop20（CF Top20）</option>
+                            <option value="bestCfProxyIpIsp">bestCfProxyIpIsp（CF 运营商）</option>
+                            <option value="bestCfProxyDomainTop20">bestCfProxyDomainTop20（CF 域名 Top20）</option>
+                            <option value="bestCfProxySub">bestCfProxySub（CF 明文订阅源）</option>
+                            <option value="bestIpKr">bestIpKr（韩国优选）</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="control">
                     <div class="select">
                         <select id="gen-client" onchange="refreshBestGen()">
@@ -105,7 +118,7 @@
             </div>
             <article class="message is-info mt-2">
                 <div class="message-body is-size-7">
-                    协议下拉按所选国家自动联动（仅显示该国家已配置的协议）；如导出为空请检查该国家对应探测是否启用。
+                    端点默认 <code>bestProxyIp</code>（全部优选节点）；筛选参数按端点支持度自动禁用（如 bestIpKr 强制韩国、不支持 limit）。协议下拉按所选国家自动联动；如导出为空请检查该国家对应探测是否启用。
                 </div>
             </article>
         </section>

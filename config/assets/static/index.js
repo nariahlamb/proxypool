@@ -122,9 +122,25 @@ function onCopyThis(e) {
     });
 }
 
-// 动态生成器：客户端 × 协议 × 落地国家 → /bestProxyIp/{client}{Protocol}?d={country}
-// 协议下拉按所选国家联动（仅显示该国家已配置的协议）
+// 动态生成器：端点 × 客户端 × 协议 × 落地国家 → /{endpoint}/{client}{Protocol}?d={country}&...
+// 协议下拉按所选国家联动（仅显示该国家已配置的协议）；筛选参数按端点支持度联动禁用
 var BEST_GEN_PROTO_ORDER = ["vless", "vmess", "trojan", "anytls"];
+
+// 各端点支持的筛选参数（对照 api/router.go 路由）
+var BEST_GEN_ENDPOINTS = {
+    "bestProxyIp":            { d: true, c: true, limit: true, random: true, cdn: true, ipv6: true },
+    "bestCfProxyIp":          { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
+    "bestCfProxyIpTop20":     { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
+    "bestCfProxyIpIsp":       { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
+    "bestCfProxyDomainTop20": { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
+    "bestCfProxySub":         { d: true, c: false, limit: false, random: false, cdn: false, ipv6: true },
+    "bestIpKr":               { d: false, c: true, limit: false, random: true, cdn: true, ipv6: true },
+};
+
+function setGenEnabled(id, on) {
+    var el = document.getElementById(id);
+    if (el) el.disabled = !on;
+}
 
 function bestGenProtocols(country) {
     var m = window.BEST_GEN_COUNTRIES || {};
@@ -132,29 +148,48 @@ function bestGenProtocols(country) {
 }
 
 function bestGenURL() {
+    var ep = document.getElementById("gen-endpoint").value;
     var client = document.getElementById("gen-client").value;
     var proto = document.getElementById("gen-protocol").value;
-    var country = document.getElementById("gen-country").value;
-    if (!client || !proto || !country) return "";
+    var caps = BEST_GEN_ENDPOINTS[ep] || {};
+    if (!ep || !client || !proto) return "";
     var cap = proto.charAt(0).toUpperCase() + proto.slice(1);
-    var url = "/bestProxyIp/" + client + cap + "?d=" + country;
-    var c = document.getElementById("gen-c").value;
-    var limit = document.getElementById("gen-limit").value;
-    var random = document.getElementById("gen-random").checked;
-    var cdn = document.getElementById("gen-cdn").checked;
-    var ipv6 = document.getElementById("gen-ipv6").value;
-    if (c) url += "&c=" + encodeURIComponent(c);
-    if (limit) url += "&limit=" + encodeURIComponent(limit);
-    if (random) url += "&random=true";
-    if (cdn) url += "&cdn=true";
-    if (ipv6) url += "&ipv6=" + ipv6;
+    var url = "/" + ep + "/" + client + cap;
+    var q = [];
+    if (caps.d) {
+        var country = document.getElementById("gen-country").value;
+        if (country) q.push("d=" + country);
+    }
+    if (caps.c) {
+        var c = document.getElementById("gen-c").value;
+        if (c) q.push("c=" + encodeURIComponent(c));
+    }
+    if (caps.limit) {
+        var limit = document.getElementById("gen-limit").value;
+        if (limit) q.push("limit=" + encodeURIComponent(limit));
+    }
+    if (caps.random && document.getElementById("gen-random").checked) q.push("random=true");
+    if (caps.cdn && document.getElementById("gen-cdn").checked) q.push("cdn=true");
+    if (caps.ipv6) {
+        var ipv6 = document.getElementById("gen-ipv6").value;
+        if (ipv6) q.push("ipv6=" + ipv6);
+    }
+    if (q.length) url += "?" + q.join("&");
     return getSubURL(url);
 }
 
 function refreshBestGen() {
-    var countrySel = document.getElementById("gen-country");
+    var ep = document.getElementById("gen-endpoint").value;
+    var caps = BEST_GEN_ENDPOINTS[ep] || {};
+    setGenEnabled("gen-country", caps.d);
+    setGenEnabled("gen-c", caps.c);
+    setGenEnabled("gen-limit", caps.limit);
+    setGenEnabled("gen-random", caps.random);
+    setGenEnabled("gen-cdn", caps.cdn);
+    setGenEnabled("gen-ipv6", caps.ipv6);
+    // 协议联动：bestIpKr 强制 KR（d 不生效），其他按国家下拉
+    var country = caps.d ? document.getElementById("gen-country").value : "KR";
     var protoSel = document.getElementById("gen-protocol");
-    var country = countrySel.value || (countrySel.options.length ? countrySel.options[0].value : "");
     var cur = protoSel.value;
     var protos = bestGenProtocols(country);
     protoSel.innerHTML = "";
