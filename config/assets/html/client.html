@@ -38,7 +38,7 @@
                     {{ if .Rel }}<span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="{{ .Rel }}"></span>
                     {{ else }}<span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400">{{ .Text }}</span>{{ end }}
                     {{ if .LinkURL }}<a href="{{ .LinkURL }}" class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">{{ .LinkLabel }}</a>{{ end }}
-                    {{ if .Rel }}<button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="{{ .Rel }}" onclick="onCopyThis(this)">复制</button>{{ end }}
+                    {{ if .Rel }}<button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="{{ .Rel }}" onclick="onCopyThis(this)">复制</button>{{ end }}
                 </div>
                 {{ end }}
             </div>
@@ -52,14 +52,14 @@
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
                     <span class="w-44 shrink-0 font-medium text-sm">{{ .Label }}</span>
                     <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="{{ .Rel }}"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="{{ .Rel }}" onclick="onCopyThis(this)">复制</button>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" data-sub-path="{{ .Rel }}" onclick="onCopyThis(this)">复制</button>
                 </div>
                 {{ end }}
                 {{ if eq .active "clash" }}
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
                     <span class="w-44 shrink-0 font-medium text-sm">筛选节点示例</span>
                     <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400">https://{{ .domain }}{{ .base_path }}/clash/proxies?c=CN,HK,TW&amp;speed=15,30&amp;type=ss<br>https://{{ .domain }}{{ .base_path }}/clash/proxies?filter=1</span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="copyText('https://{{ .domain }}{{ .base_path }}/clash/proxies?c=CN,HK,TW&amp;speed=15,30&amp;type=ss&#10;https://{{ .domain }}{{ .base_path }}/clash/proxies?filter=1').then(function(ok){showTip(ok?'复制成功':'复制失败');})">复制</button>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-blue-600 hover:bg-slate-800 text-white" onclick="copyText('https://{{ .domain }}{{ .base_path }}/clash/proxies?c=CN,HK,TW&amp;speed=15,30&amp;type=ss&#10;https://{{ .domain }}{{ .base_path }}/clash/proxies?filter=1').then(function(ok){showTip(ok?'复制成功':'复制失败');})">复制</button>
                 </div>
                 {{ end }}
             </div>
@@ -78,32 +78,32 @@
         {{ if eq .active "clash" }}
         <section>
             <h2 class="text-lg font-semibold mb-1">Provider 筛选参数</h2>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">🌟 使用 <a href="https://en.wikipedia.org/wiki/Query_string" class="text-indigo-600 dark:text-indigo-400 underline">URL Query</a> 对 Clash Provider 进行筛选</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">🌟 使用 <a href="https://en.wikipedia.org/wiki/Query_string" class="text-blue-600 dark:text-blue-400 underline">URL Query</a> 对 Clash Provider 进行筛选</p>
             <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden">
                 <div class="hidden sm:grid grid-cols-[6rem_8rem_1fr_1fr] gap-2 px-4 py-2 bg-slate-50 dark:bg-slate-800/60 text-xs font-semibold text-slate-500 dark:text-slate-400">
                     <span></span><span>Query Key</span><span>Query Value</span><span>备注</span>
                 </div>
                 <div class="divide-y divide-slate-100 dark:divide-slate-800">
                     <div class="px-4 py-3 grid grid-cols-2 sm:grid-cols-[6rem_8rem_1fr_1fr] gap-x-2 gap-y-1 text-sm">
-                        <span class="font-medium">类型</span><span class="font-mono text-xs text-indigo-600 dark:text-indigo-400">type</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">ss,ssr,vmess,trojan,vless,anytls</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">可同时选择多个类型</span>
+                        <span class="font-medium">类型</span><span class="font-mono text-xs text-blue-600 dark:text-blue-400">type</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">ss,ssr,vmess,trojan,vless,anytls</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">可同时选择多个类型</span>
                     </div>
                     <div class="px-4 py-3 grid grid-cols-2 sm:grid-cols-[6rem_8rem_1fr_1fr] gap-x-2 gap-y-1 text-sm">
-                        <span class="font-medium">TLS</span><span class="font-mono text-xs text-indigo-600 dark:text-indigo-400">tls</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">true / 1,false / 0</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">true:仅TLS节点（trojan/vmess/vless+tls）<br>false:仅非TLS节点</span>
+                        <span class="font-medium">TLS</span><span class="font-mono text-xs text-blue-600 dark:text-blue-400">tls</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">true / 1,false / 0</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">true:仅TLS节点（trojan/vmess/vless+tls）<br>false:仅非TLS节点</span>
                     </div>
                     <div class="px-4 py-3 grid grid-cols-2 sm:grid-cols-[6rem_8rem_1fr_1fr] gap-x-2 gap-y-1 text-sm">
-                        <span class="font-medium">Reality</span><span class="font-mono text-xs text-indigo-600 dark:text-indigo-400">reality</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">true / 1,false / 0</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">true:仅Reality节点（vless+reality）<br>false:仅非Reality节点</span>
+                        <span class="font-medium">Reality</span><span class="font-mono text-xs text-blue-600 dark:text-blue-400">reality</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">true / 1,false / 0</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">true:仅Reality节点（vless+reality）<br>false:仅非Reality节点</span>
                     </div>
                     <div class="px-4 py-3 grid grid-cols-2 sm:grid-cols-[6rem_8rem_1fr_1fr] gap-x-2 gap-y-1 text-sm">
-                        <span class="font-medium">国家</span><span class="font-mono text-xs text-indigo-600 dark:text-indigo-400">c</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">AT,CN,IN,HK,JP,NL,RU,SG,TW,US...</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">可同时选择多个国家</span>
+                        <span class="font-medium">国家</span><span class="font-mono text-xs text-blue-600 dark:text-blue-400">c</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">AT,CN,IN,HK,JP,NL,RU,SG,TW,US...</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">可同时选择多个国家</span>
                     </div>
                     <div class="px-4 py-3 grid grid-cols-2 sm:grid-cols-[6rem_8rem_1fr_1fr] gap-x-2 gap-y-1 text-sm">
-                        <span class="font-medium">排除国家</span><span class="font-mono text-xs text-indigo-600 dark:text-indigo-400">nc</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">AT,CN,IN,HK,JP,NL,RU,SG,TW,US...</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">可同时选择多个国家</span>
+                        <span class="font-medium">排除国家</span><span class="font-mono text-xs text-blue-600 dark:text-blue-400">nc</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">AT,CN,IN,HK,JP,NL,RU,SG,TW,US...</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">可同时选择多个国家</span>
                     </div>
                     <div class="px-4 py-3 grid grid-cols-2 sm:grid-cols-[6rem_8rem_1fr_1fr] gap-x-2 gap-y-1 text-sm">
-                        <span class="font-medium">速度</span><span class="font-mono text-xs text-indigo-600 dark:text-indigo-400">speed</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">任何数字</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">单个数字选择最低速度<br>两个数字选择速度区间</span>
+                        <span class="font-medium">速度</span><span class="font-mono text-xs text-blue-600 dark:text-blue-400">speed</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">任何数字</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">单个数字选择最低速度<br>两个数字选择速度区间</span>
                     </div>
                     <div class="px-4 py-3 grid grid-cols-2 sm:grid-cols-[6rem_8rem_1fr_1fr] gap-x-2 gap-y-1 text-sm">
-                        <span class="font-medium">过滤</span><span class="font-mono text-xs text-indigo-600 dark:text-indigo-400">filter</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">1,2</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">默认：不进行过滤<br>1:选择中转节点<br>2:选择pool节点<br>3:选择中转与pool节点</span>
+                        <span class="font-medium">过滤</span><span class="font-mono text-xs text-blue-600 dark:text-blue-400">filter</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400 break-all">1,2</span><span class="col-span-2 sm:col-span-1 text-xs text-slate-500 dark:text-slate-400">默认：不进行过滤<br>1:选择中转节点<br>2:选择pool节点<br>3:选择中转与pool节点</span>
                     </div>
                 </div>
             </div>

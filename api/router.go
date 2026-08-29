@@ -134,7 +134,7 @@ var clientPages = map[string]clientPage{
 		Title: "ShadowRocket - Free Proxies",
 		Icon:  `<i aria-hidden="true" class="metron-shadowrocket text-2xl"></i>`,
 		Desc:  "ShadowRocket 节点订阅（Clash 格式）",
-		Note:  `ShadowRocket 的订阅包含了 Clash 格式，可以参考 <a href="clash" class="text-indigo-600 dark:text-indigo-400 underline">Clash</a> 进行筛选。`,
+		Note:  `ShadowRocket 的订阅包含了 Clash 格式，可以参考 <a href="clash" class="text-blue-600 dark:text-blue-400 underline">Clash</a> 进行筛选。`,
 		NodeRows: []clientPageRow{
 			{Label: "全部节点订阅", Rel: "/clash/proxies"},
 			{Label: "常用国家订阅", Rel: "/clash/proxies?c=CN,HK,TW,JP,US"},
