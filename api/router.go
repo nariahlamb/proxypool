@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"net/url"
 	"html/template"
 	"io/fs"
 	"net/http"
@@ -44,6 +45,135 @@ var clientProtocols = map[string][]string{
 	"quanx":  {"vless", "vmess", "trojan", "anytls"},
 	"v2rayn": {"vless", "vmess", "trojan", "anytls"},
 }
+
+// clientPageRow 客户端页配置/节点列表的通用行
+type clientPageRow struct {
+	Label      string // 行标题
+	Text       string // 静态文本（Text != "" 时优先于 Rel）
+	Rel        string // data-sub-path（JS 填充 URL + 复制按钮）
+	LinkScheme string // 一键导入深链 scheme（如 clash://install-config），渲染时拼完整地址
+	LinkLabel  string // 深链按钮文字
+	LinkURL    template.URL // 渲染后的一键导入完整深链（template.URL 绕过 URL 安全过滤，自定义 scheme 如 surge3://）
+}
+
+// clientPage 客户端页渲染数据（合并 6 个客户端页为统一 client.html 模板）
+type clientPage struct {
+	Name       string
+	Title      string
+	Icon       template.HTML
+	Desc       string
+	Note       string
+	ConfigRows []clientPageRow
+	NodeRows   []clientPageRow
+}
+
+var clientPages = map[string]clientPage{
+	"clash": {
+		Name:  "clash",
+		Title: "Clash - Free Proxies",
+		Icon:  `<i aria-hidden="true" class="metron-clash text-2xl"></i>`,
+		ConfigRows: []clientPageRow{
+			{Label: "远程配置文件", Rel: "/clash/config", LinkScheme: "clash://install-config", LinkLabel: "一键导入"},
+			{Label: "本地部署时配置文件", Text: "LOCAL", LinkScheme: "clash://install-config", LinkLabel: "一键导入"},
+		},
+		NodeRows: []clientPageRow{{Label: "所有节点", Rel: "/clash/proxies"}},
+	},
+	"surge": {
+		Name:  "surge",
+		Title: "Surge - Free Proxies",
+		Icon:  `<i aria-hidden="true" class="metron-surge text-2xl"></i>`,
+		Desc:  "Surge 配置文件与节点订阅",
+		Note:  `Surge 导入方法：点击「一键导入」自动跳转安装配置；或手动在 <b>设置 → 配置 → 从 URL 下载配置</b> 填入配置地址。节点列表也可粘贴到 <b>代理 → 手动添加</b> 使用。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。`,
+		ConfigRows: []clientPageRow{
+			{Label: "Surge 配置文件（含节点与规则）", Rel: "/surge/config", LinkScheme: "surge3:///install-config", LinkLabel: "一键导入"},
+		},
+		NodeRows: []clientPageRow{
+			{Label: "全部节点订阅", Rel: "/surge/proxies"},
+			{Label: "按类型订阅", Rel: "/surge/proxies?type=vless"},
+			{Label: "常用国家订阅", Rel: "/surge/proxies?c=CN,HK,TW,JP,US"},
+		},
+	},
+	"loon": {
+		Name:  "loon",
+		Title: "Loon - Free Proxies",
+		Icon:  `<i aria-hidden="true" class="metron-loon text-2xl"></i>`,
+		Desc:  "Loon 节点订阅",
+		Note:  `Loon 导入方法：打开 Loon，进入 <b>配置 → 订阅 → 远程订阅</b>，粘贴上方订阅地址保存后拉取；或在 <b>节点</b> 页右上角添加订阅。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。`,
+		NodeRows: []clientPageRow{
+			{Label: "全部节点订阅", Rel: "/loon/proxies"},
+			{Label: "按类型订阅", Rel: "/loon/proxies?type=vless"},
+			{Label: "常用国家订阅", Rel: "/loon/proxies?c=CN,HK,TW,JP,US"},
+		},
+	},
+	"quanx": {
+		Name:  "quanx",
+		Title: "QuanX - Free Proxies",
+		Icon:  `<i aria-hidden="true" class="metron-quanx text-2xl"></i>`,
+		Desc:  "Quantumult X 节点订阅",
+		Note:  `QuanX 导入方法：打开 Quantumult X，进入 <b>节点 → 订阅</b>，右上角 + 号粘贴订阅地址；或将地址填入 <b>设置 → 资源解析器</b> 的 server 段自动解析。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。`,
+		NodeRows: []clientPageRow{
+			{Label: "全部节点订阅", Rel: "/quanx/proxies"},
+			{Label: "按类型订阅", Rel: "/quanx/proxies?type=vless"},
+			{Label: "常用国家订阅", Rel: "/quanx/proxies?c=CN,HK,TW,JP,US"},
+		},
+	},
+	"v2rayn": {
+		Name:  "v2rayn",
+		Title: "v2rayN - Free Proxies",
+		Icon:  `<span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 text-base font-bold">V</span>`,
+		Desc:  "v2rayN 节点订阅",
+		Note:  `v2rayN 导入方法：<b>订阅分组 → 订阅设置 → 添加</b>，填入上方订阅地址（URL）后点击「订阅更新」。支持 type（类型）、c（国家）、speed、filter、tls、reality 等筛选参数。`,
+		NodeRows: []clientPageRow{
+			{Label: "全部节点订阅", Rel: "/v2rayn/proxies"},
+			{Label: "按类型订阅", Rel: "/v2rayn/proxies?type=vless"},
+			{Label: "常用国家订阅", Rel: "/v2rayn/proxies?c=CN,HK,TW,JP,US"},
+		},
+	},
+	"shadowrocket": {
+		Name:  "shadowrocket",
+		Title: "ShadowRocket - Free Proxies",
+		Icon:  `<i aria-hidden="true" class="metron-shadowrocket text-2xl"></i>`,
+		Desc:  "ShadowRocket 节点订阅（Clash 格式）",
+		Note:  `ShadowRocket 的订阅包含了 Clash 格式，可以参考 <a href="clash" class="text-indigo-600 dark:text-indigo-400 underline">Clash</a> 进行筛选。`,
+		NodeRows: []clientPageRow{
+			{Label: "全部节点订阅", Rel: "/clash/proxies"},
+			{Label: "常用国家订阅", Rel: "/clash/proxies?c=CN,HK,TW,JP,US"},
+		},
+	},
+}
+
+// renderClientPage 用统一 client.html 模板渲染客户端页（合并 6 个页面文件）
+func renderClientPage(c *gin.Context, name string) {
+	pg := clientPages[name]
+	base := templateBasePath(c)
+	domain := config.Config().Domain
+	for i := range pg.ConfigRows {
+		r := &pg.ConfigRows[i]
+		switch {
+		case r.Text == "LOCAL":
+			r.Text = "https://" + domain + base + "/clash/localconfig"
+			r.LinkURL = template.URL("clash://install-config?url=" + url.QueryEscape(r.Text))
+		case r.LinkScheme != "":
+			r.LinkURL = template.URL(r.LinkScheme + "?url=" + url.QueryEscape("https://"+domain+base+r.Rel))
+		}
+	}
+	c.HTML(http.StatusOK, "client.html", gin.H{
+		"domain":       domain,
+		"base_path":    base,
+		"version":      version,
+		"active":       pg.Name,
+		"show_tg":      false,
+		"client_title": pg.Title,
+		"client_name":  pg.Name,
+		"client_icon":  pg.Icon,
+		"client_desc":  pg.Desc,
+		"client_note":  template.HTML(pg.Note),
+		"config_rows":  pg.ConfigRows,
+		"node_rows":    pg.NodeRows,
+	})
+}
+
+
 
 func SetVersion(v string) {
 	version = v
@@ -333,46 +463,22 @@ func setupRouter() {
 	})
 
 	router.GET("/clash", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "clash.html", gin.H{
-			"domain": config.Config().Domain,
-			"base_path": templateBasePath(c),
-			"port":   config.Config().Port,
-		})
+		renderClientPage(c, "clash")
 	})
-
 	router.GET("/surge", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "surge.html", gin.H{
-			"domain": config.Config().Domain,
-			"base_path": templateBasePath(c),
-		})
+		renderClientPage(c, "surge")
 	})
-
 	router.GET("/shadowrocket", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "shadowrocket.html", gin.H{
-			"domain": config.Config().Domain,
-			"base_path": templateBasePath(c),
-		})
+		renderClientPage(c, "shadowrocket")
 	})
-
 	router.GET("/loon", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "loon.html", gin.H{
-			"domain": config.Config().Domain,
-			"base_path": templateBasePath(c),
-		})
+		renderClientPage(c, "loon")
 	})
-
 	router.GET("/quanx", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "quanx.html", gin.H{
-			"domain": config.Config().Domain,
-			"base_path": templateBasePath(c),
-		})
+		renderClientPage(c, "quanx")
 	})
-
 	router.GET("/v2rayn", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "v2rayn.html", gin.H{
-			"domain": config.Config().Domain,
-			"base_path": templateBasePath(c),
-		})
+		renderClientPage(c, "v2rayn")
 	})
 
 	// 优选 IP 订阅说明页

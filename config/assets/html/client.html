@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clash - Free Proxies</title>
-    <meta property="og:description" content="Clash 配置文件与 Provider 节点订阅">
+    <title>{{ .client_title }}</title>
+    <meta property="og:description" content="{{ .client_title }} 节点订阅">
     <link rel="stylesheet" type="text/css" href="static/css/index.css" />
-        <meta name="theme-color" content="#f8fafc">
+    <meta name="theme-color" content="#f8fafc">
     <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
     <script>
     (function () {
@@ -18,75 +18,64 @@
     </script>
 </head>
 
-<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-slate-900 focus:px-3 focus:py-2 focus:rounded-lg focus:text-sm focus:shadow-lg">跳到主要内容</a>
+{{ template "_nav.html" . }}
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200">
-
-    <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md">
-        <div class="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
-            <a href="#" id="brand-home" class="font-bold text-lg tracking-tight">Free Proxies</a>
-                        <button id="theme-toggle" class="p-2 rounded-lg hover:bg-white/10 text-lg leading-none" aria-label="切换主题">🌙</button>
-            <button id="nav-burger" class="sm:hidden p-2 rounded-lg hover:bg-white/10" aria-label="menu">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            </button>
-            <div id="nav-menu" class="hidden sm:flex absolute sm:static left-0 right-0 top-14 sm:top-auto flex-col sm:flex-row bg-indigo-700 sm:bg-transparent sm:items-center gap-1 px-4 pb-3 pt-2 sm:p-0 shadow-lg sm:shadow-none">
-                <a href="clash" class="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/15 text-sm"><i aria-hidden="true" class="metron-clash text-base"></i>Clash</a>
-                <a href="shadowrocket" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-shadowrocket text-base"></i>ShadowRocket</a>
-                <a href="surge" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-surge text-base"></i>Surge</a>
-                <a href="loon" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-loon text-base"></i>Loon</a>
-                <a href="quanx" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><i aria-hidden="true" class="metron-quanx text-base"></i>QuanX</a>
-                <a href="v2rayn" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm"><span class="inline-flex items-center justify-center w-4 h-4 rounded bg-white/20 text-xs font-bold">V</span>v2rayN</a>
-                <a href="best" class="flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/10 text-sm">★优选IP</a>
-            </div>
-        </div>
-    </nav>
 
     <main id="main-content" class="flex-1 w-full max-w-6xl mx-auto px-4 py-6">
 
         <section class="mb-6">
-            <h1 class="text-2xl font-bold mb-2 flex items-center gap-2"><i aria-hidden="true" class="metron-clash text-2xl"></i>Clash</h1>
+            <h1 class="text-2xl font-bold mb-2 flex items-center gap-2">{{ .client_icon }}{{ .client_name }}</h1>
+            {{ if .client_desc }}<p class="text-sm text-slate-500 dark:text-slate-400">{{ .client_desc }}</p>{{ end }}
         </section>
 
+        {{ if .config_rows }}
         <section class="mb-6">
             <h2 class="text-lg font-semibold mb-3">配置文件</h2>
             <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
+                {{ range .config_rows }}
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-44 shrink-0 font-medium text-sm">远程配置文件</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/clash/config"></span>
-                    <a href="#" data-sub-path="/clash/config" data-install-scheme="clash" class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">一键导入</a>
+                    <span class="w-44 shrink-0 font-medium text-sm">{{ .Label }}</span>
+                    {{ if .Rel }}<span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="{{ .Rel }}"></span>
+                    {{ else }}<span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400">{{ .Text }}</span>{{ end }}
+                    {{ if .LinkURL }}<a href="{{ .LinkURL }}" class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">{{ .LinkLabel }}</a>{{ end }}
+                    {{ if .Rel }}<button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="{{ .Rel }}" onclick="onCopyThis(this)">复制</button>{{ end }}
                 </div>
-                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-44 shrink-0 font-medium text-sm">本地部署时配置文件</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400">https://{{ .domain }}{{ .base_path }}/clash/localconfig</span>
-                    <a href="clash://install-config?url=https://{{ .domain }}{{ .base_path }}/clash/localconfig" class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-sky-600 hover:bg-sky-700 text-white">一键导入</a>
-                </div>
-            </div>
-            <div class="rounded-xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 p-4 mt-3 text-sm">
-                以上提供的配置文件本身不包含节点，而使用 clash provider 的方式加载远程节点。
+                {{ end }}
             </div>
         </section>
+        {{ end }}
 
         <section class="mb-6">
-            <h2 class="text-lg font-semibold mb-3">Provider</h2>
+            <h2 class="text-lg font-semibold mb-3">节点列表</h2>
             <div class="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
+                {{ range .node_rows }}
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
-                    <span class="w-44 shrink-0 font-medium text-sm">所有节点</span>
-                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="/clash/proxies"></span>
-                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="/clash/proxies" onclick="onCopyThis(this)">复制</button>
+                    <span class="w-44 shrink-0 font-medium text-sm">{{ .Label }}</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-sub-path="{{ .Rel }}"></span>
+                    <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" data-sub-path="{{ .Rel }}" onclick="onCopyThis(this)">复制</button>
                 </div>
+                {{ end }}
+                {{ if eq .active "clash" }}
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-2">
                     <span class="w-44 shrink-0 font-medium text-sm">筛选节点示例</span>
                     <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400">https://{{ .domain }}{{ .base_path }}/clash/proxies?c=CN,HK,TW&amp;speed=15,30&amp;type=ss<br>https://{{ .domain }}{{ .base_path }}/clash/proxies?filter=1</span>
                     <button class="shrink-0 px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white" onclick="copyText('https://{{ .domain }}{{ .base_path }}/clash/proxies?c=CN,HK,TW&amp;speed=15,30&amp;type=ss&#10;https://{{ .domain }}{{ .base_path }}/clash/proxies?filter=1').then(function(ok){showTip(ok?'复制成功':'复制失败');})">复制</button>
                 </div>
+                {{ end }}
             </div>
+            {{ if eq .active "clash" }}
             <div class="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-4 mt-3 text-sm">
                 ❗️ 节点过多会造成软件卡顿，可以自行筛选节点后修改配置文件的 proxy-provider 部分。
             </div>
+            {{ end }}
+            {{ if .client_note }}
+            <div class="rounded-xl bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 p-4 mt-3 text-sm">
+                {{ .client_note }}
+            </div>
+            {{ end }}
         </section>
 
+        {{ if eq .active "clash" }}
         <section>
             <h2 class="text-lg font-semibold mb-1">Provider 筛选参数</h2>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">🌟 使用 <a href="https://en.wikipedia.org/wiki/Query_string" class="text-indigo-600 dark:text-indigo-400 underline">URL Query</a> 对 Clash Provider 进行筛选</p>
@@ -119,14 +108,10 @@
                 </div>
             </div>
         </section>
+        {{ end }}
     </main>
 
-    <a href="#main-content" class="fixed bottom-4 right-4 z-40 bg-slate-900/80 dark:bg-slate-100/80 text-white dark:text-slate-900 rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:bg-slate-900" aria-label="回到顶部">↑</a>
-    <footer class="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
-        <p>本程序为 fork 版：<a href="https://github.com/One-Piecs/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">One-Piecs/proxypool</a> {{ .version }}</p>
-        <p class="mt-1">上游项目：<a href="https://github.com/zu1k/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">zu1k/proxypool</a> · <a href="https://github.com/sansui233/proxypool" class="text-indigo-600 dark:text-indigo-400 hover:underline">sansui233/proxypool</a></p>
-        <p class="mt-2">Theme by <a href="https://github.com/sansui233/" class="text-indigo-600 dark:text-indigo-400 hover:underline">Sansui233</a> · Powered by Tailwind CSS</p>
-    </footer>
+    {{ template "_footer.html" . }}
     <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
     <script src="static/index.js"></script>
 </body>

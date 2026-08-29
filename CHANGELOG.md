@@ -1,3 +1,12 @@
+## [v2.5.22] - 2026-08-29
+
+### 🧹 前端页面合并（8 页 → 3 页 + 2 partial）
+
+- 提取共享导航 `_nav.html`（active 参数化高亮）与 footer `_footer.html`（show_tg 控制首页专属行）
+- 6 个客户端页（clash/surge/loon/quanx/v2rayn/shadowrocket）合并为统一 `client.html` 模板 + 路由数据表（clientPages），删除 6 个页面文件
+- 修复：一键导入深链（surge3://、clash:// 自定义 scheme）被 Go 模板 URL 安全过滤渲染为 #ZgotmplZ → LinkURL 用 template.URL
+- 页面渲染行为与之前一致（导航高亮/Provider 表/深链/tg 行均验证）
+
 ## [v2.5.21] - 2026-08-29
 
 ### 🐛 修复
