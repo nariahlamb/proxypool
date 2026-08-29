@@ -1,3 +1,15 @@
+## [v2.5.20] - 2026-08-29
+
+### 🎨 Tailwind CSS 前端重构（redesign-ui 分支合并）
+
+- 8 页面全部重写：统一渐变导航 + 汉堡菜单、订阅表格→响应式列表（手机堆叠）、卡片式统计/客户端
+- 弃 Bulma 双主题（-410KB），Tailwind v4 预编译入库（产物 21.5KB）；`make css` / `scripts/build-tailwind.sh` 本地编译，Docker/CI 零改动、无 CDN
+- best 动态生成器重排（端点/客户端/协议/国家 grid 布局 + 筛选参数），三维联动/生成逻辑全部保留
+- 夜间模式：跟随系统 + 手动切换按钮（🌙/☀️/🔄 三态，localStorage 持久化，防闪脚本，color-scheme 适配）
+- 手机端：触控优化（touch-action/tap-highlight）、safe-area、回到顶部按钮
+- 无障碍（Web Interface Guidelines）：标题层级、aria-label、aria-live toast、skip link、表单 autocomplete/spellcheck
+- 修复：showTip toast 样式（重构后 Bulma 类失效）、深色滚动条/原生控件
+
 ## [v2.5.19] - 2026-08-29
 
 ### 🎛️ 优选订阅动态生成器（页面）
