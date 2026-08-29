@@ -1,0 +1,17 @@
+内容都在 https://manual.nssurge.com/ 查看 Proxy Protocols 下的支持协议
+
+https://manual.nssurge.com/policies/http.html
+https://manual.nssurge.com/policies/socks5.html
+https://manual.nssurge.com/policies/shadowsocks.html
+https://manual.nssurge.com/policies/snell.html
+https://manual.nssurge.com/policies/vmess.html
+https://manual.nssurge.com/policies/trojan.html
+https://manual.nssurge.com/policies/tuic.html
+https://manual.nssurge.com/policies/hysteria2.html
+https://manual.nssurge.com/policies/masque.html
+https://manual.nssurge.com/policies/anytls.htm
+https://manual.nssurge.com/policies/trust-tunnel.html
+https://manual.nssurge.com/policies/ssh.html
+https://manual.nssurge.com/policies/wireguard.html
+https://manual.nssurge.com/policies/tailscale.html
+https://manual.nssurge.com/policies/external.html

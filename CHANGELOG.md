@@ -1,5 +1,14 @@
 ## [v2.5.18] - 2026-08-29
 
+### 🌐 Loon / Surge 导出格式对齐官方文档
+
+- Loon vless 协议名对齐文档：`= vless,` → `= VLESS,`（文档示例大写）
+- Surge ws-headers 去引号：`ws-headers=Host:"xxx"` → `ws-headers=Host:xxx`（手册格式）
+- 对照 docs/surge-支持的节点格式.txt（官方手册链接）、docs/loon-支持的节点格式.txt
+- 断言测试补 Surge ws-headers / Loon VLESS
+
+
+
 ### 🌐 QuanX 导出格式对齐官方文档
 
 - 对照 Quantumult X 官方格式文档修正：

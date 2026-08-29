@@ -24,6 +24,10 @@ func TestAllClientsIPv6Format(t *testing.T) {
       host: "o.laibas.top"
       uuid: "u"
       path: "/p"
+    vmess:
+      host: "o.laibas.top"
+      uuid: "u"
+      path: "/p"
     trojan:
       host: "o.laibas.top"
       password: "pw"
@@ -56,13 +60,22 @@ func TestAllClientsIPv6Format(t *testing.T) {
 		t.Errorf("surge server 应为裸 IPv6:\n%s", so)
 	}
 
-	// Loon vless：server 裸
-	lo := out(Format{Loon: true, Vless: true})
-	if !strings.Contains(lo, "= vless, 2606:4700::1, 443") {
-		t.Errorf("loon server 应裸 IPv6:\n%s", lo)
+	// Surge vmess：ws-headers 不带引号（对齐官方手册 ws-headers=Host:example.com）
+	so2 := out(Format{Surge: true, Vmess: true})
+	if strings.Contains(so2, `Host:"`) {
+		t.Errorf("surge ws-headers 不应带引号:\n%s", so2)
 	}
-	if strings.Contains(lo, "= vless, [2606:4700::1]") {
-		t.Errorf("loon server 不应带方括号:\n%s", lo)
+	if !strings.Contains(so2, "ws-headers=Host:o.laibas.top") {
+		t.Errorf("surge ws-headers 应为 Host:o.laibas.top（无引号）:\n%s", so2)
+	}
+
+	// Loon vless：协议名 VLESS（对齐文档）+ server 裸
+	lo := out(Format{Loon: true, Vless: true})
+	if !strings.Contains(lo, "= VLESS, 2606:4700::1, 443") {
+		t.Errorf("loon 应为 = VLESS, 裸IPv6, 443:\n%s", lo)
+	}
+	if strings.Contains(lo, "= vless, ") {
+		t.Errorf("loon vless 协议名应为大写 VLESS:\n%s", lo)
 	}
 
 	// Clash vless：server 裸
