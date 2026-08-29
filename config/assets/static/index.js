@@ -41,6 +41,12 @@ function ensureBestToken() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    // 主题初始化 + 跟随系统监听
+    applyTheme(currentTheme());
+    watchSystemTheme();
+    var themeBtn = document.getElementById("theme-toggle");
+    if (themeBtn) themeBtn.addEventListener("click", toggleTheme);
+
     // 移动端导航菜单切换（Tailwind 重构版：toggle hidden）
     var burger = document.getElementById("nav-burger");
     if (burger) {
@@ -72,6 +78,38 @@ document.addEventListener("DOMContentLoaded", function () {
     // 动态生成器初始化：填充协议下拉并生成初始预览 URL
     if (document.getElementById("gen-client")) refreshBestGen();
 });
+
+// 主题切换（三态：dark / light / 跟随系统）。状态存 localStorage('proxypool_theme')，
+// 未手动选择时跟随系统 prefers-color-scheme（含实时监听）。
+var THEME_ICONS = { dark: "🌙", light: "☀️", system: "🔄" };
+
+function currentTheme() {
+    return localStorage.getItem("proxypool_theme") || "system";
+}
+
+function applyTheme(t) {
+    var dark = t === "dark" || (t !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", dark);
+    var btn = document.getElementById("theme-toggle");
+    if (btn) btn.textContent = THEME_ICONS[t];
+}
+
+// 切换：dark → light → system → dark 循环
+function toggleTheme() {
+    var t = currentTheme();
+    var next = t === "dark" ? "light" : (t === "light" ? "system" : "dark");
+    localStorage.setItem("proxypool_theme", next);
+    applyTheme(next);
+    showTip(next === "system" ? "已切换：跟随系统" : (next === "dark" ? "已切换：夜间模式" : "已切换：日间模式"));
+}
+
+// 未手动选择时跟随系统主题变化
+function watchSystemTheme() {
+    if (!window.matchMedia) return;
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+        if (currentTheme() === "system") applyTheme("system");
+    });
+}
 
 // 复制文本：优先 navigator.clipboard，降级 execCommand
 function copyText(text) {
