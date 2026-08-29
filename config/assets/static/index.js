@@ -137,7 +137,18 @@ function bestGenURL() {
     var country = document.getElementById("gen-country").value;
     if (!client || !proto || !country) return "";
     var cap = proto.charAt(0).toUpperCase() + proto.slice(1);
-    return getSubURL("/bestProxyIp/" + client + cap + "?d=" + country);
+    var url = "/bestProxyIp/" + client + cap + "?d=" + country;
+    var c = document.getElementById("gen-c").value;
+    var limit = document.getElementById("gen-limit").value;
+    var random = document.getElementById("gen-random").checked;
+    var cdn = document.getElementById("gen-cdn").checked;
+    var ipv6 = document.getElementById("gen-ipv6").value;
+    if (c) url += "&c=" + encodeURIComponent(c);
+    if (limit) url += "&limit=" + encodeURIComponent(limit);
+    if (random) url += "&random=true";
+    if (cdn) url += "&cdn=true";
+    if (ipv6) url += "&ipv6=" + ipv6;
+    return getSubURL(url);
 }
 
 function refreshBestGen() {

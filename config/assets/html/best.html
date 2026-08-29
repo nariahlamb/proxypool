@@ -73,6 +73,33 @@
                     <button class="button is-primary" id="gen-copy" onclick="copyBestGen(this)">复制订阅链接</button>
                 </div>
             </div>
+            <div class="field is-grouped mt-2 is-flex-wrap-wrap">
+                <div class="control">
+                    <label class="checkbox">
+                        <input type="checkbox" id="gen-random" onchange="refreshBestGen()"> random
+                    </label>
+                </div>
+                <div class="control">
+                    <label class="checkbox">
+                        <input type="checkbox" id="gen-cdn" onchange="refreshBestGen()"> cdn
+                    </label>
+                </div>
+                <div class="control">
+                    <div class="select">
+                        <select id="gen-ipv6" onchange="refreshBestGen()">
+                            <option value="">IPv4+IPv6</option>
+                            <option value="true">仅 IPv6</option>
+                            <option value="false">仅 IPv4</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control">
+                    <input class="input" id="gen-limit" type="number" min="1" placeholder="limit 数量（可选）" oninput="refreshBestGen()" style="width:10em">
+                </div>
+                <div class="control">
+                    <input class="input" id="gen-c" type="text" placeholder="节点国家代码 c（可选）" oninput="refreshBestGen()" style="width:12em">
+                </div>
+            </div>
             <div class="field mt-2">
                 <input class="input" id="gen-url" type="text" readonly placeholder="选择后自动生成订阅链接…">
             </div>
@@ -134,7 +161,8 @@
             <div class="table-container">
                 <table class="table is-fullwidth">
                     <tbody>
-                        <tr><th>country</th><td>目标国家，如 <code>?country=US</code></td></tr>
+                        <tr><th>d</th><td>落地国家，如 <code>?d=US</code>（默认 JP）</td></tr>
+                        <tr><th>c</th><td>节点名中的国家代码，如 <code>?c=US</code></td></tr>
                         <tr><th>limit</th><td>限制返回数量，如 <code>?limit=20</code></td></tr>
                         <tr><th>random</th><td>随机返回，如 <code>?random=true</code></td></tr>
                         <tr><th>cdn</th><td>仅保留 CDN 节点，如 <code>?cdn=true</code></td></tr>
