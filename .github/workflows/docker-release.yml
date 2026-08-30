@@ -22,6 +22,7 @@ permissions:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -80,3 +81,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # 关掉 buildx 默认生成的 provenance 清单，省去一次元数据生成与推送（不影响镜像功能）
+          provenance: false
+          sbom: false
