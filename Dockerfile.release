@@ -1,56 +1,40 @@
-# 多阶段构建：① 在宿主架构(alpine/amd64)容器里交叉编译目标架构二进制；
-#          ② 运行阶段仅 COPY 预编译产物。
-# 依赖层(go mod download)走 buildkit registry 缓存，跨 tag 复用；版本号进环境变量，
-# 保证每次发版都重新编译出对应版本二进制。
-
-# ---------- 构建阶段 ----------
-FROM --platform=$BUILDPLATFORM golang:1.27-alpine AS build
-WORKDIR /src
-
-# buildx 注入的目标平台
-ARG TARGETOS
-ARG TARGETARCH
-# 版本号（workflow 传入，如 v2.5.47）
-ARG VERSION
-# Go 模块代理（默认官方；受限环境可 --build-arg GOPROXY=... 覆盖，如 goproxy.cn）
-ARG GOPROXY=https://proxy.golang.org
-
-# 1) 先只拷依赖清单并下载依赖：仅 go.mod/go.sum 变化才失效 → 跨 tag 命中 registry 缓存
-COPY go.mod go.sum ./
-RUN GOPROXY=$GOPROXY go mod download
-
-# 2) 让版本进入构建环境，使后续编译层在每次发版失效（不会复用旧版本二进制）
-ENV PROXYPOOL_VERSION=$VERSION
-
-# 3) 拷贝源码（含 config/assets 内嵌资源）
-COPY . .
-
-# 4) 交叉编译目标架构二进制（测试仍在宿主机 workflow 中执行）
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
-    go build -trimpath -ldflags "-X main.version=$PROXYPOOL_VERSION -w -s" \
-    -o /out/proxypool .
-
-# ---------- 运行阶段 ----------
+# 运行阶段
 FROM alpine:3.24
 
+# buildx 自动注入目标平台（用于 COPY 对应预编译二进制）
+ARG TARGETOS
+ARG TARGETARCH
+
+# 安装运行时依赖并清理缓存
 RUN apk add --no-cache ca-certificates tzdata \
     && rm -rf /var/cache/apk/*
 
+# 创建文件夹
 RUN mkdir -p /app/config /app/data /app/assets
 
 WORKDIR /app
 
+# 复制配置文件
 COPY ./config/config.yaml ./config/source.yaml /app/config/
 
-COPY --from=build /out/proxypool /app/proxypool
+# 复制宿主机预先交叉编译好的二进制
+# 注意：构建上下文中必须包含 bin/ 目录，且文件名格式为 proxypool-<os>-<arch>
+# 例如：bin/proxypool-linux-amd64, bin/proxypool-linux-arm64
+COPY bin/proxypool-${TARGETOS}-${TARGETARCH} /app/proxypool
 
+# 设置权限
 RUN chmod +x /app/proxypool
 
+# 设置时区
 ENV TZ=Asia/Shanghai
+
+# 暴露端口
 EXPOSE 12580
 
+# 启动命令
 ENTRYPOINT ["/app/proxypool"]
 CMD ["-d", "-c", "config/config.yaml"]
 
+# 添加元数据标签
 LABEL maintainer="proxypool@laibas.top" \
     description="ProxyPool Service"

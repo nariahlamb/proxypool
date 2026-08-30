@@ -50,6 +50,16 @@ jobs:
           go vet ./...
           go test ./... 2>&1 | tail -30
 
+      - name: Build binaries (amd64 + arm64)
+        run: |
+          # 并行交叉编译两个平台，全部完成后继续
+          make linux-amd64 &
+          make linux-armv8 &
+          wait
+          # 重命名以匹配 Dockerfile.release 中的 TARGETARCH 命名规范
+          mv bin/proxypool-linux-armv8 bin/proxypool-linux-arm64
+          ls -lh bin/proxypool-linux-*
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
@@ -89,7 +99,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: VERSION=${{ github.ref_name }}
           # 缓存改用 registry 并按周滚动：跨 tag/多平台稳定命中，且便于定时清理
           cache-from: |
             type=registry,ref=${{ env.IMAGE_NAME }}:buildcache-${{ steps.cache.outputs.week }}
