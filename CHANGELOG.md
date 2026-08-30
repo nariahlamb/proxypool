@@ -1,3 +1,10 @@
+## [v2.5.46] - 2026-08-30
+
+### ⚙️ CI / 构建
+
+- Go 缓存改用显式 `actions/cache`：key 含 `go.sum` 哈希，`restore-keys` 用系统前缀兜底，避免 `setup-go` 偶发“Cache is not found”导致每次重下依赖、重编译
+- Docker `buildcache` 清理策略改为只保留最新一个标签（每天 04:00 UTC），控制 Docker Hub 缓存体积
+
 ## [v2.5.45] - 2026-08-30
 
 ### ⚙️ 构建 / CI 优化
