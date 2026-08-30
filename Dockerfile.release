@@ -12,10 +12,12 @@ ARG TARGETOS
 ARG TARGETARCH
 # 版本号（workflow 传入，如 v2.5.47）
 ARG VERSION
+# Go 模块代理（默认官方；受限环境可 --build-arg GOPROXY=... 覆盖，如 goproxy.cn）
+ARG GOPROXY=https://proxy.golang.org
 
 # 1) 先只拷依赖清单并下载依赖：仅 go.mod/go.sum 变化才失效 → 跨 tag 命中 registry 缓存
 COPY go.mod go.sum ./
-RUN go mod download
+RUN GOPROXY=$GOPROXY go mod download
 
 # 2) 让版本进入构建环境，使后续编译层在每次发版失效（不会复用旧版本二进制）
 ENV PROXYPOOL_VERSION=$VERSION
