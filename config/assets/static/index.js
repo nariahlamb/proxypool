@@ -124,8 +124,8 @@ function softNavigate(url, push) {
         // 清除上一次导航留下的填充动画，避免其 fill 影响后续（否则可能把内容盖回透明）
         try { main.getAnimations().forEach(function (a) { a.cancel(); }); } catch (e) {}
         var leave = main.animate(
-            [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-8px)" }],
-            { duration: 150, easing: "ease-out", fill: "forwards" }
+            [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-4px)" }],
+            { duration: 240, easing: "ease-out", fill: "forwards" }
         );
         leave.finished.then(function () {
             main.innerHTML = newMain.innerHTML;
@@ -134,9 +134,9 @@ function softNavigate(url, push) {
             window.scrollTo(0, 0);
             initPageFeatures();
             main.animate(
-                [{ opacity: 0, transform: "translateY(28px)" }, { opacity: 1, transform: "translateY(0)" }],
+                [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "translateY(0)" }],
                 // fill:both 让新页淡入完成后保持可见，避免旧淡出的 fill:forwards 把它盖回透明
-                { duration: 320, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "both" }
+                { duration: 520, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "both" }
             );
         });
     }).catch(function () { location.assign(url); });
@@ -197,7 +197,12 @@ function toggleTheme() {
     var t = currentTheme();
     var next = t === "dark" ? "light" : (t === "light" ? "system" : "dark");
     localStorage.setItem("proxypool_theme", next);
-    applyTheme(next);
+    // 主题切换：用 View Transition 做整页平滑交叉淡入淡出（不支持则直接切换）
+    if (document.startViewTransition) {
+        document.startViewTransition(function () { applyTheme(next); });
+    } else {
+        applyTheme(next);
+    }
     showTip(next === "system" ? "已切换：跟随系统" : (next === "dark" ? "已切换：夜间模式" : "已切换：日间模式"));
 }
 
