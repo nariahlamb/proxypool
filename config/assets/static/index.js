@@ -197,12 +197,11 @@ function toggleTheme() {
     var t = currentTheme();
     var next = t === "dark" ? "light" : (t === "light" ? "system" : "dark");
     localStorage.setItem("proxypool_theme", next);
-    // 主题切换：用 View Transition 做整页平滑交叉淡入淡出（不支持则直接切换）
-    if (document.startViewTransition) {
-        document.startViewTransition(function () { applyTheme(next); });
-    } else {
-        applyTheme(next);
-    }
+    // 主题切换：只对颜色类属性做平滑过渡（背景/文字/边框），不做整页画面交叉淡化
+    var html = document.documentElement;
+    html.classList.add("theme-transition");
+    applyTheme(next);
+    setTimeout(function () { html.classList.remove("theme-transition"); }, 360);
     showTip(next === "system" ? "已切换：跟随系统" : (next === "dark" ? "已切换：夜间模式" : "已切换：日间模式"));
 }
 
