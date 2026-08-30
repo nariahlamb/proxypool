@@ -43,15 +43,20 @@ function ensureBestToken() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    // 主题初始化 + 跟随系统监听
+    initPageChrome();
+});
+
+// 页面级“外壳”初始化（每次整页加载只跑一次）：主题、导航、软导航绑定
+function initPageChrome() {
     applyTheme(currentTheme());
     watchSystemTheme();
     var themeBtn = document.getElementById("theme-toggle");
-    if (themeBtn) themeBtn.addEventListener("click", toggleTheme);
+    if (themeBtn && !themeBtn.__bound) { themeBtn.__bound = true; themeBtn.addEventListener("click", toggleTheme); }
 
     // 移动端导航菜单切换（Tailwind 重构版：toggle hidden）
     var burger = document.getElementById("nav-burger");
-    if (burger) {
+    if (burger && !burger.__bound) {
+        burger.__bound = true;
         burger.addEventListener("click", function () {
             var menu = document.getElementById("nav-menu");
             if (menu) menu.classList.toggle("hidden");
@@ -59,10 +64,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     // 首页品牌链接跳转部署前缀首页
     var brand = document.getElementById("brand-home");
-    if (brand) {
-        brand.setAttribute("href", getBasePath() + "/");
-    }
-    // 渲染订阅链接：td 文本 / 复制按钮 / 一键导入
+    if (brand) brand.setAttribute("href", getBasePath() + "/");
+
+    // 软导航：拦截同源页面跳转，fetch + 替换主内容，避免整页刷新
+    bindSoftNav();
+    window.addEventListener("popstate", function () { softNavigate(location.href, false); });
+
+    initPageFeatures();
+}
+
+// 每次主内容渲染后调用：填充订阅链接、初始化优选生成器/搜索等
+function initPageFeatures() {
     var subs = document.querySelectorAll("[data-sub-path]");
     for (var i = 0; i < subs.length; i++) {
         var el = subs[i];
@@ -77,11 +89,83 @@ document.addEventListener("DOMContentLoaded", function () {
             el.setAttribute("data-copy", url);
         }
     }
-    // 动态生成器初始化：填充协议下拉并生成初始预览 URL
     if (document.getElementById("gen-client")) refreshBestGen();
-    // 订阅表搜索过滤
     initSubSearch();
-});
+    applyTheme(currentTheme()); // 同步新页面的主题色 meta
+}
+
+// 绑定软导航：拦截同源、非新标签页、非自定义 scheme 的 <a> 点击
+function bindSoftNav() {
+    document.addEventListener("click", function (e) {
+        var a = e.target && e.target.closest ? e.target.closest("a") : null;
+        if (!a) return;
+        if (a.target === "_blank") return;
+        var href = a.getAttribute("href");
+        if (!href || href.charAt(0) === "#" || /^(javascript:|mailto:|tel:|clash:|surge3:|about:)/i.test(href)) return;
+        var abs;
+        try { abs = new URL(href, location.href); } catch (err) { return; }
+        if (abs.origin !== location.origin) return;
+        if (abs.href === location.href) { e.preventDefault(); return; }
+        e.preventDefault();
+        softNavigate(abs.href, true);
+    });
+}
+
+// 软导航：fetch 目标页 → 淡出旧内容 → 替换主内容 → 新内容自下而上淡入
+function softNavigate(url, push) {
+    var main = document.getElementById("main-content");
+    if (!main) { location.assign(url); return; }
+    if (push) history.pushState({}, "", url);
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        var doc = new DOMParser().parseFromString(html, "text/html");
+        var newMain = doc.querySelector("#main-content");
+        if (!newMain) { location.assign(url); return; }
+        applyScriptGlobals(doc);
+        var leave = main.animate(
+            [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-8px)" }],
+            { duration: 150, easing: "ease-out", fill: "forwards" }
+        );
+        leave.finished.then(function () {
+            main.innerHTML = newMain.innerHTML;
+            if (doc.title) document.title = doc.title;
+            setNavActive(url);
+            window.scrollTo(0, 0);
+            initPageFeatures();
+            main.animate(
+                [{ opacity: 0, transform: "translateY(28px)" }, { opacity: 1, transform: "translateY(0)" }],
+                { duration: 320, easing: "cubic-bezier(0.4, 0, 0.2, 1)" }
+            );
+        });
+    }).catch(function () { location.assign(url); });
+}
+
+// 提取目标页内联脚本里的页面级全局（如 best 生成器数据），innerHTML 替换不会执行 <script>
+function applyScriptGlobals(doc) {
+    var scripts = doc.querySelectorAll("script");
+    for (var i = 0; i < scripts.length; i++) {
+        var text = scripts[i].textContent || "";
+        if (text.indexOf("BEST_GEN_COUNTRIES") >= 0 || text.indexOf("BEST_GEN_CLIENTS") >= 0) {
+            try { (0, eval)(text); } catch (e) {}
+        }
+    }
+}
+
+// 更新导航当前激活项（服务端只在整页加载时渲染 active 高亮）
+function setNavActive(url) {
+    var u = new URL(url, location.href);
+    var base = getBasePath();
+    var rest = u.pathname.slice(base.length).replace(/^\//, "");
+    var route = rest.split("/")[0] || "";
+    var navMenu = document.getElementById("nav-menu");
+    if (!navMenu) return;
+    var links = navMenu.querySelectorAll("a");
+    var act = ["bg-indigo-50", "text-indigo-700", "dark:bg-indigo-500/10", "dark:text-indigo-300"];
+    for (var i = 0; i < links.length; i++) {
+        var linkHref = links[i].getAttribute("href");
+        var active = !!route && linkHref === route;
+        for (var j = 0; j < act.length; j++) links[i].classList.toggle(act[j], active);
+    }
+}
 
 // 主题切换（三态：dark / light / 跟随系统）。状态存 localStorage('proxypool_theme')，
 // 未手动选择时跟随系统 prefers-color-scheme（含实时监听）。
