@@ -31,7 +31,19 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.27'
-          cache: true
+          cache: false
+
+      # 显式缓存 Go 模块与构建缓存：key 含 go.sum 哈希，restore-keys 用前缀兜底，
+      # 避免 setup-go 的 cache 偶发“Cache is not found”导致每次重下依赖/重编译。
+      - name: Cache Go modules & build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            /home/runner/go/pkg/mod
+            /home/runner/.cache/go-build
+          key: go-${{ runner.os }}-${{ hashFiles('go.sum') }}
+          restore-keys: |
+            go-${{ runner.os }}-
 
       - name: Run vet & tests
         run: |

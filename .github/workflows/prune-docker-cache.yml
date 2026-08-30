@@ -18,7 +18,6 @@ jobs:
           HUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
           HUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           REPO: proxypool
-          KEEP_DAYS: '7'
         run: |
           python3 - <<'PY'
           import os, json, datetime, urllib.request, urllib.error, urllib.parse
@@ -26,7 +25,6 @@ jobs:
           NS = os.environ["HUB_USER"]
           REPO = os.environ["REPO"]
           PASS = os.environ["HUB_TOKEN"]
-          KEEP_DAYS = int(os.environ.get("KEEP_DAYS", "14"))
           API = "https://hub.docker.com/v2"
 
           def call(method, path, body=None, token=None):
@@ -50,8 +48,8 @@ jobs:
               raise SystemExit(1)
           tok = data["token"]
 
-          cutoff = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=KEEP_DAYS)
-          deleted = []
+          # 收集所有 buildcache-* 标签及其最后更新时间
+          tags = []
           page = 1
           while True:
               st, d = call("GET", f"/repositories/{NS}/{REPO}/tags/?page_size=100&page={page}", token=tok)
@@ -68,12 +66,22 @@ jobs:
                       dt = datetime.datetime.fromisoformat(lu.replace("Z", "+00:00"))
                   except Exception:
                       continue
-                  if dt < cutoff:
-                      dsta, _ = call("DELETE", f"/repositories/{NS}/{REPO}/tags/{urllib.parse.quote(name)}/", token=tok)
-                      deleted.append(name)
+                  tags.append((name, dt))
               if not d.get("next"):
                   break
               page += 1
 
-          print("pruned buildcache tags older than %d days: %s" % (KEEP_DAYS, ", ".join(deleted) or "none"))
+          # 只保留最新的一个 buildcache 标签，其余删除，控制 Docker Hub 缓存体积
+          if tags:
+              keep = max(tags, key=lambda x: x[1])[0]
+              deleted = []
+              for name, _ in tags:
+                  if name == keep:
+                      continue
+                  call("DELETE", f"/repositories/{NS}/{REPO}/tags/{urllib.parse.quote(name)}/", token=tok)
+                  deleted.append(name)
+              print("keep latest buildcache tag:", keep)
+              print("deleted:", ", ".join(deleted) or "none")
+          else:
+              print("no buildcache tags to prune")
           PY
