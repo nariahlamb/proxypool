@@ -18,7 +18,7 @@ jobs:
           HUB_USER: ${{ secrets.DOCKERHUB_USERNAME }}
           HUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           REPO: proxypool
-          KEEP_DAYS: '14'
+          KEEP_DAYS: '7'
         run: |
           python3 - <<'PY'
           import os, json, datetime, urllib.request, urllib.error, urllib.parse
