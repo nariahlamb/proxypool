@@ -2,8 +2,8 @@ name: Prune Docker registry build cache
 
 on:
   schedule:
-    # 每周日 04:00 UTC 清理一次
-    - cron: '0 4 * * 0'
+    # 每天 04:00 UTC 清理一次
+    - cron: '0 4 * * *'
   workflow_dispatch:
 
 permissions:
