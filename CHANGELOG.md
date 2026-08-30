@@ -1,3 +1,11 @@
+## [v2.5.45] - 2026-08-30
+
+### ⚙️ 构建 / CI 优化
+
+- Docker 镜像构建提速：缓存改为 `type=registry` 并按 ISO 周滚动（`buildcache-<周>`，构建用本周+上周双 ref 兜底），跨 tag/多平台稳定命中，避开 Actions 缓存上限与淘汰
+- 新增每天 04:00 UTC 的定时清理：删除 Docker Hub 上超过 7 天的 `buildcache-*` 标签，控制缓存体积
+- 构建任务加 30 分钟超时保护；Go 模块/构建缓存（`setup-go cache: true`）保持不变；provenance 保持默认生成
+
 ## [v2.5.44] - 2026-08-30
 
 ### 🐛 修复
