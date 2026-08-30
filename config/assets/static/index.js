@@ -121,6 +121,8 @@ function softNavigate(url, push) {
         var newMain = doc.querySelector("#main-content");
         if (!newMain) { location.assign(url); return; }
         applyScriptGlobals(doc);
+        // 清除上一次导航留下的填充动画，避免其 fill 影响后续（否则可能把内容盖回透明）
+        try { main.getAnimations().forEach(function (a) { a.cancel(); }); } catch (e) {}
         var leave = main.animate(
             [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-8px)" }],
             { duration: 150, easing: "ease-out", fill: "forwards" }
@@ -133,7 +135,8 @@ function softNavigate(url, push) {
             initPageFeatures();
             main.animate(
                 [{ opacity: 0, transform: "translateY(28px)" }, { opacity: 1, transform: "translateY(0)" }],
-                { duration: 320, easing: "cubic-bezier(0.4, 0, 0.2, 1)" }
+                // fill:both 让新页淡入完成后保持可见，避免旧淡出的 fill:forwards 把它盖回透明
+                { duration: 320, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "both" }
             );
         });
     }).catch(function () { location.assign(url); });
