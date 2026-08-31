@@ -344,7 +344,9 @@ var BEST_GEN_ENDPOINTS = {
 };
 
 function setGenEnabled(id, on) {
+    var wrap = document.getElementById("wrap-" + id);
     var el = document.getElementById(id);
+    if (wrap) wrap.style.display = on ? "" : "none";
     if (el) el.disabled = !on;
 }
 

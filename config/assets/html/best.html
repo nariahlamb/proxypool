@@ -71,7 +71,7 @@
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">协议</label>
                         <select id="gen-protocol" onchange="refreshBestGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"></select>
                     </div>
-                    <div>
+                    <div id="wrap-gen-country">
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">落地国家</label>
                         <select id="gen-country" onchange="refreshBestGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
                             {{ range .countries }}<option value="{{ . }}">{{ . }}</option>{{ end }}
@@ -79,16 +79,16 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-3">
-                    <label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"><input type="checkbox" id="gen-random" onchange="refreshBestGen()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30">random</label>
-                    <label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"><input type="checkbox" id="gen-cdn" onchange="refreshBestGen()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30">cdn</label>
-                    <div>
+                    <div id="wrap-gen-random"><label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"><input type="checkbox" id="gen-random" onchange="refreshBestGen()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30">random</label></div>
+                    <div id="wrap-gen-cdn"><label class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"><input type="checkbox" id="gen-cdn" onchange="refreshBestGen()" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/30">cdn</label></div>
+                    <div id="wrap-gen-ipv6">
                         <select id="gen-ipv6" aria-label="IPv6 模式" onchange="refreshBestGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm text-slate-700 dark:text-slate-200">
                             <option value="">IPv4+IPv6</option>
                             <option value="true">仅 IPv6</option>
                             <option value="false">仅 IPv4</option>
                         </select>
                     </div>
-                    <div>
+                    <div id="wrap-gen-sort">
                         <select id="gen-sort" aria-label="排序方式" onchange="refreshBestGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-2 text-sm text-slate-700 dark:text-slate-200">
                             <option value="">固定排序</option>
                             <option value="country">按国家</option>
@@ -96,21 +96,21 @@
                             <option value="random">随机</option>
                         </select>
                     </div>
-                    <div>
+                    <div id="wrap-gen-limit">
                         <input id="gen-limit" type="number" min="1" placeholder="limit 数量…" aria-label="limit 数量" autocomplete="off" spellcheck="false" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
                     </div>
-                    <div>
+                    <div id="wrap-gen-c">
                         <input id="gen-c" type="text" placeholder="节点国家 c…" aria-label="节点国家代码 c" autocomplete="off" spellcheck="false" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
                     </div>
                 </div>
-                <div class="mb-3">
+                <div id="wrap-gen-sub" class="mb-3">
                     <input id="gen-sub" type="text" placeholder="sub CF 明文订阅源链接…" aria-label="sub CF 明文订阅源链接" autocomplete="off" spellcheck="false" oninput="refreshBestGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
                 </div>
                 <div class="flex flex-col sm:flex-row gap-2">
                     <input id="gen-url" type="text" readonly placeholder="选择后自动生成订阅链接…" aria-label="订阅链接预览" class="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs font-mono text-slate-500 dark:text-slate-400 focus:outline-none">
                     <button class="shrink-0 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-medium text-white hover:from-indigo-500 hover:to-violet-500" onclick="copyBestGen(this)">复制订阅链接</button>
                 </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3 leading-5">三维联动：国家候选只显示配置了所选协议的国家；协议候选 = 客户端支持 ∩ 国家配置（如 Surge 不支持 vless）。筛选参数按端点支持度自动禁用（bestIpKr 强制韩国、不支持 d；bestCfProxySub 需填写 sub 订阅源链接）。如导出为空请检查该国家对应探测是否启用。</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3 leading-5">三维联动：国家候选只显示配置了所选协议的国家；协议候选 = 客户端支持 ∩ 国家配置（如 Surge 不支持 vless）。筛选参数按端点支持度自动隐藏（bestIpKr 强制韩国、不支持 d；bestCfProxySub 需填写 sub 订阅源链接）。如导出为空请检查该国家对应探测是否启用。</p>
             </div>
         </section>
 
