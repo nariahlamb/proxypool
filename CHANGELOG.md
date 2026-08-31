@@ -1,3 +1,14 @@
+## [v2.5.51] - 2026-08-31
+
+### 🎨 前端
+
+- 首页「客户端」区块补全 Loon / QuanX / v2rayN 接入卡片，与顶部导航一致的完整客户端列表（Clash、ShadowRocket、Surge、Loon、QuanX、v2rayN），每张卡提供「复制订阅 / 常用国家」与详情页入口
+- 首页「优选 IP 订阅」区块补 v2rayN / vless 订阅入口，对齐 best 页的客户端覆盖（Clash、Surge、QuanX、Loon、v2rayN）
+
+### 🐛 修复
+
+- 修复页面切换的 Layout Shift（布局位移）：全局 `html` 增加 `scrollbar-gutter: stable`，预留垂直滚动条槽位，避免短页（不足一屏）与长页切换时滚动条出现/消失导致居中内容整体横向偏移约 15px
+
 ## [v2.5.50] - 2026-08-30
 
 ### ⚙️ 构建
