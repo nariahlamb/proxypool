@@ -494,6 +494,29 @@ func setupRouter() {
 		})
 	})
 
+	// 采集节点订阅生成器（无 token 鉴权，对应 /clash|/surge|/loon|/quanx|/v2rayn/proxies）
+	router.GET("/nodes", func(c *gin.Context) {
+		clients := []struct {
+			Name string
+			Rel  string
+		}{
+			{Name: "Clash", Rel: "/clash/proxies"},
+			{Name: "Surge", Rel: "/surge/proxies"},
+			{Name: "Loon", Rel: "/loon/proxies"},
+			{Name: "QuanX", Rel: "/quanx/proxies"},
+			{Name: "v2rayN", Rel: "/v2rayn/proxies"},
+		}
+		c.HTML(http.StatusOK, "nodes.html", gin.H{
+			"domain":    requestHost(c),
+			"origin":    requestOrigin(c),
+			"base_path": templateBasePath(c),
+			"version":   version,
+			"active":    "nodes",
+			"countries": config.Config().ProxyInfo.Countries(),
+			"clients":   clients,
+		})
+	})
+
 	router.GET("/clash/config", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "clash-config.yaml", gin.H{
 			"domain": requestHost(c),

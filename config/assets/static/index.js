@@ -3,6 +3,7 @@
 
 // 已知根路由第一段（用于从前端 URL 推断部署前缀）
 var ROOT_ROUTES = ["clash", "surge", "shadowrocket", "loon", "quanx", "v2rayn", "best",
+    "nodes",
     "static", "health", "task", "ss", "ssr", "vmess", "trojan", "vless", "sip002",
     "link", "debug", "bestProxyIp", "bestCfProxyIp", "bestCfProxyIpTop20",
     "bestCfProxyIpIsp", "bestCfProxyDomainTop20", "bestCfProxySub", "bestIpKr"];
@@ -90,8 +91,58 @@ function initPageFeatures() {
         }
     }
     if (document.getElementById("gen-client")) refreshBestGen();
+    if (document.getElementById("gen-n-client")) refreshNodeGen();
     initSubSearch();
     applyTheme(currentTheme()); // 同步新页面的主题色 meta
+}
+
+// ---- 采集节点订阅生成器（/nodes，无 token） ----
+function val(id) {
+    var el = document.getElementById(id);
+    return el ? el.value.trim() : "";
+}
+
+function nodeGenURL() {
+    var client = val("gen-n-client");
+    if (!client) return "";
+    var rel = "/" + client + "/proxies";
+    var q = [];
+    var type = val("gen-n-type");
+    if (type) q.push("type=" + encodeURIComponent(type));
+    var c = val("gen-n-c");
+    if (c) q.push("c=" + encodeURIComponent(c));
+    var nc = val("gen-n-nc");
+    if (nc) q.push("nc=" + encodeURIComponent(nc));
+    var speed = val("gen-n-speed");
+    if (speed) q.push("speed=" + encodeURIComponent(speed));
+    var tls = val("gen-n-tls");
+    if (tls) q.push("tls=" + tls);
+    var reality = val("gen-n-reality");
+    if (reality) q.push("reality=" + reality);
+    var filter = val("gen-n-filter");
+    if (filter) q.push("filter=" + filter);
+    if (client === "surge") {
+        var up = val("gen-n-up");
+        if (up) q.push("underlyingproxy=" + encodeURIComponent(up));
+    }
+    if (q.length) rel += "?" + q.join("&");
+    return getSubURL(rel);
+}
+
+function refreshNodeGen() {
+    var wrap = document.getElementById("gen-n-up-wrap");
+    var client = val("gen-n-client");
+    if (wrap) wrap.style.display = (client === "surge") ? "" : "none";
+    var url = nodeGenURL();
+    var el = document.getElementById("gen-n-url");
+    if (el) el.value = url;
+    return url;
+}
+
+function copyNodeGen(btn) {
+    var url = nodeGenURL();
+    if (!url) { showTip("请先选择客户端"); return; }
+    copyText(url).then(function (ok) { showTip(ok ? "复制成功" : "复制失败"); });
 }
 
 // 绑定软导航：拦截同源、非新标签页、非自定义 scheme 的 <a> 点击

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>节点订阅生成器 - Free Proxies</title>
+    <meta property="og:description" content="采集节点订阅动态生成：clash、surge、loon、quanx、v2rayN 格式，无 Token">
+    <link rel="stylesheet" type="text/css" href="static/css/index.css?v={{ .version }}" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 21a9 9 0 1 0-9-9c0 1.13.21 2.2.59 3.19L2 21l5.81-1.59A9.02 9.02 0 0 0 12 21Z'/%3E%3C/svg%3E">
+    <meta name="theme-color" content="#f6f7fb">
+    <link rel="stylesheet" type="text/css" href="static/css/metron-icon.css" />
+    <script>
+    (function () {
+        var t = localStorage.getItem("proxypool_theme");
+        var dark = t === "dark" || (!t && window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches);
+        document.documentElement.classList.toggle("dark", dark);
+    })();
+    </script>
+</head>
+
+<body class="min-h-screen flex flex-col bg-[#f6f7fb] text-slate-700 dark:bg-slate-950 dark:text-slate-200">
+
+    {{ template "_nav.html" . }}
+
+    <main id="main-content" class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+        <section class="mb-8">
+            <div class="flex items-center gap-3">
+                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg>
+                </span>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">节点订阅生成器</h1>
+                    <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">基于采集到的普通节点动态生成订阅链接，无需 Token，支持类型 / 国家 / 速度 / TLS / Reality / 过滤等筛选。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">动态生成</h2>
+            <p class="mt-0.5 text-sm text-slate-500 dark:text-slate-400">选择客户端、协议与筛选条件，一键复制订阅链接。</p>
+            <div class="rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900/70 p-4 sm:p-5 shadow-sm">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">客户端</label>
+                        <select id="gen-n-client" onchange="refreshNodeGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
+                            <option value="">请选择</option>
+                            <option value="clash" selected>Clash</option>
+                            <option value="surge">Surge</option>
+                            <option value="loon">Loon</option>
+                            <option value="quanx">QuanX</option>
+                            <option value="v2rayn">v2rayN</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">协议 type</label>
+                        <select id="gen-n-type" onchange="refreshNodeGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
+                            <option value="">全部</option>
+                            <option value="ss">ss</option>
+                            <option value="ssr">ssr</option>
+                            <option value="vmess">vmess</option>
+                            <option value="trojan">trojan</option>
+                            <option value="vless">vless</option>
+                            <option value="anytls">anytls</option>
+                            <option value="all">全部(含不可用)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">国家 c</label>
+                        <input id="gen-n-c" list="node-countries" placeholder="如 HK,US,JP…" autocomplete="off" spellcheck="false" oninput="refreshNodeGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">排除国家 nc</label>
+                        <input id="gen-n-nc" list="node-countries" placeholder="如 RU,CN…" autocomplete="off" spellcheck="false" oninput="refreshNodeGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">速度 speed</label>
+                        <input id="gen-n-speed" placeholder="如 15,30…" autocomplete="off" spellcheck="false" oninput="refreshNodeGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">TLS</label>
+                        <select id="gen-n-tls" onchange="refreshNodeGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200">
+                            <option value="">全部</option>
+                            <option value="true">仅 TLS</option>
+                            <option value="false">仅非 TLS</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Reality</label>
+                        <select id="gen-n-reality" onchange="refreshNodeGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200">
+                            <option value="">全部</option>
+                            <option value="true">仅 Reality</option>
+                            <option value="false">仅非 Reality</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">过滤 filter</label>
+                        <select id="gen-n-filter" onchange="refreshNodeGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200">
+                            <option value="">不过滤</option>
+                            <option value="1">中转</option>
+                            <option value="2">pool</option>
+                            <option value="3">中转+pool</option>
+                        </select>
+                    </div>
+                    <div id="gen-n-up-wrap" style="display:none">
+                        <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">中转 underlyingproxy</label>
+                        <input id="gen-n-up" placeholder="中转组名…" autocomplete="off" spellcheck="false" oninput="refreshNodeGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input id="gen-n-url" type="text" readonly placeholder="选择后自动生成订阅链接…" aria-label="订阅链接预览" class="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs font-mono text-slate-500 dark:text-slate-400 focus:outline-none">
+                    <button class="shrink-0 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-medium text-white hover:from-indigo-500 hover:to-violet-500" onclick="copyNodeGen(this)">复制订阅链接</button>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3 leading-5">说明：生成的链接无需 Token，对应 <code class="rounded bg-slate-200/70 dark:bg-slate-800 px-1 py-0.5">/{客户端}/proxies</code> 接口。type=all 表示使用全量节点；filter=1/2/3 分别对应中转 / pool / 中转+pool；underlyingproxy 仅 Surge 生效。国家代码可多选（逗号分隔）。</p>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">可用接口</h2>
+            <div class="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900/70 shadow-sm divide-y divide-slate-100 dark:divide-slate-800">
+                {{ range .clients }}
+                <div class="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center">
+                    <span class="w-40 shrink-0 font-medium text-sm text-slate-900 dark:text-white">{{ .Name }}</span>
+                    <span class="flex-1 text-xs break-all font-mono text-slate-500 dark:text-slate-400" data-text data-sub-path="{{ .Rel }}"></span>
+                    <button class="shrink-0 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-3 py-1.5 text-xs font-medium text-white hover:from-indigo-500 hover:to-violet-500" data-sub-path="{{ .Rel }}" onclick="onCopyThis(this)">复制</button>
+                </div>
+                {{ end }}
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">筛选参数</h2>
+            <div class="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900/70 shadow-sm divide-y divide-slate-100 dark:divide-slate-800">
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm text-indigo-600 dark:text-indigo-400">type</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">ss / ssr / vmess / trojan / vless / anytls / all(全量)</span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm text-indigo-600 dark:text-indigo-400">c / nc</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">国家代码，逗号分隔，如 <code class="rounded bg-slate-200/70 dark:bg-slate-800 px-1 py-0.5 text-xs">?c=HK,US,JP</code></span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm text-indigo-600 dark:text-indigo-400">speed</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">速度下限/区间，如 <code class="rounded bg-slate-200/70 dark:bg-slate-800 px-1 py-0.5 text-xs">?speed=15,30</code></span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm text-indigo-600 dark:text-indigo-400">tls / reality</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">true/1 只要，false/0 只要排除</span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm text-indigo-600 dark:text-indigo-400">filter</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">1 中转 / 2 pool / 3 中转+pool</span>
+                </div>
+                <div class="px-4 py-3 grid grid-cols-1 sm:grid-cols-[8rem_1fr] gap-1">
+                    <span class="font-mono text-sm text-indigo-600 dark:text-indigo-400">underlyingproxy</span>
+                    <span class="text-sm text-slate-600 dark:text-slate-300">仅 Surge，中转组名</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <datalist id="node-countries">
+        {{ range .countries }}<option value="{{ . }}"></option>{{ end }}
+    </datalist>
+
+    {{ template "_footer.html" . }}
+    <script>window.PROXYPOOL_BASE_PATH = "{{ .base_path }}";</script>
+    <script src="static/index.js?v={{ .version }}"></script>
+</body>
+
+</html>
