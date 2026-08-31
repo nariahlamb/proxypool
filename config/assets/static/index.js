@@ -361,46 +361,46 @@ function bestGenProtocols(client, country) {
 }
 
 function bestGenURL() {
-    var ep = document.getElementById("gen-endpoint").value;
-    var client = document.getElementById("gen-client").value;
-    var proto = document.getElementById("gen-protocol").value;
+    var ep = val("gen-endpoint");
+    var client = val("gen-client");
+    var proto = val("gen-protocol");
     var caps = BEST_GEN_ENDPOINTS[ep] || {};
     if (!ep || !client || !proto) return "";
     var cap = proto.charAt(0).toUpperCase() + proto.slice(1);
-    var url = "/" + ep + "/" + client + cap;
+    var rel = "/" + ep + "/" + client + cap;
     var q = [];
     if (caps.d) {
-        var country = document.getElementById("gen-country").value;
+        var country = val("gen-country");
         if (country) q.push("d=" + country);
     }
     if (caps.c) {
-        var c = document.getElementById("gen-c").value;
+        var c = val("gen-c");
         if (c) q.push("c=" + encodeURIComponent(c));
     }
     if (caps.sub) {
-        var sub = document.getElementById("gen-sub").value;
+        var sub = val("gen-sub");
         if (sub) q.push("sub=" + encodeURIComponent(sub));
     }
     if (caps.limit) {
-        var limit = document.getElementById("gen-limit").value;
+        var limit = val("gen-limit");
         if (limit) q.push("limit=" + encodeURIComponent(limit));
     }
     if (caps.random && document.getElementById("gen-random").checked) q.push("random=true");
     if (caps.sort) {
-        var sort = document.getElementById("gen-sort").value;
+        var sort = val("gen-sort");
         if (sort) q.push("sort=" + sort);
     }
     if (caps.cdn && document.getElementById("gen-cdn").checked) q.push("cdn=true");
     if (caps.ipv6) {
-        var ipv6 = document.getElementById("gen-ipv6").value;
+        var ipv6 = val("gen-ipv6");
         if (ipv6) q.push("ipv6=" + ipv6);
     }
-    if (q.length) url += "?" + q.join("&");
-    return getSubURL(url);
+    if (q.length) rel += "?" + q.join("&");
+    return getSubURL(rel);
 }
 
 function refreshBestGen() {
-    var ep = document.getElementById("gen-endpoint").value;
+    var ep = val("gen-endpoint");
     var caps = BEST_GEN_ENDPOINTS[ep] || {};
     setGenEnabled("gen-country", caps.d);
     setGenEnabled("gen-c", caps.c);
@@ -411,7 +411,7 @@ function refreshBestGen() {
     setGenEnabled("gen-cdn", caps.cdn);
     setGenEnabled("gen-ipv6", caps.ipv6);
 
-    var client = document.getElementById("gen-client").value;
+    var client = val("gen-client");
     var protoSel = document.getElementById("gen-protocol");
     var cur = protoSel.value;
 
@@ -448,7 +448,8 @@ function refreshBestGen() {
     }
 
     var url = bestGenURL();
-    document.getElementById("gen-url").value = url;
+    var genUrl = document.getElementById("gen-url");
+    if (genUrl) genUrl.value = url;
     return url;
 }
 
