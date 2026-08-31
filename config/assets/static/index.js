@@ -145,6 +145,17 @@ function refreshNodeGen() {
 
     // 协议 type 按客户端支持度筛选：隐藏客户端不支持的协议，并回退当前选中项
     var supported = NODE_GEN_TYPES[client];
+    // Reality 仅对 vless 语义相关：客户端不支持 vless（如 Surge）时隐藏 Reality
+    var realityWrap = document.getElementById("gen-n-reality-wrap");
+    var supportsVless = supported && supported.indexOf("vless") >= 0;
+    if (realityWrap) {
+        realityWrap.style.display = supportsVless ? "" : "none";
+        if (!supportsVless) {
+            var realitySel = document.getElementById("gen-n-reality");
+            if (realitySel) realitySel.value = "";
+        }
+    }
+
     var typeSel = document.getElementById("gen-n-type");
     if (typeSel) {
         var typeOpts = typeSel.querySelectorAll("option");

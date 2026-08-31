@@ -75,7 +75,7 @@
                         <input id="gen-n-nc" list="node-countries" placeholder="如 RU,CN…" autocomplete="off" spellcheck="false" oninput="refreshNodeGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
                     </div>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
                     <div>
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">速度 speed</label>
                         <input id="gen-n-speed" placeholder="如 15,30…" autocomplete="off" spellcheck="false" oninput="refreshNodeGen()" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 placeholder:text-slate-400">
@@ -88,7 +88,7 @@
                             <option value="false">仅非 TLS</option>
                         </select>
                     </div>
-                    <div>
+                    <div id="gen-n-reality-wrap">
                         <label class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Reality</label>
                         <select id="gen-n-reality" onchange="refreshNodeGen()" class="select-arrow w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-700 dark:text-slate-200">
                             <option value="">全部</option>
@@ -114,7 +114,7 @@
                     <input id="gen-n-url" type="text" readonly placeholder="选择后自动生成订阅链接…" aria-label="订阅链接预览" class="flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs font-mono text-slate-500 dark:text-slate-400 focus:outline-none">
                     <button class="shrink-0 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-sm font-medium text-white hover:from-indigo-500 hover:to-violet-500" onclick="copyNodeGen(this)">复制订阅链接</button>
                 </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3 leading-5">说明：生成的链接无需 Token，对应 <code class="rounded bg-slate-200/70 dark:bg-slate-800 px-1 py-0.5">/{客户端}/proxies</code> 接口。协议 type 选项按客户端支持度展示（如 Surge 不支持 ssr/vless）；type=all 表示使用全量节点；filter=1/2/3 分别对应中转 / pool / 中转+pool；underlyingproxy 仅 Surge 生效。国家代码可多选（逗号分隔）。</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-3 leading-5">说明：生成的链接无需 Token，对应 <code class="rounded bg-slate-200/70 dark:bg-slate-800 px-1 py-0.5">/{客户端}/proxies</code> 接口。协议 type 与 Reality 按客户端支持度展示（如 Surge 不支持 ssr/vless/Reality）；type=all 表示使用全量节点；filter=1/2/3 分别对应中转 / pool / 中转+pool；underlyingproxy 仅 Surge 生效。国家代码可多选（逗号分隔）。</p>
             </div>
         </section>
 
