@@ -102,6 +102,15 @@ function val(id) {
     return el ? el.value.trim() : "";
 }
 
+// 各客户端支持的协议类型（对照 pkg/provider 各 Provide 的 check*Support：Surge 不支持 ssr/vless）
+var NODE_GEN_TYPES = {
+    "clash":  ["ss", "ssr", "vmess", "trojan", "vless", "anytls"],
+    "surge":  ["ss", "vmess", "trojan", "anytls"],
+    "loon":   ["ss", "ssr", "vmess", "trojan", "vless", "anytls"],
+    "quanx":  ["ss", "ssr", "vmess", "trojan", "vless", "anytls"],
+    "v2rayn": ["ss", "ssr", "vmess", "trojan", "vless", "anytls"]
+};
+
 function nodeGenURL() {
     var client = val("gen-n-client");
     if (!client) return "";
@@ -133,6 +142,23 @@ function refreshNodeGen() {
     var wrap = document.getElementById("gen-n-up-wrap");
     var client = val("gen-n-client");
     if (wrap) wrap.style.display = (client === "surge") ? "" : "none";
+
+    // 协议 type 按客户端支持度筛选：隐藏客户端不支持的协议，并回退当前选中项
+    var supported = NODE_GEN_TYPES[client];
+    var typeSel = document.getElementById("gen-n-type");
+    if (typeSel) {
+        var typeOpts = typeSel.querySelectorAll("option");
+        for (var i = 0; i < typeOpts.length; i++) {
+            var v = typeOpts[i].value;
+            var hide = supported && v !== "" && v !== "all" && supported.indexOf(v) < 0;
+            typeOpts[i].style.display = hide ? "none" : "";
+        }
+        var cur = typeSel.value;
+        if (supported && cur !== "" && cur !== "all" && supported.indexOf(cur) < 0) {
+            typeSel.value = "";
+        }
+    }
+
     var url = nodeGenURL();
     var el = document.getElementById("gen-n-url");
     if (el) el.value = url;
